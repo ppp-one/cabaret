@@ -31,10 +31,10 @@ To generate an image from RA/DEC coordinates and a field of vue specified in deg
 ```python
 import cabaret
 
-field_of_view = (0.1, 0.1) # in degrees 
 ra, dec = 12.3323, 30.4343 # in degrees
+exposure_time = 10 # in seconds
 
-image = cabaret.image(ra, dec, field_of_view)
+image = cabaret.generate_image(ra, dec, exposure_time)
 ```
 
 and to display the image (`matplotlib` required here):
@@ -53,10 +53,10 @@ To  adjust the physical characteristics of the camera, you can define and pass a
 import cabaret
 from cabaret import Camera
 
-camera = Camera(read_noise=10, gain=1, exposure_time=1)
+camera = Camera(read_noise=10, gain=1)
 
-field_of_view = (0.1, 0.1) # in degrees
 ra, dec = 12.3323, 30.4343 # in degrees
+exposure_time = 10 # in seconds
 
-image = cabaret.image(ra, dec, field_of_view, camera=camera)
+image = cabaret.generate_image(ra, dec, exposure_time, camera=camera)
 ``` 
