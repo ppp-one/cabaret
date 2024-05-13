@@ -5,19 +5,13 @@ authors = [
   {name = "Peter Pedersen"},
   {name = "Lionel Garcia"},
 ]
-description = "cabaret "
+description = "cabaret"
+repository = "https://github.com/ppp-one/cabaret"
 readme = "README.md"
-license = "MIT"
+license = { text = "MIT License" }
 requires-python = ">=3.9"
-packages = [{ include = "spotter" },]
-dependencies = ["numpy", "astopy"]
-
-[project.urls]
-Homepage = "https://github.com/ppp-one/cabaret"
+dependencies = ["numpy", "astropy"]
 
 [build-system]
 requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
-
-[tool.hatch.build.targets.wheel]
-packages = ["cabaret"]
