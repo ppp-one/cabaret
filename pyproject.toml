@@ -1,0 +1,13 @@
+[project]
+name = "cabaret"
+version = "0.0.0"
+requires-python = ">=3.9"
+authors = [
+  {name = "Peter Pedersen"},
+  {name = "Lionel Garcia"},
+]
+description = "cabaret "
+readme = "README.md"
+
+[project.urls]
+Homepage = "https://github.com/ppp-one/cabaret"
