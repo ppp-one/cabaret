@@ -1,7 +1,6 @@
 [project]
 name = "cabaret"
-version = "0.0.3"
-description = "cabaret"
+version = "0.0.4"
 authors = [
   {name = "Peter Pedersen"},
   {name = "Lionel Garcia"},
