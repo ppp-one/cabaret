@@ -1,11 +1,11 @@
 [project]
 name = "cabaret"
 version = "0.0.3"
+description = "cabaret"
 authors = [
   {name = "Peter Pedersen"},
   {name = "Lionel Garcia"},
 ]
-description = "cabaret"
 repository = "https://github.com/ppp-one/cabaret"
 readme = "README.md"
 license = { text = "MIT License" }
@@ -15,6 +15,9 @@ dependencies = ["numpy", "astropy", "astroquery"]
 [build-system]
 requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
 
 [project.optional-dependencies]
 dev = ["black", "pytest"]
