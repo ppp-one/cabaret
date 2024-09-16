@@ -49,40 +49,54 @@ def generate_image(
     telescope=Telescope,
     site=Site,
     tmass=True,
+    n_star_limit=2000,
 ):
 
     base = np.ones((camera.height, camera.width)).astype(np.float64)
-    base += camera.bias + np.random.poisson(
-        base * camera.dark_current * exp_time
-    ).astype(np.float64)
+
+    base += np.random.poisson(base * camera.dark_current * exp_time).astype(np.float64)
+
     base += np.random.normal(
         0, camera.read_noise, (camera.height, camera.width)
     ).astype(np.float64)
 
-    plate_scale = (
-        np.arctan((camera.pitch * 1e-6) / (telescope.focal_length))
-        * (180 / np.pi)
-        * 3600
-    )  # "/pixel
+    if camera.plate_scale is None:
+        camera.plate_scale = (
+            np.arctan((camera.pitch * 1e-6) / (telescope.focal_length))
+            * (180 / np.pi)
+            * 3600
+        )  # "/pixel
 
-    collecting_area = np.pi * (telescope.diameter / 2) ** 2  # [m^2]
+    if telescope.collecting_area is None:
+        telescope.collecting_area = np.pi * (telescope.diameter / 2) ** 2  # [m^2]
 
     if light == 1:
 
         # call gaia
         center = SkyCoord(ra=ra, dec=dec, unit="deg")
 
-        fovx = (1 / np.abs(np.cos(center.dec.rad))) * camera.width * plate_scale / 3600
+        fovx = (
+            (1 / np.abs(np.cos(center.dec.rad)))
+            * camera.width
+            * camera.plate_scale
+            / 3600
+        )
         fovy = (
-            np.sqrt(2) * camera.height * plate_scale / 3600
+            np.sqrt(2) * camera.height * camera.plate_scale / 3600
         )  # to account for poles, maybe should scale instead
 
-        gaias, mags = gaia_radecs(
-            center, (fovx * 1.5, fovy * 1.5), tmass=tmass, dateobs=dateobs
+        print("Querying Gaia for sources...")
+        gaias, vals = gaia_radecs(
+            center,
+            (fovx * 1.5, fovy * 1.5),
+            tmass=tmass,
+            dateobs=dateobs,
+            limit=n_star_limit,
         )
+        print(f"Found {len(gaias)} sources (user set limit of {n_star_limit}).")
 
         wcs = WCS(naxis=2)
-        wcs.wcs.cdelt = [-plate_scale / 3600, -plate_scale / 3600]
+        wcs.wcs.cdelt = [-camera.plate_scale / 3600, -camera.plate_scale / 3600]
         wcs.wcs.cunit = ["deg", "deg"]
         wcs.wcs.crpix = [int(camera.width / 2), int(camera.height / 2)]
         wcs.wcs.crval = [center.ra.deg, center.dec.deg]
@@ -97,16 +111,16 @@ def generate_image(
                 photons = 0.16 * 1600 * Jy  # [photons sec^-1 m^-2] at mag 0
                 fluxes = (
                     photons
-                    * 10 ** (-0.4 * mags)
+                    * 10 ** (-0.4 * vals)
                     * camera.average_quantum_efficiency
-                    * collecting_area
+                    * telescope.collecting_area
                     * exp_time
                 )  # [electrons]
             else:
                 fluxes = (
-                    fluxes
+                    vals
                     * camera.average_quantum_efficiency
-                    * collecting_area
+                    * telescope.collecting_area
                     * exp_time
                 )  # [electrons]
 
@@ -117,15 +131,21 @@ def generate_image(
             stars = generate_star_image(
                 gaias_pixel,
                 fluxes,
-                site.seeing / plate_scale,
+                site.seeing / camera.plate_scale,
                 (camera.width, camera.height),
             ).astype(
                 np.float64
             )  # * flat
 
+            sky_background = (
+                site.sky_background * telescope.collecting_area * camera.plate_scale**2
+            )  # [e-/s]
+
             # make base image with sky background
             image = base + np.random.poisson(
-                base * site.sky_background * exp_time
+                np.ones((camera.height, camera.width)).astype(np.float64)
+                * sky_background
+                * exp_time
             ).astype(
                 np.float64
             )  # * flat
@@ -151,14 +171,32 @@ def generate_image(
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
+    camera = Camera()
+    telescope = Telescope()
+    site = Site()
+    exp_time = 1  # [s]
+
     print("Generating image...")
+
     # example usage
-    image = generate_image(323.36152, -0.82325, 1)
+    image = generate_image(
+        323.36152,
+        -0.82325,
+        exp_time=exp_time,
+        camera=camera,
+        telescope=telescope,
+        site=site,
+    )
+
+    science = image  # - camera.dark_current / camera.gain * exp_time - camera.bias
 
     print("Plotting image...")
-    fig = plt.figure(figsize=(10, 10))
+    med = np.median(science)
+    std = np.std(science)
+    print(med, std)
 
-    med = np.median(image)
-    std = np.std(image)
-    plt.imshow(image, cmap="Greys_r", vmax=3 * std + med, vmin=med - 1 * std)
+    fig, ax = plt.subplots()
+    img = ax.imshow(science, cmap="gray", vmin=med - 3 * std, vmax=med + 3 * std)
+    cbar = plt.colorbar(img, ax=ax)
+    cbar.set_label("ADU")
     plt.show()

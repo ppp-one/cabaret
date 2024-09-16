@@ -7,9 +7,9 @@ def test_readme_1():
     image = cabaret.generate_image(ra, dec, exposure_time)
 
     assert image.shape == (
-        1000,
-        1000,
-    ), f"Expected image shape (1000, 1000), but got {image.shape}"
+        1024,
+        1024,
+    ), f"Expected image shape (1024, 1024), but got {image.shape}"
 
 
 def test_readme_2():

@@ -1,9 +1,10 @@
-from typing import Optional, Tuple, Union
-from astropy.units import Quantity
-from astropy.coordinates import SkyCoord
 from datetime import datetime
+from typing import Optional, Tuple, Union
+
 import numpy as np
 from astropy import units as u
+from astropy.coordinates import SkyCoord
+from astropy.units import Quantity
 
 
 def gaia_radecs(

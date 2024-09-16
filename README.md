@@ -47,7 +47,7 @@ plt.imshow(image)
 
 ### Using the camera characteristics
 
-To  adjust the physical characteristics of the camera, you can define and pass a `Camera` object
+To adjust the physical characteristics of the camera, you can define and pass a `Camera` object. Similary, one can pass `Telescope` and `Site` objects to define the telescope and site characteristics, respectively.
 
 ```python
 import cabaret
