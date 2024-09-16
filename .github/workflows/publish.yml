@@ -47,5 +47,5 @@ jobs:
           name: dist
           path: dist
       - uses: pypa/gh-action-pypi-publish@v1.8.11
-        # with:
-        #   password: ${{ secrets.PYPI_API_TOKEN }}
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
