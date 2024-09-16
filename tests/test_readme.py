@@ -6,6 +6,11 @@ def test_readme_1():
 
     image = cabaret.generate_image(ra, dec, exposure_time)
 
+    assert image.shape == (
+        1000,
+        1000,
+    ), f"Expected image shape (1000, 1000), but got {image.shape}"
+
 
 def test_readme_2():
     import cabaret
@@ -17,3 +22,8 @@ def test_readme_2():
     exposure_time = 10  # in seconds
 
     image = cabaret.generate_image(ra, dec, exposure_time, camera=camera)
+
+    assert image.shape == (
+        100,
+        100,
+    ), f"Expected image shape (1000, 1000), but got {image.shape}"

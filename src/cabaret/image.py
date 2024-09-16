@@ -1,11 +1,10 @@
-import numpy as np
+from datetime import UTC, datetime
 
+import numpy as np
 from astropy.coordinates import SkyCoord
 from astropy.wcs import WCS
 
-from datetime import datetime
-
-from cabaret.camera import Camera
+from cabaret.observatory import Camera, Site, Telescope
 from cabaret.queries import gaia_radecs
 
 
@@ -41,7 +40,15 @@ def generate_star_image(pos, fluxes, FWHM, frame_size):
 
 
 def generate_image(
-    ra, dec, exp_time, dateobs=datetime.utcnow(), light=1, camera=Camera, tmass=True
+    ra,
+    dec,
+    exp_time,
+    dateobs=datetime.now(UTC),
+    light=1,
+    camera=Camera,
+    telescope=Telescope,
+    site=Site,
+    tmass=True,
 ):
 
     base = np.ones((camera.height, camera.width)).astype(np.float64)
@@ -52,19 +59,22 @@ def generate_image(
         0, camera.read_noise, (camera.height, camera.width)
     ).astype(np.float64)
 
+    plate_scale = (
+        np.arctan((camera.pitch * 1e-6) / (telescope.focal_length))
+        * (180 / np.pi)
+        * 3600
+    )  # "/pixel
+
+    collecting_area = np.pi * (telescope.diameter / 2) ** 2  # [m^2]
+
     if light == 1:
 
         # call gaia
         center = SkyCoord(ra=ra, dec=dec, unit="deg")
 
-        fovx = (
-            (1 / np.abs(np.cos(center.dec.rad)))
-            * camera.width
-            * camera.plate_scale
-            / 3600
-        )
+        fovx = (1 / np.abs(np.cos(center.dec.rad))) * camera.width * plate_scale / 3600
         fovy = (
-            np.sqrt(2) * camera.height * camera.plate_scale / 3600
+            np.sqrt(2) * camera.height * plate_scale / 3600
         )  # to account for poles, maybe should scale instead
 
         gaias, mags = gaia_radecs(
@@ -72,11 +82,13 @@ def generate_image(
         )
 
         wcs = WCS(naxis=2)
-        wcs.wcs.cdelt = [-camera.plate_scale / 3600, -camera.plate_scale / 3600]
+        wcs.wcs.cdelt = [-plate_scale / 3600, -plate_scale / 3600]
         wcs.wcs.cunit = ["deg", "deg"]
         wcs.wcs.crpix = [int(camera.width / 2), int(camera.height / 2)]
         wcs.wcs.crval = [center.ra.deg, center.dec.deg]
         wcs.wcs.ctype = ["RA---TAN", "DEC--TAN"]
+
+        image = base
 
         if len(gaias) > 0:
             if tmass:
@@ -86,15 +98,15 @@ def generate_image(
                 fluxes = (
                     photons
                     * 10 ** (-0.4 * mags)
-                    * camera.quantum_efficiency
-                    * camera.collecting_area
+                    * camera.average_quantum_efficiency
+                    * collecting_area
                     * exp_time
                 )  # [electrons]
             else:
                 fluxes = (
                     fluxes
-                    * camera.quantum_efficiency
-                    * camera.collecting_area
+                    * camera.average_quantum_efficiency
+                    * collecting_area
                     * exp_time
                 )  # [electrons]
 
@@ -105,7 +117,7 @@ def generate_image(
             stars = generate_star_image(
                 gaias_pixel,
                 fluxes,
-                camera.seeing / camera.plate_scale,
+                site.seeing / plate_scale,
                 (camera.width, camera.height),
             ).astype(
                 np.float64
@@ -113,7 +125,7 @@ def generate_image(
 
             # make base image with sky background
             image = base + np.random.poisson(
-                base * camera.sky_background * exp_time
+                base * site.sky_background * exp_time
             ).astype(
                 np.float64
             )  # * flat
@@ -139,9 +151,11 @@ def generate_image(
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
+    print("Generating image...")
     # example usage
     image = generate_image(323.36152, -0.82325, 1)
 
+    print("Plotting image...")
     fig = plt.figure(figsize=(10, 10))
 
     med = np.median(image)

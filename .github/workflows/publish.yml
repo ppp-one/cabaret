@@ -5,9 +5,7 @@ on:
     branches:
       - main
     tags:
-      - "*"
-  pull_request:
-  merge_group:
+      - 'v*.*.*'
 
 jobs:
   build:
@@ -49,4 +47,5 @@ jobs:
           name: dist
           path: dist
       - uses: pypa/gh-action-pypi-publish@v1.8.11
-  
+        # with:
+        #   password: ${{ secrets.PYPI_API_TOKEN }}

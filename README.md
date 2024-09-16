@@ -3,7 +3,7 @@
 *cabaret* is a Python package to simulate astronomical images using the [GAIA catalog](https://en.wikipedia.org/wiki/Gaia_catalogues) of stars.
 ## Installation
 
-You can install *cabaret* in a Python (`>=3.9`) environment with
+You can install *cabaret* in a Python (`>=3.11`) environment with
 
 ```bash
 pip install cabaret
