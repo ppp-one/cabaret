@@ -8,7 +8,9 @@ from cabaret.observatory import Camera, Site, Telescope
 from cabaret.queries import gaia_radecs
 
 
-def moffat_profile(x, y, x0, y0, FWHM, beta=2.5):
+def moffat_profile(
+    x: np.ndarray, y: np.ndarray, x0: float, y0: float, FWHM: float, beta: float = 2.5
+):
     # https://nbviewer.org/github/ysbach/AO_2017/blob/master/04_Ground_Based_Concept.ipynb#1.2.-Moffat
     # FWHM =  2 * R * (2**(1/beta) - 1)**0.5
 
@@ -24,17 +26,51 @@ def moffat_profile(x, y, x0, y0, FWHM, beta=2.5):
     return mp / mp_sum
 
 
-def generate_star_image(pos, fluxes, FWHM, frame_size):
+# slow version
+# def generate_star_image(pos, fluxes, FWHM, frame_size):
+#     x = np.linspace(0, frame_size[0] - 1, frame_size[0])
+#     y = np.linspace(0, frame_size[1] - 1, frame_size[1])
+#     xx, yy = np.meshgrid(x, y)
+
+#     image = np.zeros(frame_size).T
+#     for i, flux in enumerate(fluxes):
+#         x0 = pos[0][i]
+#         y0 = pos[1][i]
+#         star = np.random.poisson(flux) * moffat_profile(xx, yy, x0, y0, FWHM)
+#         image += star
+
+#     return image
+
+
+def generate_star_image(
+    pos: np.array, fluxes: list, FWHM: float, frame_size: tuple
+) -> np.ndarray:
     x = np.linspace(0, frame_size[0] - 1, frame_size[0])
     y = np.linspace(0, frame_size[1] - 1, frame_size[1])
     xx, yy = np.meshgrid(x, y)
+
+    render_radius = FWHM * 5  # render 5 FWHM around the star
 
     image = np.zeros(frame_size).T
     for i, flux in enumerate(fluxes):
         x0 = pos[0][i]
         y0 = pos[1][i]
-        star = np.random.poisson(flux) * moffat_profile(xx, yy, x0, y0, FWHM)
-        image += star
+        if x0 < 0 or x0 >= frame_size[0] or y0 < 0 or y0 >= frame_size[1]:
+            # print(f"Star {i} is outside the frame.")
+            continue
+        x_min, x_max = int(x0 - render_radius), int(x0 + render_radius)
+        y_min, y_max = int(y0 - render_radius), int(y0 + render_radius)
+        x_min, x_max = max(0, x_min), min(x_max, frame_size[0] - 1)
+        y_min, y_max = max(0, y_min), min(y_max, frame_size[1] - 1)
+
+        star = np.random.poisson(flux) * moffat_profile(
+            xx[y_min : y_max + 1, x_min : x_max + 1],
+            yy[y_min : y_max + 1, x_min : x_max + 1],
+            x0,
+            y0,
+            FWHM,
+        )
+        image[y_min : y_max + 1, x_min : x_max + 1] += star
 
     return image
 
@@ -171,10 +207,10 @@ def generate_image(
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
-    camera = Camera()
+    camera = Camera(width=2000, height=2000)
     telescope = Telescope()
-    site = Site()
-    exp_time = 1  # [s]
+    site = Site(seeing=1.3, sky_background=350)
+    exp_time = 0.1  # [s]
 
     print("Generating image...")
 
@@ -196,7 +232,7 @@ if __name__ == "__main__":
     print(med, std)
 
     fig, ax = plt.subplots()
-    img = ax.imshow(science, cmap="gray", vmin=med - 3 * std, vmax=med + 3 * std)
+    img = ax.imshow(science, cmap="gray", vmin=med - 1 * std, vmax=med + 1 * std)
     cbar = plt.colorbar(img, ax=ax)
     cbar.set_label("ADU")
     plt.show()
