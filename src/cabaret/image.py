@@ -3,7 +3,9 @@ from datetime import UTC, datetime
 
 import numpy as np
 import numpy.random
-from astropy.coordinates import SkyCoord
+from astropy import units as u
+from astropy.coordinates import AltAz, EarthLocation, SkyCoord, get_sun
+from astropy.time import Time
 
 from cabaret.camera import Camera
 from cabaret.focuser import Focuser
@@ -162,6 +164,43 @@ def generate_image(
         logger.info(f"Found {len(sources)} sources (user set limit of {n_star_limit}).")
 
         image = base
+
+        if site.latitude is not None and site.longitude is not None:
+            logger.info("Since location specified, calculating sunlight brightness based on sun's position")
+            location = EarthLocation(
+                lat=site.latitude * u.deg, lon=site.longitude * u.deg
+            )
+            obs_time = Time(dateobs, scale="utc")
+
+            # Get sun position
+            sun = get_sun(obs_time)
+
+            # Transform to altitude/azimuth coordinates for the observatory
+            altaz_frame = AltAz(obstime=obs_time, location=location)
+            sun_altaz = sun.transform_to(altaz_frame)
+            sun_altitude = sun_altaz.alt.degree
+            logger.info(f"Sun altitude: {sun_altitude:.5f} deg at {dateobs} UTC")
+
+            a, b, c = (
+                np.float64(4533508.655833181),
+                np.float64(0.3937301435229289),
+                np.float64(-0.7907223506021084),
+            )  # calibrated for I+z band in Paranal
+
+            sky_brightness = a * b ** (c * sun_altitude)  # e-/m2/arcsec2/s
+            logger.info(f"sky_brightness (e-/m2/arcsec2/s): {sky_brightness}")
+
+            sky_e = (
+                sky_brightness * telescope.collecting_area * camera.plate_scale**2
+            )  # e-/s
+            logger.info(f"sky_e (e-/s): {sky_e}")
+
+
+            image += rng.poisson(
+                np.ones((camera.height, camera.width)).astype(np.float64)
+                * sky_e
+                * exp_time
+            ).astype(np.float64)
 
         if len(sources) > 0:
             fluxes = (

@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.DS_Store
+temp/
 
 # C extensions
 *.so
@@ -160,4 +161,3 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-temp.ipynb
