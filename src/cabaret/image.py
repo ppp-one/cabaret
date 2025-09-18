@@ -166,7 +166,10 @@ def generate_image(
         image = base
 
         if site.latitude is not None and site.longitude is not None:
-            logger.info("Since location specified, calculating sunlight brightness based on sun's position")
+            logger.info(
+                "Since location specified, calculating sunlight brightness"
+                " based on sun's position"
+            )
             location = EarthLocation(
                 lat=site.latitude * u.deg, lon=site.longitude * u.deg
             )
@@ -194,7 +197,6 @@ def generate_image(
                 sky_brightness * telescope.collecting_area * camera.plate_scale**2
             )  # e-/s
             logger.info(f"sky_e (e-/s): {sky_e}")
-
 
             image += rng.poisson(
                 np.ones((camera.height, camera.width)).astype(np.float64)
