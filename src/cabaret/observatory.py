@@ -1,3 +1,4 @@
+import copy
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -93,6 +94,7 @@ class Observatory:
         seed: int | None = None,
         timeout: float | None = None,
         sources: Sources | None = None,
+        apply_pixel_defects: bool = True,
     ) -> numpy.ndarray:
         """Generate a simulated image of the sky.
 
@@ -122,6 +124,8 @@ class Observatory:
         sources : Sources, optional
             A collection of sources with their sky coordinates and fluxes.
             If provided, these sources will be used instead of querying Gaia.
+        apply_pixel_defects : bool, optional
+            Whether to apply camera pixel defects (default: True).
         """
         return generate_image(
             ra=ra,
@@ -139,6 +143,7 @@ class Observatory:
             seed=seed,
             timeout=timeout,
             sources=sources,
+            apply_pixel_defects=apply_pixel_defects,
         )
 
     def to_dict(self) -> dict:
@@ -187,3 +192,6 @@ class Observatory:
             )
         except Exception as e:
             raise Exception(f"Error saving Observatory configuration: {e}")
+
+    def copy(self) -> "Observatory":
+        return copy.deepcopy(self)

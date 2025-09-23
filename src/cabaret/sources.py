@@ -110,3 +110,10 @@ class Sources:
             "fluxes": fluxes,
         }
         return cls(**(parameters))
+
+    @classmethod
+    def get_test_source(cls):
+        """Return a simple test Sources instance."""
+        coords = SkyCoord(ra=[10.64], dec=[10.68], unit="deg")
+        fluxes = np.array([169_435.6])
+        return cls(coords, fluxes)

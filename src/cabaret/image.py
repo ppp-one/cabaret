@@ -114,6 +114,7 @@ def generate_image(
     seed: int | None = None,
     timeout: float | None = None,
     sources: Sources | None = None,
+    apply_pixel_defects: bool = True,
 ) -> np.ndarray:
     if seed is not None:
         rng = numpy.random.default_rng(seed)
@@ -128,7 +129,8 @@ def generate_image(
 
     if camera.plate_scale is None:
         camera.plate_scale = (
-            np.arctan((camera.pitch * 1e-6) / (telescope.focal_length))
+            2
+            * np.arctan((camera.pitch * 1e-6) / (2 * telescope.focal_length))
             * (180 / np.pi)
             * 3600
         )  # "/pixel
@@ -242,12 +244,13 @@ def generate_image(
         # dark exposure
         image = base
 
+    # inject defect pixels
+    if apply_pixel_defects:
+        for defect in camera.pixel_defects.values():
+            image = defect.introduce_pixel_defect(image, camera)
+
     # convert to adu and add camera's bias
     image = image / camera.gain + camera.bias  # [adu]
-
-    # inject defect pixels
-    for defect in camera.pixel_defects.values():
-        image = defect.introduce_pixel_defect(image, camera)
 
     # clip to max adu
     image = np.clip(image, 0, camera.max_adu)

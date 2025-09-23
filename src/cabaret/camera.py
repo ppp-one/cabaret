@@ -41,13 +41,14 @@ class Camera:
     def _create_pixel_defect(
         self,
         name: str,
-        type: Literal["constant", "telegraphic", "noise"] = "constant",
+        type: Literal["constant", "telegraphic", "noise", "fixed_pattern"] = "constant",
         **kwargs,
     ) -> "PixelDefect":
         defect_classes = {
             "constant": ConstantPixelDefect,
             "telegraphic": TelegraphicPixelDefect,
             "noise": RandomNoisePixelDefect,
+            "quantum_efficiency_map": QuantumEfficiencyMapPixelDefect,
         }
         defect_type = type
 
@@ -167,6 +168,47 @@ class PixelDefect(ABC):
 
 @dataclass
 class ConstantPixelDefect(PixelDefect):
+    """A pixel defect that sets selected pixels to a constant value.
+
+    Examples
+    --------
+    >>> from cabaret import Observatory, Sources
+    >>> pixel_defects = {
+        "hot": {"type": "constant", "value": 5000, "rate": 0.01, "seed": 0},
+        "cold": {"type": "constant", "value": 0, "rate": 0.01, "seed": 1}
+    }
+    >>> observatory = Observatory(
+    ...     camera={"width": 80, "height": 80, "pixel_defects": pixel_defects}
+    ... )
+    >>> sources = Sources.get_test_source()
+    >>> ra, dec = sources.ra.mean().deg, sources.dec.mean().deg,
+    >>> image = observatory.generate_image(
+    ...     exp_time=3, ra=ra, dec=dec, sources=sources, seed=42
+    ... )
+    >>> clean_image = observatory.generate_image(
+    ...     exp_time=3, ra=ra, dec=dec, sources=sources,
+    ...     apply_pixel_defects=False, seed=42
+    ... )
+
+    >>> import matplotlib.pyplot as plt
+    >>> fig, axes = plt.subplots(1, 2, figsize=(7, 5), sharex=True, sharey=True)
+    >>> im0 = axes[0].imshow(clean_image, cmap='gray')
+    >>> cbar0 = fig.colorbar(im0, ax=axes[0], orientation="horizontal", pad=0.2)
+    >>> cbar0.set_label('ADU')
+    >>> im1 = axes[1].imshow(image, cmap='gray')
+    >>> cbar1 = fig.colorbar(im1, ax=axes[1], orientation="horizontal", pad=0.2)
+    >>> cbar1.set_label('ADU')
+    >>> axes[0].set_title('Image without defects')
+    >>> axes[1].set_title('Image with constant defects')
+    >>> axes[0].set_ylabel('Pixels')
+    >>> for ax in axes:
+    ...     ax.set_xlabel('Pixels')
+    >>> plt.subplots_adjust(wspace=0.1)
+    >>> plt.show()
+
+
+    """
+
     value: int = 0
     seed: int = 0
 
@@ -181,6 +223,46 @@ class ConstantPixelDefect(PixelDefect):
 
 @dataclass
 class TelegraphicPixelDefect(PixelDefect):
+    """A pixel defect that simulates telegraphic noise by selecting entire rows or
+    columns of pixels to be defective.
+
+    Examples
+    --------
+    >>> from cabaret import Observatory, Sources
+    >>> pixel_defects = {
+    ...     "telegraphic": {"type": "telegraphic", "value": 5000, "rate": 0.5, "dim": 0}
+    ... }
+    >>> observatory = Observatory(
+    ...     camera={"width": 80, "height": 80, "pixel_defects": pixel_defects}
+    ... )
+    >>> sources = Sources.get_test_source()
+    >>> ra, dec = sources.ra.mean().deg, sources.dec.mean().deg,
+    >>> image = observatory.generate_image(
+    ...     exp_time=3, ra=ra, dec=dec, sources=sources, seed=42
+    ... )
+    >>> clean_image = observatory.generate_image(
+    ...     exp_time=3, ra=ra, dec=dec, sources=sources,
+    ...     apply_pixel_defects=False, seed=42
+    ... )
+
+    >>> import matplotlib.pyplot as plt
+    >>> fig, axes = plt.subplots(1, 2, figsize=(7, 5), sharex=True, sharey=True)
+    >>> im0 = axes[0].imshow(clean_image, cmap='gray')
+    >>> cbar0 = fig.colorbar(im0, ax=axes[0], orientation="horizontal", pad=0.2)
+    >>> cbar0.set_label('ADU')
+    >>> im1 = axes[1].imshow(image, cmap='gray')
+    >>> cbar1 = fig.colorbar(im1, ax=axes[1], orientation="horizontal", pad=0.2)
+    >>> cbar1.set_label('ADU')
+    >>> axes[0].set_title('Image without defects')
+    >>> axes[1].set_title('Image with telegraphic defects')
+    >>> axes[0].set_ylabel('Pixels')
+    >>> for ax in axes:
+    ...     ax.set_xlabel('Pixels')
+    >>> plt.subplots_adjust(wspace=0.1)
+    >>> plt.show()
+
+    """
+
     value: int = 0
     seed: int = 0
     dim: int = 0
@@ -224,8 +306,53 @@ class TelegraphicPixelDefect(PixelDefect):
 
 @dataclass
 class RandomNoisePixelDefect(PixelDefect):
+    """A pixel defect that introduces random noise to selected pixels.
+
+    Examples
+    --------
+    >>> from cabaret import Observatory, Sources
+    >>> pixel_defects = {"noise": {"type": "noise", "rate": 0.01, "noise_level": 5e3}}
+    >>> observatory = Observatory(
+    ...     camera={"width": 80, "height": 80, "pixel_defects": pixel_defects}
+    ... )
+    >>> sources = Sources.get_test_source()
+
+    >>> ra, dec = sources.ra.mean().deg, sources.dec.mean().deg,
+    >>> image = observatory.generate_image(
+    ...     exp_time=3, ra=ra, dec=dec, sources=sources
+    ... )
+    >>> clean_image = observatory.generate_image(
+    ...     exp_time=3, ra=ra, dec=dec, sources=sources, apply_pixel_defects=False
+    ... )
+
+    >>> import matplotlib.pyplot as plt
+    >>> fig, axes = plt.subplots(1, 2, figsize=(7, 5), sharex=True, sharey=True)
+    >>> im0 = axes[0].imshow(clean_image, cmap='gray')
+    >>> cbar0 = fig.colorbar(im0, ax=axes[0], orientation="horizontal", pad=0.2)
+    >>> cbar0.set_label('ADU')
+    >>> im1 = axes[1].imshow(image, cmap='gray')
+    >>> cbar1 = fig.colorbar(im1, ax=axes[1], orientation="horizontal", pad=0.2)
+    >>> cbar1.set_label('ADU')
+    >>> axes[0].set_title('Image without defects')
+    >>> axes[1].set_title('Image with random noise defects')
+    >>> axes[0].set_ylabel('Pixels')
+    >>> for ax in axes:
+    ...     ax.set_xlabel('Pixels')
+    >>> plt.subplots_adjust(wspace=0.1)
+    >>> plt.show()
+
+    """
+
     noise_level: float = 10.0  # Standard deviation for Gaussian noise
     distribution: Literal["normal", "poisson"] = "normal"
+
+    def generate_noise(self, size: int) -> np.ndarray:
+        if self.distribution == "poisson":
+            return self.noise_level * self.rng.poisson(size=size)
+        elif self.distribution == "normal":
+            return self.noise_level * self.rng.normal(size=size)
+        else:
+            raise ValueError("Unknown noise distribution.")
 
     def introduce_pixel_defect(self, image, camera, seed: int | None = None):
         if seed is not None:
@@ -234,14 +361,90 @@ class RandomNoisePixelDefect(PixelDefect):
         if self._pixels is None:
             self.set_pixels(self._select_random_pixels(camera), camera)
 
-        if self.distribution == "poisson":
-            noise = self.noise_level * self.rng.poisson(size=self.pixels.shape[0])
-        elif self.distribution == "normal":
-            noise = self.noise_level * self.rng.normal(size=self.pixels.shape[0])
-        else:
-            raise ValueError("Unknown noise distribution.")
+        noise = self.generate_noise(self.pixels.shape[0])
 
         image[self.pixels[:, 0], self.pixels[:, 1]] += noise
         image = np.clip(image, 0, camera.max_adu)
 
+        return image
+
+
+@dataclass
+class QuantumEfficiencyMapPixelDefect(PixelDefect):
+    """
+    A pixel defect that simulates variations in quantum efficiency across the sensor.
+
+    Examples
+    --------
+    >>> from cabaret import Observatory, Sources
+    >>> pixel_defects = {
+    ...     "qe": {"type": "quantum_efficiency_map", "quantum_efficiency_std": 0.25}
+    ... }
+    >>> observatory = Observatory(
+    ...     camera={"width": 40, "height": 40, "pixel_defects": pixel_defects}
+    ... )
+    >>> sources = Sources.get_test_source()
+
+    >>> ra, dec = sources.ra.mean().deg, sources.dec.mean().deg,
+    >>> image = observatory.generate_image(
+    ...     exp_time=3, ra=ra, dec=dec, sources=sources
+    ... )
+    >>> clean_image = observatory.generate_image(
+    ...     exp_time=3, ra=ra, dec=dec, sources=sources, apply_pixel_defects=False
+    ... )
+
+
+    >>> import matplotlib.pyplot as plt
+    >>> fig, axes = plt.subplots(1, 3, figsize=(10, 5), sharex=True, sharey=True)
+    >>> im0 = axes[0].imshow(clean_image, cmap='gray')
+    >>> cbar0 = fig.colorbar(im0, ax=axes[0], orientation="horizontal", pad=0.2)
+    >>> cbar0.set_label('ADU')
+    >>> im1 = axes[1].imshow(image, cmap='gray')
+    >>> cbar1 = fig.colorbar(im1, ax=axes[1], orientation="horizontal", pad=0.2)
+    >>> cbar1.set_label('ADU')
+    >>> im2 = axes[2].imshow(
+    ...     observatory.camera.pixel_defects["qe"].quantum_efficiency_map, cmap='gray'
+    ... )
+    >>> cbar2 = fig.colorbar(im2, ax=axes[2], orientation="horizontal", pad=0.2)
+    >>> cbar2.set_label('Quantum Efficiency')
+    >>> axes[0].set_title('Image without defects')
+    >>> axes[1].set_title('Image with QE defects')
+    >>> axes[2].set_title('Quantum Efficiency Map')
+    >>> axes[0].set_ylabel('Pixels')
+    >>> for ax in axes:
+    ...     ax.set_xlabel('Pixels')
+    >>> plt.subplots_adjust(wspace=0.3, hspace=0.3)
+    >>> plt.show()
+
+    """
+
+    quantum_efficiency_std: float = 0.1
+    quantum_efficiency_map: np.ndarray | None = None
+    seed: int = 0
+
+    def __post_init__(self):
+        if self.quantum_efficiency_map is not None:
+            self.quantum_efficiency_map = np.array(self.quantum_efficiency_map)
+
+    def generate_quantum_efficiency_map(self, camera: Camera):
+        self.quantum_efficiency_map = np.clip(
+            self.rng.normal(
+                loc=camera.average_quantum_efficiency,
+                scale=self.quantum_efficiency_std,
+                size=(camera.height, camera.width),
+            ),
+            0,
+            1,
+        )
+
+    def introduce_pixel_defect(
+        self, image: np.ndarray, camera: Camera, seed: int | None = None
+    ):
+        if seed is not None:
+            self._rng = numpy.random.default_rng(seed)
+        if self.quantum_efficiency_map is None:
+            self.generate_quantum_efficiency_map(camera)
+
+        image = image * self.quantum_efficiency_map / camera.average_quantum_efficiency
+        image = np.clip(image, 0, camera.max_adu)
         return image
