@@ -90,7 +90,7 @@ class Observatory:
         exp_time: float,
         dateobs: datetime = datetime.now(UTC),
         light: int = 1,
-        tmass: bool = True,
+        tmass: bool = False,
         n_star_limit: int = 2000,
         rng: numpy.random.Generator = numpy.random.default_rng(),
         seed: int | None = None,

@@ -58,7 +58,11 @@ def gaia_launch_job_with_timeout(query, timeout=None, **kwargs) -> Table:
             job = future.result(timeout=timeout)
             return job.get_results()
         except TimeoutError:
-            raise TimeoutError("Gaia query timed out.")
+            raise TimeoutError(
+                "Gaia query timed out."
+                " You may want to increase the timeout or reduce the query size."
+                f"Query was: {query}"
+            )
 
 
 def gaia_query(
@@ -73,10 +77,10 @@ def gaia_query(
 
     Example
     -------
-    >>> from cabaret.queries import gaia_table_query
+    >>> from cabaret.queries import gaia_query
     >>> from astropy.coordinates import SkyCoord
     >>> center = SkyCoord(ra=10.68458, dec=41.26917, unit='deg')
-    >>> table = gaia_table_query(center, fov=0.1, limit=10, timeout=30)
+    >>> table = gaia_query(center, fov=0.1, limit=10, timeout=30, tmass=False)
     """
     if isinstance(center, SkyCoord):
         ra = center.ra.deg
@@ -103,7 +107,7 @@ def gaia_query(
     ]
     joins = []
     where = []
-    order_by = "gaia.phot_rp_mean_flux DESC"
+    order_by = "gaia.phot_rp_mean_flux DESC"  # Prefer brighter stars
 
     if tmass:
         select_cols.append("tmass.j_m")
@@ -115,7 +119,10 @@ def gaia_query(
                 + "ON tmass.tmass_oid = tmass_match.tmass_oid",
             ]
         )
-        order_by = "tmass.j_m"
+        order_by = "tmass.j_m ASC"  # Prefer brighter stars
+        where.append("tmass.j_m IS NOT NULL")
+    else:
+        where.append("gaia.phot_rp_mean_flux IS NOT NULL")
 
     if circular:
         where.append(

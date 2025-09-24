@@ -169,7 +169,7 @@ def generate_image(
     focuser: Focuser = Focuser(),
     telescope: Telescope = Telescope(),
     site: Site = Site(),
-    tmass: bool = True,
+    tmass: bool = False,
     n_star_limit: int = 2000,
     rng: numpy.random.Generator = numpy.random.default_rng(),
     seed: int | None = None,
