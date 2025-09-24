@@ -172,7 +172,9 @@ class Camera:
             The image with pixel defects applied.
         """
         for defect in self.pixel_defects.values():
-            image = defect.introduce_pixel_defect(image, self, exp_time)
+            image = defect.introduce_pixel_defect(
+                image=image, camera=self, exp_time=exp_time
+            )
         return image
 
     def to_adu_image(self, image: np.ndarray) -> np.ndarray:
@@ -283,7 +285,9 @@ class PixelDefect(ABC):
         return self._rng
 
     @abstractmethod
-    def introduce_pixel_defect(self, image: np.ndarray, camera: Camera):
+    def introduce_pixel_defect(
+        self, image: np.ndarray, camera: Camera, **kwargs
+    ) -> np.ndarray:
         """Introduce the defect into the image.
 
         Parameters
@@ -535,7 +539,7 @@ class RandomNoisePixelDefect(PixelDefect):
         else:
             raise ValueError("Unknown noise distribution.")
 
-    def introduce_pixel_defect(self, image, camera, seed: int | None = None):
+    def introduce_pixel_defect(self, image, camera, seed: int | None = None, **kwargs):
         if seed is not None:
             self._rng = numpy.random.default_rng(seed)
 
@@ -620,7 +624,7 @@ class QuantumEfficiencyMapPixelDefect(PixelDefect):
         )
 
     def introduce_pixel_defect(
-        self, image: np.ndarray, camera: Camera, seed: int | None = None
+        self, image: np.ndarray, camera: Camera, seed: int | None = None, **kwargs
     ):
         if seed is not None:
             self._rng = numpy.random.default_rng(seed)
