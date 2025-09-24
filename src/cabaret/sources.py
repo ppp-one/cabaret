@@ -45,12 +45,12 @@ class Sources:
     @property
     def ra(self) -> Longitude:
         """Right Ascension coordinates of the sources."""
-        return self.coords.ra
+        return self.coords.ra  # type: ignore
 
     @property
     def dec(self) -> Longitude:
         """Declination coordinates of the sources."""
-        return self.coords.dec
+        return self.coords.dec  # type: ignore
 
     def to_pixel(self, wcs: WCS) -> np.ndarray:
         """Convert the RA-DEC coordinates to pixel coordinates using the given WCS.

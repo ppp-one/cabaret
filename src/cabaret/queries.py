@@ -20,7 +20,20 @@ __all__ = [
 
 
 class Filters(Enum):
-    """Allowed Gaia and 2MASS flux filter_band strings."""
+    """Allowed Gaia and 2MASS flux filter_band strings.
+
+    Examples
+    --------
+    >>> from cabaret.queries import Filters
+    >>> Filters.G
+    <Filters.G: 'phot_g_mean_flux'>
+    >>> Filters.from_string('RP')
+    <Filters.RP: 'phot_rp_mean_flux'>
+    >>> Filters.is_tmass('J')
+    True
+    >>> Filters.options()
+    ('G', 'BP', 'RP', 'J', 'H', 'KS')
+    """
 
     G = "phot_g_mean_flux"
     """ Gaia G band flux in [e-/s] """
@@ -36,25 +49,9 @@ class Filters(Enum):
     """ 2MASS KS band magnitude """
 
     @classmethod
-    def is_valid(cls, value: str) -> bool:
-        """Check if the filter_band string is valid."""
-        return value.upper() in cls.__members__
-
-    @classmethod
     def options(cls) -> tuple[str, ...]:
         """Return all valid filter_band options."""
         return tuple(cls.__members__.keys())
-
-    @classmethod
-    def to_column(cls, value: str) -> str:
-        """Return the column name for a given filter_band string."""
-        try:
-            return cls[value.upper()].value
-        except KeyError:
-            raise ValueError(
-                f"Invalid filter_band string: {value}. "
-                f"Valid options are: {cls.options()}"
-            )
 
     @classmethod
     def from_string(cls, value: str) -> "Filters":
@@ -68,9 +65,16 @@ class Filters(Enum):
             )
 
     @classmethod
-    def is_tmass(cls, value: str) -> bool:
+    def is_tmass(cls, value: "Filters | str") -> bool:
         """Check if the filter_band string is a 2MASS filter_band."""
-        return value.upper() in ("J", "H", "KS")
+        if isinstance(value, cls):
+            return value.name in ("J", "H", "KS")
+        elif isinstance(value, str):
+            return value.upper() in ("J", "H", "KS")
+        else:
+            raise ValueError(
+                f"Value must be an Filters enum or string, got {type(value)}"
+            )
 
     @classmethod
     def ensure_enum(cls, value: "Filters | str") -> "Filters":
@@ -83,6 +87,11 @@ class Filters(Enum):
             raise ValueError(
                 f"Value must be a Filters enum or string, got {type(value)}"
             )
+
+    @classmethod
+    def is_valid(cls, value: str) -> bool:
+        """Check if the filter_band string is valid."""
+        return value.upper() in cls.__members__
 
 
 def tmass_mag_to_photons(mags: np.ndarray) -> np.ndarray:
@@ -124,13 +133,13 @@ def gaia_launch_job_with_timeout(query, timeout=None, **kwargs) -> Table:
     # unnecessary thread creation and to preserve original callstacks/tracebacks.
     if timeout is None:
         job = Gaia.launch_job(query, **kwargs)
-        return job.get_results()
+        return job.get_results()  # type: ignore
 
     with ThreadPoolExecutor() as executor:
         future = executor.submit(Gaia.launch_job, query, **kwargs)
         try:
             job = future.result(timeout=timeout)
-            return job.get_results()
+            return job.get_results()  # type: ignore
         except TimeoutError:
             raise TimeoutError(
                 "Gaia query timed out."
@@ -159,18 +168,18 @@ def gaia_query(
     filter_band = Filters.ensure_enum(filter_band)
 
     if isinstance(center, SkyCoord):
-        ra = center.ra.deg
-        dec = center.dec.deg
+        ra = center.ra.deg  # type: ignore
+        dec = center.dec.deg  # type: ignore
     else:
         ra, dec = center
 
     if not isinstance(fov, u.Quantity):
-        fov = u.Quantity(fov, u.deg)
+        fov = u.Quantity(fov, "deg")
 
     if fov.ndim == 1:
-        ra_fov, dec_fov = fov.to(u.deg).value
+        ra_fov, dec_fov = fov.to("deg").value
     else:
-        ra_fov = dec_fov = fov.to(u.deg).value
+        ra_fov = dec_fov = fov.to("deg").value
 
     radius = np.max([ra_fov, dec_fov]) / 2
 
@@ -236,8 +245,8 @@ def apply_proper_motion(table: Table, dateobs: datetime):
     """
     dateobs_frac = dateobs.year + (dateobs.timetuple().tm_yday - 1) / 365.25  # type: ignore
     years = dateobs_frac - 2015.5  # type: ignore
-    table["ra"] += years * table["pmra"] / 1000 / 3600
-    table["dec"] += years * table["pmdec"] / 1000 / 3600
+    table["ra"] += years * table["pmra"] / 1000 / 3600  # type: ignore
+    table["dec"] += years * table["pmdec"] / 1000 / 3600  # type: ignore
     return table
 
 
@@ -326,14 +335,16 @@ def get_gaia_sources(
         table = apply_proper_motion(table, dateobs)
 
     if Filters.is_tmass(filter_band_instance.name):
-        fluxes = tmass_mag_to_photons(table[filter_band_instance.value].value.data)
+        fluxes = tmass_mag_to_photons(
+            table[filter_band_instance.value].value.data  # type: ignore
+        )
     else:
-        fluxes = table[filter_band_instance.value].value.data
+        fluxes = table[filter_band_instance.value].value.data  # type: ignore
     table.remove_rows(np.isnan(fluxes))
     fluxes = fluxes[~np.isnan(fluxes)]
 
     return Sources.from_arrays(
-        ra=table["ra"].value.data,
-        dec=table["dec"].value.data,
+        ra=table["ra"].value.data,  # type: ignore
+        dec=table["dec"].value.data,  # type: ignore
         fluxes=fluxes,
     )

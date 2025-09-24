@@ -26,7 +26,6 @@ docs = [
   "sphinx-design",
   "ipywidgets",
   "sphinx-copybutton",
-  "sphinxcontrib.dataclass",
   "docformatter[tomli]",
   "toml",
   "numpydoc"

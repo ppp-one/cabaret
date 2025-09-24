@@ -314,6 +314,7 @@ class PixelDefect(ABC):
         self._pixels = pixels
 
     def number_of_defect_pixels(self, camera: Camera) -> int:
+        """Calculate the number of pixels affected by the defect."""
         return int(round(self.rate * camera.width * camera.height))
 
     def _select_random_pixels(self, camera: Camera) -> np.ndarray:
@@ -439,7 +440,7 @@ class TelegraphicPixelDefect(PixelDefect):
     """Random seed for reproducibility."""
 
     dim: int = 0
-    """Dimension along which to apply the defect (0: rows, 1: columns)."""
+    """Dimension along which to apply the defect."""
 
     _lines: np.ndarray | None = None
 
@@ -459,6 +460,7 @@ class TelegraphicPixelDefect(PixelDefect):
         return image
 
     def set_lines(self, lines: np.ndarray | list, camera: Camera):
+        """Set the lines for the defect."""
         self._lines = np.array(lines)
 
         # Set pixels based on the selected lines
@@ -523,6 +525,7 @@ class RandomNoisePixelDefect(PixelDefect):
     """Distribution type for the noise ('normal' or 'poisson')."""
 
     def generate_noise(self, size: int) -> np.ndarray:
+        """Generate noise for the defect pixels."""
         if self.distribution == "poisson":
             return self.noise_level * self.rng.poisson(size=size)
         elif self.distribution == "normal":

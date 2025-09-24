@@ -20,6 +20,7 @@ repos:
     rev: v6.0.0
     hooks:
       - id: end-of-file-fixer
+        exclude: \.rst$
       - id: check-yaml
       - id: check-added-large-files
       - id: check-merge-conflict
