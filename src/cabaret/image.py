@@ -159,6 +159,136 @@ def generate_star_image(
     return image
 
 
+def get_sources(center, fovx, fovy, tmass, dateobs, n_star_limit, timeout, sources):
+    """Get sources from Gaia or use provided sources."""
+    if not isinstance(sources, Sources):
+        sources = get_gaia_sources(
+            center,
+            (fovx * 1.5, fovy * 1.5),
+            tmass=tmass,
+            dateobs=dateobs,
+            limit=n_star_limit,
+            timeout=timeout,
+        )
+    return sources
+
+
+def add_sun_sky_background(image, site, telescope, camera, exp_time, dateobs, logger):
+    """Add sky background and sunlight if location is specified."""
+    if site.latitude is not None and site.longitude is not None:
+        logger.info(
+            "Since location specified, calculating sunlight brightness"
+            " based on sun's position"
+        )
+        location = EarthLocation(lat=site.latitude * u.deg, lon=site.longitude * u.deg)
+        obs_time = Time(dateobs, scale="utc")
+        sun = get_sun(obs_time)
+        altaz_frame = AltAz(obstime=obs_time, location=location)
+        sun_altaz = sun.transform_to(altaz_frame)
+        sun_altitude = sun_altaz.alt.degree
+        logger.info(f"Sun altitude: {sun_altitude:.5f} deg at {dateobs} UTC")
+
+        a, b, c = (
+            np.float64(4533508.655833181),
+            np.float64(0.3937301435229289),
+            np.float64(-0.7907223506021084),
+        )  # calibrated for I+z band in Paranal
+
+        sky_brightness = a * b ** (c * sun_altitude)  # e-/m2/arcsec2/s
+        logger.info(f"sky_brightness (e-/m2/arcsec2/s): {sky_brightness}")
+
+        sky_e = (
+            sky_brightness * telescope.collecting_area * camera.plate_scale**2
+        )  # e-/s
+        logger.info(f"sky_e (e-/s): {sky_e}")
+
+        image += np.random.poisson(
+            np.ones((camera.height, camera.width)).astype(np.float64) * sky_e * exp_time
+        ).astype(np.float64)
+    return image
+
+
+def add_stars(image, sources, camera, focuser, telescope, site, exp_time, rng):
+    """Add stars to the image using the Moffat profile and sky background."""
+    if len(sources) > 0:
+        fluxes = (
+            sources.fluxes
+            * camera.average_quantum_efficiency
+            * telescope.collecting_area
+            * exp_time
+        )  # [electrons]
+
+        wcs = camera.get_wcs(
+            SkyCoord(ra=sources.ra.deg.mean(), dec=sources.dec.deg.mean(), unit="deg")
+        )
+        gaias_pixel = sources.to_pixel(wcs)
+
+        stars = generate_star_image(
+            gaias_pixel,
+            fluxes,
+            focuser.seeing_multiplier * site.seeing / camera.plate_scale,
+            (camera.width, camera.height),
+            rng=rng,
+        ).astype(np.float64)
+
+        sky_background = (
+            site.sky_background * telescope.collecting_area * camera.plate_scale**2
+        )  # [e-/s]
+
+        image = image + rng.poisson(
+            np.ones((camera.height, camera.width)).astype(np.float64)
+            * sky_background
+            * exp_time
+        ).astype(np.float64)
+
+        image += stars
+    return image
+
+
+def add_stars_and_sky(
+    base,
+    ra,
+    dec,
+    exp_time,
+    dateobs,
+    light,
+    camera,
+    focuser,
+    telescope,
+    site,
+    tmass,
+    n_star_limit,
+    rng,
+    timeout,
+    sources,
+):
+    """Add stars and sky background to the base image."""
+    if light == 1:
+        center = SkyCoord(ra=ra, dec=dec, unit="deg")
+        fovx = (
+            (1 / np.abs(np.cos(center.dec.rad)))
+            * camera.width
+            * camera.plate_scale
+            / 3600
+        )
+        fovy = np.sqrt(2) * camera.height * camera.plate_scale / 3600
+        logger.info("Querying Gaia for sources...")
+        sources = get_sources(
+            center, fovx, fovy, tmass, dateobs, n_star_limit, timeout, sources
+        )
+        logger.info(f"Found {len(sources)} sources (user set limit of {n_star_limit}).")
+        image = base
+        image = add_sun_sky_background(
+            image, site, telescope, camera, exp_time, dateobs, logger
+        )
+        image = add_stars(
+            image, sources, camera, focuser, telescope, site, exp_time, rng
+        )
+    else:
+        image = base
+    return image
+
+
 def generate_image(
     ra: float,
     dec: float,
@@ -223,143 +353,36 @@ def generate_image(
     if seed is not None:
         rng = numpy.random.default_rng(seed)
 
-    base = np.ones((camera.height, camera.width)).astype(np.float64)
-
-    base += rng.poisson(base * camera.dark_current * exp_time).astype(np.float64)
-
-    base += rng.normal(0, camera.read_noise, (camera.height, camera.width)).astype(
-        np.float64
-    )
-
     if camera.plate_scale is None:
-        camera.plate_scale = (
-            2
-            * np.arctan((camera.pitch * 1e-6) / (2 * telescope.focal_length))
-            * (180 / np.pi)
-            * 3600
-        )  # "/pixel
+        camera.set_plate_scale_from_focal_length(telescope.focal_length)
 
-    if telescope.collecting_area is None:
-        telescope.collecting_area = np.pi * (telescope.diameter / 2) ** 2  # [m^2]
+    base = camera.make_base_image(exp_time=exp_time, rng=rng)
 
     if light == 1:
-        # call gaia
-        center = SkyCoord(ra=ra, dec=dec, unit="deg")
-
-        fovx = (
-            (1 / np.abs(np.cos(center.dec.rad)))
-            * camera.width
-            * camera.plate_scale
-            / 3600
+        image = add_stars_and_sky(
+            base,
+            ra,
+            dec,
+            exp_time,
+            dateobs,
+            light,
+            camera,
+            focuser,
+            telescope,
+            site,
+            tmass,
+            n_star_limit,
+            rng,
+            timeout,
+            sources,
         )
-        fovy = (
-            np.sqrt(2) * camera.height * camera.plate_scale / 3600
-        )  # to account for poles, maybe should scale instead
-
-        logger.info("Querying Gaia for sources...")
-        # gaias, vals = get_gaia_sources(
-        if not isinstance(sources, Sources):
-            sources = get_gaia_sources(
-                center,
-                (fovx * 1.5, fovy * 1.5),
-                tmass=tmass,
-                dateobs=dateobs,
-                limit=n_star_limit,
-                timeout=timeout,
-            )
-        logger.info(f"Found {len(sources)} sources (user set limit of {n_star_limit}).")
-
-        image = base
-
-        if site.latitude is not None and site.longitude is not None:
-            logger.info(
-                "Since location specified, calculating sunlight brightness"
-                " based on sun's position"
-            )
-            location = EarthLocation(
-                lat=site.latitude * u.deg, lon=site.longitude * u.deg
-            )
-            obs_time = Time(dateobs, scale="utc")
-            # Get sun position
-            sun = get_sun(obs_time)
-
-            # Transform to altitude/azimuth coordinates for the observatory
-            altaz_frame = AltAz(obstime=obs_time, location=location)
-            sun_altaz = sun.transform_to(altaz_frame)
-            sun_altitude = sun_altaz.alt.degree
-            logger.info(f"Sun altitude: {sun_altitude:.5f} deg at {dateobs} UTC")
-
-            a, b, c = (
-                np.float64(4533508.655833181),
-                np.float64(0.3937301435229289),
-                np.float64(-0.7907223506021084),
-            )  # calibrated for I+z band in Paranal
-
-            sky_brightness = a * b ** (c * sun_altitude)  # e-/m2/arcsec2/s
-            logger.info(f"sky_brightness (e-/m2/arcsec2/s): {sky_brightness}")
-
-            sky_e = (
-                sky_brightness * telescope.collecting_area * camera.plate_scale**2
-            )  # e-/s
-            logger.info(f"sky_e (e-/s): {sky_e}")
-
-            image += rng.poisson(
-                np.ones((camera.height, camera.width)).astype(np.float64)
-                * sky_e
-                * exp_time
-            ).astype(np.float64)
-
-        if len(sources) > 0:
-            fluxes = (
-                sources.fluxes
-                * camera.average_quantum_efficiency
-                * telescope.collecting_area
-                * exp_time
-            )  # [electrons]
-
-            # convert gaia stars to pixel coordinates
-            wcs = camera.get_wcs(center)
-            gaias_pixel = sources.to_pixel(wcs)
-
-            # stars within frame and moffat profile
-            stars = generate_star_image(
-                gaias_pixel,
-                fluxes,
-                focuser.seeing_multiplier * site.seeing / camera.plate_scale,
-                (camera.width, camera.height),
-                rng=rng,
-            ).astype(np.float64)  # * flat
-
-            sky_background = (
-                site.sky_background * telescope.collecting_area * camera.plate_scale**2
-            )  # [e-/s]
-
-            # make base image with sky background
-            image = base + rng.poisson(
-                np.ones((camera.height, camera.width)).astype(np.float64)
-                * sky_background
-                * exp_time
-            ).astype(np.float64)  # * flat
-
-            image += stars
-
     else:
-        # dark exposure
         image = base
 
-    # inject defect pixels
     if apply_pixel_defects:
-        for defect in camera.pixel_defects.values():
-            image = defect.introduce_pixel_defect(image, camera, exp_time)
+        image = camera.apply_pixel_defects(image, exp_time)
 
-    # convert to adu and add camera's bias
-    image = image / camera.gain + camera.bias  # [adu]
-
-    # clip to max adu
-    image = np.clip(image, 0, camera.max_adu)
-
-    # make image 16 bit
-    image = image.astype(np.uint16)
+    image = camera.to_adu_image(image)
 
     return image
 
