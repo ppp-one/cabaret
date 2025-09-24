@@ -136,6 +136,8 @@ class Camera:
             "telegraphic": TelegraphicPixelDefect,
             "noise": RandomNoisePixelDefect,
             "quantum_efficiency_map": QuantumEfficiencyMapPixelDefect,
+            "cti": ChargeTransferInefficiencyPixelDefect,
+            "readout_smear": ReadoutSmearPixelDefect,
         }
         defect_type = type
 
@@ -301,7 +303,7 @@ class ConstantPixelDefect(PixelDefect):
     value: int = 0
     seed: int = 0
 
-    def introduce_pixel_defect(self, image, camera):
+    def introduce_pixel_defect(self, image, camera, **kwargs):
         if self._pixels is None:
             self.set_pixels(self._select_random_pixels(camera), camera)
 
@@ -357,7 +359,7 @@ class TelegraphicPixelDefect(PixelDefect):
     dim: int = 0
     _lines: np.ndarray | None = None
 
-    def introduce_pixel_defect(self, image, camera):
+    def introduce_pixel_defect(self, image, camera, **kwargs):
         if self._lines is None:
             self.set_lines(self._select_random_lines(camera, self.dim), camera)
 
@@ -542,4 +544,154 @@ class QuantumEfficiencyMapPixelDefect(PixelDefect):
 
         image = image * self.quantum_efficiency_map / camera.average_quantum_efficiency
         image = np.clip(image, 0, camera.max_adu)
+        return image
+
+
+@dataclass
+class ChargeTransferInefficiencyPixelDefect(PixelDefect):
+    """
+    Simulates charge transfer inefficiency (CTI) by trailing charge along columns or
+    rows.
+
+    Each affected pixel leaks a fraction of its value to downstream pixels along the
+    readout direction.
+
+    Parameters
+    ----------
+    cti_fraction : float
+        Fraction of charge transferred per pixel.
+    dimension : int
+        Direction of readout: 0 for columns (default), 1 for rows.
+    seed : int
+        Random seed for reproducibility.
+
+    Examples
+    --------
+    >>> from cabaret import Observatory, Sources
+    >>> pixel_defects = {
+    ...     "cti": {"type": "cti", "cti_fraction": 0.05, "rate": 0.5, "dimension": 0}
+    ... }
+    >>> observatory = Observatory(
+    ...     camera={"width": 40, "height": 40, "pixel_defects": pixel_defects}
+    ... )
+    >>> sources = Sources.get_test_source()
+    >>> ra, dec = sources.ra.mean().deg, sources.dec.mean().deg,
+    >>> image = observatory.generate_image(
+    ...     exp_time=3, ra=ra, dec=dec, sources=sources
+    ... )
+    >>> clean_image = observatory.generate_image(
+    ...     exp_time=3, ra=ra, dec=dec, sources=sources, apply_pixel_defects=False
+    ... )
+
+    >>> import matplotlib.pyplot as plt
+    >>> fig, axes = plt.subplots(1, 2, figsize=(7, 5), sharex=True, sharey=True)
+    >>> im0 = axes[0].imshow(clean_image, cmap='gray')
+    >>> cbar0 = fig.colorbar(im0, ax=axes[0], orientation="horizontal", pad=0.2)
+    >>> cbar0.set_label('ADU')
+    >>> im1 = axes[1].imshow(image, cmap='gray')
+    >>> cbar1 = fig.colorbar(im1, ax=axes[1], orientation="horizontal", pad=0.2)
+    >>> cbar1.set_label('ADU')
+    >>> axes[0].set_title('Image without defects')
+    >>> axes[1].set_title('Image with CTI defects')
+    >>> axes[0].set_ylabel('Pixels')
+    >>> for ax in axes:
+    ...     ax.set_xlabel('Pixels')
+    >>> plt.subplots_adjust(wspace=0.1)
+    >>> plt.show()
+    """
+
+    cti_fraction: float = 0.01  # Fraction of charge transferred per pixel
+    dimension: int = 0  # 0: columns (default), 1: rows
+    seed: int = 0
+
+    def introduce_pixel_defect(self, image, camera, **kwargs):
+        if self._pixels is None:
+            self.set_pixels(self._select_random_pixels(camera), camera)
+        # For each affected pixel, trail charge along the selected dimension
+        if self.dimension == 0:
+            # Trail down columns (y increases)
+            for y, x in self.pixels:
+                for y2 in range(y + 1, camera.height):
+                    image[y2, x] += image[y, x] * self.cti_fraction
+        elif self.dimension == 1:
+            # Trail along rows (x increases)
+            for y, x in self.pixels:
+                for x2 in range(x + 1, camera.width):
+                    image[y, x2] += image[y, x] * self.cti_fraction
+        else:
+            raise ValueError("dimension must be 0 (columns) or 1 (rows)")
+        return image
+
+
+@dataclass
+class ReadoutSmearPixelDefect(PixelDefect):
+    """
+    Simulates readout smear (frame transfer smear) caused by continued exposure during
+    readout.
+
+    Parameters
+    ----------
+    smear_fraction : float
+        Fraction of the exposure time spent during readout (smear strength).
+    dim : int
+        Direction of readout: 0 for vertical (default), 1 for horizontal.
+    readout_time : float
+        Time taken to read out the entire frame (seconds).
+    seed : int
+        Random seed for reproducibility.
+
+    Examples
+    --------
+    >>> from cabaret import Observatory, Sources
+    >>> pixel_defects = {
+    ...     "smear": {"type": "readout_smear", "readout_time": 1}
+    ... }
+    >>> observatory = Observatory(
+    ...     camera={"width": 40, "height": 40, "pixel_defects": pixel_defects}
+    ... )
+    >>> sources = Sources.get_test_source()
+    >>> ra, dec = sources.ra.mean().deg, sources.dec.mean().deg,
+    >>> image = observatory.generate_image(
+    ...     exp_time=1, ra=ra, dec=dec, sources=sources
+    ... )
+    >>> clean_image = observatory.generate_image(
+    ...     exp_time=1, ra=ra, dec=dec, sources=sources, apply_pixel_defects=False
+    ... )
+
+    >>> import matplotlib.pyplot as plt
+    >>> fig, axes = plt.subplots(1, 2, figsize=(7, 5), sharex=True, sharey=True)
+    >>> im0 = axes[0].imshow(clean_image, cmap='gray')
+    >>> cbar0 = fig.colorbar(im0, ax=axes[0], orientation="horizontal", pad=0.2)
+    >>> cbar0.set_label('ADU')
+    >>> im1 = axes[1].imshow(image, cmap='gray')
+    >>> cbar1 = fig.colorbar(im1, ax=axes[1], orientation="horizontal", pad=0.2)
+    >>> cbar1.set_label('ADU')
+    >>> axes[0].set_title('Image without defects')
+    >>> axes[1].set_title('Image with readout smear')
+    >>> axes[0].set_ylabel('Pixels')
+    >>> for ax in axes:
+    ...     ax.set_xlabel('Pixels')
+    >>> plt.subplots_adjust(wspace=0.1)
+    >>> plt.show()
+    """
+
+    readout_time: float = 0.1
+    dim: int = 0
+    seed: int = 0
+
+    def __post__init__(self):
+        if self.dim not in (0, 1):
+            raise ValueError("dim must be 0 (vertical) or 1 (horizontal)")
+
+    def introduce_pixel_defect(self, image, camera, exp_time, **kwargs):
+        # Fraction of the exposure time that each pixel is exposed
+        # during the readout of a single row/column, assuming uniform readout speed
+        smear_fraction_per_pixel_readout = (
+            self.readout_time / exp_time / image.shape[self.dim]
+        )
+
+        # A fraction of each pixels values to those read out after it
+        smear = smear_fraction_per_pixel_readout * np.cumsum(image, axis=self.dim)
+
+        image = np.clip(image + smear, 0, camera.max_adu)
         return image

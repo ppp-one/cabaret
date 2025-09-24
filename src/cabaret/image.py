@@ -350,7 +350,7 @@ def generate_image(
     # inject defect pixels
     if apply_pixel_defects:
         for defect in camera.pixel_defects.values():
-            image = defect.introduce_pixel_defect(image, camera)
+            image = defect.introduce_pixel_defect(image, camera, exp_time)
 
     # convert to adu and add camera's bias
     image = image / camera.gain + camera.bias  # [adu]
