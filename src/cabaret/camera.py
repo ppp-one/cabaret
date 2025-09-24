@@ -12,39 +12,6 @@ class Camera:
     """
     Camera configuration and properties.
 
-    Attributes
-    ----------
-    name : str
-        Name of the camera.
-    width : int
-        Number of pixels in the x-direction (width).
-    height : int
-        Number of pixels in the y-direction (height).
-    bin_x : int
-        Binning factor in x.
-    bin_y : int
-        Binning factor in y.
-    pitch : float
-        Pixel pitch in microns.
-    plate_scale : float or None
-        Arcseconds per pixel (if None, calculated from pitch and telescope).
-    max_adu : int
-        Maximum ADU value.
-    well_depth : int
-        Full well capacity in electrons.
-    bias : int
-        Bias level in ADU.
-    gain : float
-        Gain in electrons per ADU.
-    read_noise : float
-        Read noise in electrons.
-    dark_current : float
-        Dark current in electrons per second.
-    average_quantum_efficiency : float
-        Average quantum efficiency (fraction).
-    pixel_defects : dict
-        Dictionary of pixel defect configurations.
-
     Examples
     --------
     Create a camera with multiple pixel defects:
@@ -61,6 +28,8 @@ class Camera:
     >>> sources = Sources.get_test_source()
     >>> ra, dec = sources.ra.mean().deg, sources.dec.mean().deg,
 
+    Now generate an image with and without pixel defects:
+
     >>> image = observatory.generate_image(
     ...     exp_time=10, ra=ra, dec=dec, seed=42, sources=sources
     ... )
@@ -69,40 +38,61 @@ class Camera:
     ...     apply_pixel_defects=False, seed=42, sources=sources
     ... )
 
+    To plot the images, you can use the `plot_image` function from `cabaret.plot`:
+
+    >>> from cabaret.plot import plot_image
     >>> import matplotlib.pyplot as plt
     >>> fig, axes = plt.subplots(1, 2, figsize=(7, 5), sharex=True, sharey=True)
-    >>> im0 = axes[0].imshow(clean_image, cmap='gray')
-    >>> cbar0 = fig.colorbar(im0, ax=axes[0], orientation="horizontal", pad=0.2)
-    >>> cbar0.set_label('ADU')
-    >>> im1 = axes[1].imshow(image, cmap='gray')
-    >>> cbar1 = fig.colorbar(im1, ax=axes[1], orientation="horizontal", pad=0.2)
-    >>> cbar1.set_label('ADU')
-    >>> axes[0].set_title('Image without defects')
-    >>> axes[1].set_title('Image with multiple defects')
-    >>> axes[0].set_ylabel('Pixels')
-    >>> for ax in axes:
-    ...     ax.set_xlabel('Pixels')
+    >>> plot_image(clean_image, ax=axes[0], title="Image without defects")
+    >>> plot_image(image, ax=axes[1], title="Image with multiple defects")
     >>> plt.subplots_adjust(wspace=0.1)
     >>> plt.show()
     """
 
     name: str = "gaia-camera-simulated"
-    width: int = 1024  # pixels
-    height: int = 1024  # pixels
-    bin_x: int = 1  # binning factor in x
-    bin_y: int = 1  # binning factor in y
-    pitch: float = 13.5  # pixel pitch, microns
-    plate_scale: float | None = (
-        None  # arcsec/pixel (calculated from pitch+telescope if None)
-    )
-    max_adu: int = 2**16 - 1  # maximum ADU value
-    well_depth: int = 2**16 - 1  # electrons
-    bias: int = 300  # ADU
-    gain: float = 1.0  # e-/ADU
-    read_noise: float = 6.2  # e-
-    dark_current: float = 0.2  # e-/s
-    average_quantum_efficiency: float = 0.8  # fraction
+    """Name of the camera."""
+
+    width: int = 1024
+    """Number of pixels in the x-direction (width)."""
+
+    height: int = 1024
+    """Number of pixels in the y-direction (height)."""
+
+    bin_x: int = 1
+    """Binning factor in x."""
+
+    bin_y: int = 1
+    """Binning factor in y."""
+
+    pitch: float = 13.5
+    """Pixel pitch in microns."""
+
+    plate_scale: float | None = None
+    """Arcseconds per pixel (if None, calculated from pitch and telescope)."""
+
+    max_adu: int = 2**16 - 1
+    """Maximum ADU value."""
+
+    well_depth: int = 2**16 - 1
+    """Full well capacity in electrons."""
+
+    bias: int = 300
+    """Bias level in ADU."""
+
+    gain: float = 1.0
+    """Gain in electrons per ADU."""
+
+    read_noise: float = 6.2
+    """Read noise in electrons."""
+
+    dark_current: float = 0.2
+    """Dark current in electrons per second."""
+
+    average_quantum_efficiency: float = 0.8
+    """Average quantum efficiency (fraction)."""
+
     pixel_defects: dict = field(default_factory=dict)
+    """Dictionary of pixel defect configurations."""
 
     def __post_init__(self):
         if self.pixel_defects:
@@ -266,19 +256,30 @@ class Camera:
 @dataclass
 class PixelDefect(ABC):
     name: str = "defect"
+    """Name of the defect."""
+
     rate: float = 0.0
+    """Fraction of pixels affected by the defect."""
+
     seed: int = 0
+    """Random seed for reproducibility."""
+
     _rng: numpy.random.Generator | None = None
+    """Random number generator instance."""
+
     _pixels: np.ndarray | None = None
+    """Array of pixel coordinates affected by the defect."""
 
     @property
     def pixels(self) -> np.ndarray:
+        """Pixel coordinates affected by the defect."""
         if self._pixels is None:
             raise ValueError(f"{self.name} pixels are not defined.")
         return self._pixels
 
     @property
     def rng(self) -> numpy.random.Generator:
+        """Random number generator instance."""
         if self._rng is None:
             self._rng = numpy.random.default_rng(self.seed)
 
@@ -354,9 +355,9 @@ class ConstantPixelDefect(PixelDefect):
     --------
     >>> from cabaret import Observatory, Sources
     >>> pixel_defects = {
-        "hot": {"type": "constant", "value": 5000, "rate": 0.01, "seed": 0},
-        "cold": {"type": "constant", "value": 0, "rate": 0.01, "seed": 1}
-    }
+    ...     "hot": {"type": "constant", "value": 5000, "rate": 0.01, "seed": 0},
+    ...     "cold": {"type": "constant", "value": 0, "rate": 0.01, "seed": 1}
+    ... }
     >>> observatory = Observatory(
     ...     camera={"width": 80, "height": 80, "pixel_defects": pixel_defects}
     ... )
@@ -370,27 +371,22 @@ class ConstantPixelDefect(PixelDefect):
     ...     apply_pixel_defects=False, seed=42
     ... )
 
+    To plot the images, you can use the `plot_image` function from `cabaret.plot`:
+
+    >>> from cabaret.plot import plot_image
     >>> import matplotlib.pyplot as plt
     >>> fig, axes = plt.subplots(1, 2, figsize=(7, 5), sharex=True, sharey=True)
-    >>> im0 = axes[0].imshow(clean_image, cmap='gray')
-    >>> cbar0 = fig.colorbar(im0, ax=axes[0], orientation="horizontal", pad=0.2)
-    >>> cbar0.set_label('ADU')
-    >>> im1 = axes[1].imshow(image, cmap='gray')
-    >>> cbar1 = fig.colorbar(im1, ax=axes[1], orientation="horizontal", pad=0.2)
-    >>> cbar1.set_label('ADU')
-    >>> axes[0].set_title('Image without defects')
-    >>> axes[1].set_title('Image with constant defects')
-    >>> axes[0].set_ylabel('Pixels')
-    >>> for ax in axes:
-    ...     ax.set_xlabel('Pixels')
+    >>> plot_image(clean_image, ax=axes[0], title="Image without defects")
+    >>> plot_image(image, ax=axes[1], title="Image with constant defects")
     >>> plt.subplots_adjust(wspace=0.1)
     >>> plt.show()
-
-
     """
 
     value: int = 0
+    """Constant value to assign to defect pixels."""
+
     seed: int = 0
+    """Random seed for reproducibility."""
 
     def introduce_pixel_defect(self, image, camera, **kwargs):
         if self._pixels is None:
@@ -425,28 +421,34 @@ class TelegraphicPixelDefect(PixelDefect):
     ...     apply_pixel_defects=False, seed=42
     ... )
 
+    To plot the images, you can use the `plot_image` function from `cabaret.plot`:
+
+    >>> from cabaret.plot import plot_image
     >>> import matplotlib.pyplot as plt
     >>> fig, axes = plt.subplots(1, 2, figsize=(7, 5), sharex=True, sharey=True)
-    >>> im0 = axes[0].imshow(clean_image, cmap='gray')
-    >>> cbar0 = fig.colorbar(im0, ax=axes[0], orientation="horizontal", pad=0.2)
-    >>> cbar0.set_label('ADU')
-    >>> im1 = axes[1].imshow(image, cmap='gray')
-    >>> cbar1 = fig.colorbar(im1, ax=axes[1], orientation="horizontal", pad=0.2)
-    >>> cbar1.set_label('ADU')
-    >>> axes[0].set_title('Image without defects')
-    >>> axes[1].set_title('Image with telegraphic defects')
-    >>> axes[0].set_ylabel('Pixels')
-    >>> for ax in axes:
-    ...     ax.set_xlabel('Pixels')
+    >>> plot_image(clean_image, ax=axes[0], title="Image without defects")
+    >>> plot_image(image, ax=axes[1], title="Image with telegraphic defects")
     >>> plt.subplots_adjust(wspace=0.1)
     >>> plt.show()
-
     """
 
     value: int = 0
+    """Constant value to assign to defect pixels."""
+
     seed: int = 0
+    """Random seed for reproducibility."""
+
     dim: int = 0
+    """Dimension along which to apply the defect (0: rows, 1: columns)."""
+
     _lines: np.ndarray | None = None
+
+    @property
+    def lines(self) -> np.ndarray:
+        """Defective lines (rows or columns)."""
+        if self._lines is None:
+            raise ValueError(f"{self.name} lines are not defined.")
+        return self._lines
 
     def introduce_pixel_defect(self, image, camera, **kwargs):
         if self._lines is None:
@@ -455,12 +457,6 @@ class TelegraphicPixelDefect(PixelDefect):
         self._overwrite_pixel_values(image, self.pixels, self.value)
 
         return image
-
-    @property
-    def lines(self) -> np.ndarray:
-        if self._lines is None:
-            raise ValueError(f"{self.name} lines are not defined.")
-        return self._lines
 
     def set_lines(self, lines: np.ndarray | list, camera: Camera):
         self._lines = np.array(lines)
@@ -501,7 +497,6 @@ class RandomNoisePixelDefect(PixelDefect):
     ...     camera={"width": 80, "height": 80, "pixel_defects": pixel_defects}
     ... )
     >>> sources = Sources.get_test_source()
-
     >>> ra, dec = sources.ra.mean().deg, sources.dec.mean().deg,
     >>> image = observatory.generate_image(
     ...     exp_time=3, ra=ra, dec=dec, sources=sources
@@ -510,26 +505,22 @@ class RandomNoisePixelDefect(PixelDefect):
     ...     exp_time=3, ra=ra, dec=dec, sources=sources, apply_pixel_defects=False
     ... )
 
+    To plot the images, you can use the `plot_image` function from `cabaret.plot`:
+
+    >>> from cabaret.plot import plot_image
     >>> import matplotlib.pyplot as plt
     >>> fig, axes = plt.subplots(1, 2, figsize=(7, 5), sharex=True, sharey=True)
-    >>> im0 = axes[0].imshow(clean_image, cmap='gray')
-    >>> cbar0 = fig.colorbar(im0, ax=axes[0], orientation="horizontal", pad=0.2)
-    >>> cbar0.set_label('ADU')
-    >>> im1 = axes[1].imshow(image, cmap='gray')
-    >>> cbar1 = fig.colorbar(im1, ax=axes[1], orientation="horizontal", pad=0.2)
-    >>> cbar1.set_label('ADU')
-    >>> axes[0].set_title('Image without defects')
-    >>> axes[1].set_title('Image with random noise defects')
-    >>> axes[0].set_ylabel('Pixels')
-    >>> for ax in axes:
-    ...     ax.set_xlabel('Pixels')
+    >>> plot_image(clean_image, ax=axes[0], title="Image without defects")
+    >>> plot_image(image, ax=axes[1], title="Image with random noise defects")
     >>> plt.subplots_adjust(wspace=0.1)
     >>> plt.show()
-
     """
 
     noise_level: float = 10.0  # Standard deviation for Gaussian noise
+    """Standard deviation or scale for the noise."""
+
     distribution: Literal["normal", "poisson"] = "normal"
+    """Distribution type for the noise ('normal' or 'poisson')."""
 
     def generate_noise(self, size: int) -> np.ndarray:
         if self.distribution == "poisson":
@@ -570,7 +561,6 @@ class QuantumEfficiencyMapPixelDefect(PixelDefect):
     ...     camera={"width": 40, "height": 40, "pixel_defects": pixel_defects}
     ... )
     >>> sources = Sources.get_test_source()
-
     >>> ra, dec = sources.ra.mean().deg, sources.dec.mean().deg,
     >>> image = observatory.generate_image(
     ...     exp_time=3, ra=ra, dec=dec, sources=sources
@@ -579,34 +569,26 @@ class QuantumEfficiencyMapPixelDefect(PixelDefect):
     ...     exp_time=3, ra=ra, dec=dec, sources=sources, apply_pixel_defects=False
     ... )
 
+    To plot the images, you can use the `plot_image` function from `cabaret.plot`:
 
+    >>> from cabaret.plot import plot_image
     >>> import matplotlib.pyplot as plt
     >>> fig, axes = plt.subplots(1, 3, figsize=(10, 5), sharex=True, sharey=True)
-    >>> im0 = axes[0].imshow(clean_image, cmap='gray')
-    >>> cbar0 = fig.colorbar(im0, ax=axes[0], orientation="horizontal", pad=0.2)
-    >>> cbar0.set_label('ADU')
-    >>> im1 = axes[1].imshow(image, cmap='gray')
-    >>> cbar1 = fig.colorbar(im1, ax=axes[1], orientation="horizontal", pad=0.2)
-    >>> cbar1.set_label('ADU')
-    >>> im2 = axes[2].imshow(
-    ...     observatory.camera.pixel_defects["qe"].quantum_efficiency_map, cmap='gray'
+    >>> plot_image(clean_image, ax=axes[0], title="Image without defects")
+    >>> plot_image(image, ax=axes[1], title="Image with QE defects")
+    >>> plot_image(
+    ...     observatory.camera.pixel_defects["qe"].quantum_efficiency_map,
+    ...     ax=axes[2], title="Quantum Efficiency Map"
     ... )
-    >>> cbar2 = fig.colorbar(im2, ax=axes[2], orientation="horizontal", pad=0.2)
-    >>> cbar2.set_label('Quantum Efficiency')
-    >>> axes[0].set_title('Image without defects')
-    >>> axes[1].set_title('Image with QE defects')
-    >>> axes[2].set_title('Quantum Efficiency Map')
-    >>> axes[0].set_ylabel('Pixels')
-    >>> for ax in axes:
-    ...     ax.set_xlabel('Pixels')
     >>> plt.subplots_adjust(wspace=0.3, hspace=0.3)
     >>> plt.show()
-
     """
 
     quantum_efficiency_std: float = 0.1
+    """Standard deviation of the quantum efficiency variations."""
+
     quantum_efficiency_map: np.ndarray | None = None
-    seed: int = 0
+    """Quantum efficiency map (2D array)."""
 
     def __post_init__(self):
         if self.quantum_efficiency_map is not None:
@@ -624,7 +606,7 @@ class QuantumEfficiencyMapPixelDefect(PixelDefect):
         )
 
     def introduce_pixel_defect(
-        self, image: np.ndarray, camera: Camera, seed: int | None = None, **kwargs
+        self, image: np.ndarray, camera: Camera, seed: int | None = None
     ):
         if seed is not None:
             self._rng = numpy.random.default_rng(seed)
@@ -671,26 +653,22 @@ class ReadoutSmearPixelDefect(PixelDefect):
     ...     exp_time=1, ra=ra, dec=dec, sources=sources, apply_pixel_defects=False
     ... )
 
+    To plot the images, you can use the `plot_image` function from `cabaret.plot`:
+
+    >>> from cabaret.plot import plot_image
     >>> import matplotlib.pyplot as plt
     >>> fig, axes = plt.subplots(1, 2, figsize=(7, 5), sharex=True, sharey=True)
-    >>> im0 = axes[0].imshow(clean_image, cmap='gray')
-    >>> cbar0 = fig.colorbar(im0, ax=axes[0], orientation="horizontal", pad=0.2)
-    >>> cbar0.set_label('ADU')
-    >>> im1 = axes[1].imshow(image, cmap='gray')
-    >>> cbar1 = fig.colorbar(im1, ax=axes[1], orientation="horizontal", pad=0.2)
-    >>> cbar1.set_label('ADU')
-    >>> axes[0].set_title('Image without defects')
-    >>> axes[1].set_title('Image with readout smear')
-    >>> axes[0].set_ylabel('Pixels')
-    >>> for ax in axes:
-    ...     ax.set_xlabel('Pixels')
+    >>> plot_image(clean_image, ax=axes[0], title="Image without defects")
+    >>> plot_image(image, ax=axes[1], title="Image with readout smear")
     >>> plt.subplots_adjust(wspace=0.1)
     >>> plt.show()
     """
 
     readout_time: float = 0.1
+    """Time taken to read out the entire frame (seconds)."""
+
     dim: int = 0
-    seed: int = 0
+    """Direction of readout: 0 for vertical, 1 for horizontal."""
 
     def __post__init__(self):
         if self.dim not in (0, 1):

@@ -16,27 +16,15 @@ from cabaret.telescope import Telescope
 
 @dataclass
 class Observatory:
-    """Observatory configuration.
-
-    Parameters
-    ----------
-    name : str, optional
-        Observatory name.
-    camera : Camera, dict, optional
-        Camera configuration.
-    focuser: Focuser, dict, optional
-        Focuser configuration.
-    telescope : Telescope, dict, optional
-        Telescope configuration.
-    site : Site, dict, optional
-        Site configuration.
+    """
+    Observatory configuration.
 
     Examples
     --------
     >>> from datetime import datetime, UTC
+    >>> dateobs = datetime.now(UTC)
     >>> from cabaret.observatory import Observatory
     >>> observatory = Observatory()
-    >>> dateobs = datetime.now(UTC)
 
     Query Gaia for sources and generate an image:
 
@@ -60,6 +48,7 @@ class Observatory:
 
     If you have matplotlib installed, you can visualize the image using cabaret's plot
     utility:
+
     >>> import matplotlib.pyplot as plt
     >>> from cabaret.plot import plot_image
     >>> plot_image(image, title="Simulated Image")
@@ -67,10 +56,19 @@ class Observatory:
     """
 
     name: str = "Observatory"
+    """Observatory name."""
+
     camera: Camera = field(default_factory=Camera)
+    """Camera configuration."""
+
     focuser: Focuser = field(default_factory=Focuser)
+    """Focuser configuration."""
+
     telescope: Telescope = field(default_factory=Telescope)
+    """Telescope configuration."""
+
     site: Site = field(default_factory=Site)
+    """Site configuration."""
 
     def __post_init__(self):
         if isinstance(self.camera, dict):

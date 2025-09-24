@@ -9,13 +9,6 @@ from astropy.wcs import WCS
 class Sources:
     """A collection of sources with their sky coordinates and fluxes.
 
-    Attributes
-    ----------
-    coords : SkyCoords
-        A SkyCoords instance of size n, with the ra and dec coordinates of the sources.
-    fluxes : np.ndarray
-        An array of shape (n,) containing the fluxes of the sources.
-
     Examples
     --------
 

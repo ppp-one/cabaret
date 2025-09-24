@@ -23,11 +23,17 @@ class Filters(Enum):
     """Allowed Gaia and 2MASS flux filter_band strings."""
 
     G = "phot_g_mean_flux"
+    """ Gaia G band flux in [e-/s] """
     BP = "phot_bp_mean_flux"
+    """ Gaia BP band flux in [e-/s] """
     RP = "phot_rp_mean_flux"
+    """ Gaia RP band flux in [e-/s] """
     J = "j_m"
+    """ 2MASS J band magnitude """
     H = "h_m"
+    """ 2MASS H band magnitude """
     KS = "ks_m"
+    """ 2MASS KS band magnitude """
 
     @classmethod
     def is_valid(cls, value: str) -> bool:
