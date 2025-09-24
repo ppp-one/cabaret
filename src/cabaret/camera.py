@@ -397,6 +397,11 @@ class TelegraphicPixelDefect(PixelDefect):
 class RandomNoisePixelDefect(PixelDefect):
     """A pixel defect that introduces random noise to selected pixels.
 
+    This is different from read noise, which is applied to all pixels and represents
+    the electronic noise of the sensor. RandomNoisePixelDefect simulates pixels that
+    are abnormally noisy (e.g., "noisy" or "unstable" pixels), and the noise is
+    added only to those selected pixels.
+
     Examples
     --------
     >>> from cabaret import Observatory, Sources
@@ -452,6 +457,7 @@ class RandomNoisePixelDefect(PixelDefect):
 
         noise = self.generate_noise(self.pixels.shape[0])
 
+        # Add noise only to the selected defect pixels
         image[self.pixels[:, 0], self.pixels[:, 1]] += noise
         image = np.clip(image, 0, camera.max_adu)
 
