@@ -38,11 +38,13 @@ class Observatory:
     >>> dateobs = datetime.now(UTC)
 
     Query Gaia for sources and generate an image:
+
     >>> image = observatory.generate_image(
     ...     ra=12.3323, dec=30.4343, exp_time=10, dateobs=dateobs, seed=0
     ... )
 
     Or using a set of predefined sources:
+
     >>> from cabaret.sources import Sources
     >>> sources = Sources.from_arrays(
     ...     ra=[10.64, 10.68], dec=[10.68, 41.22], fluxes=[169435.6, 52203.9]
@@ -147,10 +149,12 @@ class Observatory:
         )
 
     def to_dict(self) -> dict:
+        """Convert the Observatory configuration to a dictionary."""
         return asdict(self)
 
     @classmethod
     def from_dict(cls, config) -> "Observatory":
+        """Create an Observatory instance from a configuration dictionary."""
         return cls(
             name=config.get("name", "Observatory"),
             camera=Camera(**config["camera"]),
@@ -180,6 +184,7 @@ class Observatory:
             raise Exception(f"Error loading Observatory configuration: {e}")
 
     def save_to_yaml(self, file_path: str | Path):
+        """Save Observatory configuration to a YAML file."""
         try:
             import yaml
 
@@ -194,4 +199,5 @@ class Observatory:
             raise Exception(f"Error saving Observatory configuration: {e}")
 
     def copy(self) -> "Observatory":
+        """Create a deep copy of the Observatory instance."""
         return copy.deepcopy(self)

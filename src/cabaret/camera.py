@@ -9,6 +9,83 @@ from astropy.wcs import WCS
 
 @dataclass
 class Camera:
+    """
+    Camera configuration and properties.
+
+    Attributes
+    ----------
+    name : str
+        Name of the camera.
+    width : int
+        Number of pixels in the x-direction (width).
+    height : int
+        Number of pixels in the y-direction (height).
+    bin_x : int
+        Binning factor in x.
+    bin_y : int
+        Binning factor in y.
+    pitch : float
+        Pixel pitch in microns.
+    plate_scale : float or None
+        Arcseconds per pixel (if None, calculated from pitch and telescope).
+    max_adu : int
+        Maximum ADU value.
+    well_depth : int
+        Full well capacity in electrons.
+    bias : int
+        Bias level in ADU.
+    gain : float
+        Gain in electrons per ADU.
+    read_noise : float
+        Read noise in electrons.
+    dark_current : float
+        Dark current in electrons per second.
+    average_quantum_efficiency : float
+        Average quantum efficiency (fraction).
+    pixel_defects : dict
+        Dictionary of pixel defect configurations.
+
+    Examples
+    --------
+    Create a camera with multiple pixel defects:
+
+    >>> from cabaret import Camera, Observatory, Sources
+    >>> pixel_defects = {
+    ...     "hot": {"type": "constant", "value": 10_000, "rate": 0.1, "seed": 0},
+    ...     "cold": {"type": "constant", "value": 0, "rate": 0.01, "seed": 1},
+    ...     "noise": {"type": "noise", "rate": 0.02, "noise_level": 100, "seed": 2},
+    ...     "qe": {"type": "quantum_efficiency_map", "seed": 3}
+    ... }
+    >>> camera = Camera(width=100, height=100, pixel_defects=pixel_defects)
+    >>> observatory = Observatory(camera=camera)
+    >>> sources = Sources.get_test_source()
+    >>> ra, dec = sources.ra.mean().deg, sources.dec.mean().deg,
+
+    >>> image = observatory.generate_image(
+    ...     exp_time=10, ra=ra, dec=dec, seed=42, sources=sources
+    ... )
+    >>> clean_image = observatory.generate_image(
+    ...     exp_time=10, ra=ra, dec=dec,
+    ...     apply_pixel_defects=False, seed=42, sources=sources
+    ... )
+
+    >>> import matplotlib.pyplot as plt
+    >>> fig, axes = plt.subplots(1, 2, figsize=(7, 5), sharex=True, sharey=True)
+    >>> im0 = axes[0].imshow(clean_image, cmap='gray')
+    >>> cbar0 = fig.colorbar(im0, ax=axes[0], orientation="horizontal", pad=0.2)
+    >>> cbar0.set_label('ADU')
+    >>> im1 = axes[1].imshow(image, cmap='gray')
+    >>> cbar1 = fig.colorbar(im1, ax=axes[1], orientation="horizontal", pad=0.2)
+    >>> cbar1.set_label('ADU')
+    >>> axes[0].set_title('Image without defects')
+    >>> axes[1].set_title('Image with multiple defects')
+    >>> axes[0].set_ylabel('Pixels')
+    >>> for ax in axes:
+    ...     ax.set_xlabel('Pixels')
+    >>> plt.subplots_adjust(wspace=0.1)
+    >>> plt.show()
+    """
+
     name: str = "gaia-camera-simulated"
     width: int = 1024  # pixels
     height: int = 1024  # pixels
@@ -26,6 +103,16 @@ class Camera:
     dark_current: float = 0.2  # e-/s
     average_quantum_efficiency: float = 0.8  # fraction
     pixel_defects: dict = field(default_factory=dict)
+
+    @property
+    def shape(self) -> tuple[int, int]:
+        """Tuple of (height, width) of the camera in pixels."""
+        return (self.height, self.width)
+
+    @property
+    def size(self) -> int:
+        """Total number of pixels in the camera."""
+        return self.height * self.width
 
     def __post_init__(self):
         if self.pixel_defects:
@@ -59,6 +146,7 @@ class Camera:
 
     @classmethod
     def create_ideal_camera(cls, **kwargs) -> "Camera":
+        """Create a defect-free camera."""
         parameters = {
             "read_noise": 0,
             "dark_current": 0,
@@ -69,6 +157,7 @@ class Camera:
         return cls(**(parameters | kwargs))
 
     def get_wcs(self, center):
+        """Get a WCS object for the camera centered at the given sky coordinate."""
         if self.plate_scale is None:
             raise ValueError("plate_scale must be set to compute WCS.")
 

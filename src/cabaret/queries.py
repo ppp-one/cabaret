@@ -194,11 +194,10 @@ def get_gaia_sources(
 
     Returns
     -------
-    np.ndarray
-        A tuple containing:
-        - An array of shape (n, 2) containing the RA-DEC coordinates
-          of the retrieved sources in degrees.
-        - An array of shape (n,) containing the fluxes of the retrieved sources.
+    Sources
+        A Sources instance containing the coordinates and fluxes of the retrieved
+        sources.
+
 
     Notes
     -----
@@ -216,6 +215,16 @@ def get_gaia_sources(
     >>> from astropy.coordinates import SkyCoord
     >>> center = SkyCoord(ra=10.68458, dec=41.26917, unit='deg')
     >>> sources = get_gaia_sources(center, fov=0.1, timeout=30)
+    Sources(coords=<SkyCoord (ICRS): (ra, dec) in deg
+        [(10.63950247, 41.26393165), (10.6880729 , 41.22524785),
+        (10.70349581, 41.25357386), (10.70022208, 41.26019689),
+        (10.71333998, 41.29943347), (10.73974676, 41.2942209 ),
+        (10.71181048, 41.29130279), (10.68780207, 41.31717482),
+        (10.63804045, 41.27468757), (10.64397532, 41.25237352)]>, fluxes=array(
+            [169435.62814443,  52203.9396396 ,  41716.18126449,  29035.89106422,
+            22990.85994301,  17672.53437883,  15953.21022642,  15077.12262318,
+            14004.42013396,  12271.11779953]))
+
     """
     table = gaia_query(
         center=center,

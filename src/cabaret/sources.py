@@ -9,7 +9,7 @@ from astropy.wcs import WCS
 class Sources:
     """A collection of sources with their sky coordinates and fluxes.
 
-    Parameters
+    Attributes
     ----------
     coords : SkyCoords
         A SkyCoords instance of size n, with the ra and dec coordinates of the sources.
@@ -18,16 +18,25 @@ class Sources:
 
     Examples
     --------
+
+    Create a Sources instance from arrays:
+
     >>> from cabaret.queries import Sources
     >>> import numpy as np
     >>> from astropy.coordinates import SkyCoord
     >>> coords = np.array([[10.64, 41.26], [10.68, 41.22]])
     >>> fluxes = np.array([169435.6, 52203.9])
     >>> sources = Sources(SkyCoord(coords, unit='deg'), fluxes)
+    >>> sources
+    Sources(coords=<SkyCoord (ICRS): (ra, dec) in deg
+        [(10.64, 41.26), (10.68, 41.22)]>, fluxes=array([169435.6,  52203.9]))
+
     """
 
     coords: SkyCoord
+    """SkyCoords instance with the RA and DEC coordinates of the sources."""
     fluxes: np.ndarray
+    """An array of shape (n,) containing the fluxes of the sources."""
 
     def __post_init__(self):
         if not isinstance(self.coords, SkyCoord):
@@ -42,10 +51,12 @@ class Sources:
 
     @property
     def ra(self) -> Longitude:
+        """Right Ascension coordinates of the sources."""
         return self.coords.ra
 
     @property
     def dec(self) -> Longitude:
+        """Declination coordinates of the sources."""
         return self.coords.dec
 
     def to_pixel(self, wcs: WCS) -> np.ndarray:
@@ -112,7 +123,7 @@ class Sources:
         return cls(**(parameters))
 
     @classmethod
-    def get_test_source(cls):
+    def get_test_source(cls) -> "Sources":
         """Return a simple test Sources instance."""
         coords = SkyCoord(ra=[10.64], dec=[10.68], unit="deg")
         fluxes = np.array([169_435.6])

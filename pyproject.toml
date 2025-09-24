@@ -18,6 +18,19 @@ version = "0.3.1"
 
 [project.optional-dependencies]
 dev = ["ruff", "pre-commit", "pytest"]
+docs = [
+  "sphinx",
+  "matplotlib",
+  "myst-nb",
+  "sphinx-book-theme",
+  "sphinx-design",
+  "ipywidgets",
+  "sphinx-copybutton",
+  "sphinxcontrib.dataclass",
+  "docformatter[tomli]",
+  "toml",
+  "numpydoc"
+]
 test = ["pytest"]
 
 [tool.hatch.version]

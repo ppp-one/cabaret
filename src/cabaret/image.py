@@ -25,6 +25,25 @@ def moffat_profile(
     FWHM: float,
     beta: float = 2.5,
 ) -> np.ndarray:
+    """
+    Compute a normalized Moffat profile centered at (x0, y0).
+
+    Parameters
+    ----------
+    x, y : np.ndarray
+        Meshgrid arrays for the pixel coordinates.
+    x0, y0 : float
+        Center of the profile.
+    FWHM : float
+        Full width at half maximum of the profile.
+    beta : float, optional
+        Moffat beta parameter (default: 2.5).
+
+    Returns
+    -------
+    np.ndarray
+        Normalized Moffat profile evaluated on the grid.
+    """
     # https://nbviewer.org/github/ysbach/AO_2017/blob/master/04_Ground_Based_Concept.ipynb#1.2.-Moffat
     # FWHM =  2 * R * (2**(1/beta) - 1)**0.5
 
@@ -47,6 +66,27 @@ def generate_star_image_slow(
     frame_size: tuple,
     rng: numpy.random.Generator,
 ):
+    """
+    Render stars onto an image using a slow loop-based approach.
+
+    Parameters
+    ----------
+    pos : np.ndarray
+        Pixel positions of stars (shape: 2, n_stars).
+    fluxes : list
+        List of fluxes for each star.
+    FWHM : float
+        Full width at half maximum for the Moffat profile.
+    frame_size : tuple
+        Size of the output image (width, height).
+    rng : numpy.random.Generator
+        Random number generator for Poisson noise.
+
+    Returns
+    -------
+    np.ndarray
+        Image with rendered stars.
+    """
     x = np.linspace(0, frame_size[0] - 1, frame_size[0])
     y = np.linspace(0, frame_size[1] - 1, frame_size[1])
     xx, yy = np.meshgrid(x, y)
@@ -68,6 +108,27 @@ def generate_star_image(
     frame_size: tuple,
     rng: numpy.random.Generator,
 ) -> np.ndarray:
+    """
+    Render stars onto an image using a fast, windowed approach.
+
+    Parameters
+    ----------
+    pos : np.ndarray
+        Pixel positions of stars (shape: 2, n_stars).
+    fluxes : list
+        List of fluxes for each star.
+    FWHM : float
+        Full width at half maximum for the Moffat profile.
+    frame_size : tuple
+        Size of the output image (width, height).
+    rng : numpy.random.Generator
+        Random number generator for Poisson noise.
+
+    Returns
+    -------
+    np.ndarray
+        Image with rendered stars.
+    """
     x = np.linspace(0, frame_size[0] - 1, frame_size[0])
     y = np.linspace(0, frame_size[1] - 1, frame_size[1])
     xx, yy = np.meshgrid(x, y)
@@ -116,6 +177,49 @@ def generate_image(
     sources: Sources | None = None,
     apply_pixel_defects: bool = True,
 ) -> np.ndarray:
+    """
+    Generate a simulated astronomical image.
+
+    Parameters
+    ----------
+    ra : float
+        Right ascension of the image center (degrees).
+    dec : float
+        Declination of the image center (degrees).
+    exp_time : float
+        Exposure time in seconds.
+    dateobs : datetime, optional
+        Observation date and time (default: now, UTC).
+    light : int, optional
+        If 1, simulate light exposure; if 0, simulate dark exposure.
+    camera : Camera, optional
+        Camera configuration.
+    focuser : Focuser, optional
+        Focuser configuration.
+    telescope : Telescope, optional
+        Telescope configuration.
+    site : Site, optional
+        Observatory site configuration.
+    tmass : bool, optional
+        Whether to use 2MASS J-band magnitudes for fluxes.
+    n_star_limit : int, optional
+        Maximum number of stars to simulate.
+    rng : numpy.random.Generator, optional
+        Random number generator.
+    seed : int or None, optional
+        Seed for the random number generator.
+    timeout : float or None, optional
+        Timeout for Gaia query.
+    sources : Sources or None, optional
+        Precomputed sources to use instead of querying Gaia.
+    apply_pixel_defects : bool, optional
+        Whether to apply pixel defects to the image.
+
+    Returns
+    -------
+    np.ndarray
+        Simulated image as a 2D numpy array (uint16).
+    """
     if seed is not None:
         rng = numpy.random.default_rng(seed)
 
@@ -176,7 +280,6 @@ def generate_image(
                 lat=site.latitude * u.deg, lon=site.longitude * u.deg
             )
             obs_time = Time(dateobs, scale="utc")
-
             # Get sun position
             sun = get_sun(obs_time)
 
@@ -262,7 +365,7 @@ def generate_image(
 
 
 if __name__ == "__main__":
-    import matplotlib.pyplot as plt
+    import importlib.util
 
     camera = Camera(width=2000, height=2000)
     telescope = Telescope()
@@ -283,13 +386,16 @@ if __name__ == "__main__":
 
     science = image  # - camera.dark_current / camera.gain * exp_time - camera.bias
 
-    print("Plotting image...")
-    med = np.median(science)
-    std = np.std(science)
-    print(med, std)
+    if importlib.util.find_spec("matplotlib") is not None:
+        import matplotlib.pyplot as plt
 
-    fig, ax = plt.subplots()
-    img = ax.imshow(science, cmap="gray", vmin=med - 1 * std, vmax=med + 1 * std)
-    cbar = plt.colorbar(img, ax=ax)
-    cbar.set_label("ADU")
-    plt.show()
+        print("Plotting image...")
+        med = np.median(science)
+        std = np.std(science)
+        print(med, std)
+
+        fig, ax = plt.subplots()
+        img = ax.imshow(science, cmap="gray", vmin=med - 1 * std, vmax=med + 1 * std)
+        cbar = plt.colorbar(img, ax=ax)
+        cbar.set_label("ADU")
+        plt.show()
