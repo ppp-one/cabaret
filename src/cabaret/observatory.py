@@ -7,7 +7,8 @@ import numpy.random
 
 from cabaret.camera import Camera
 from cabaret.focuser import Focuser
-from cabaret.image import generate_image
+from cabaret.image import generate_image, generate_image_stack
+from cabaret.queries import Filters
 from cabaret.site import Site
 from cabaret.sources import Sources
 from cabaret.telescope import Telescope
@@ -56,6 +57,13 @@ class Observatory:
     ...     seed=0,
     ...     sources=sources,
     ... )
+
+    If you have matplotlib installed, you can visualize the image using cabaret's plot
+    utility:
+    >>> import matplotlib.pyplot as plt
+    >>> from cabaret.plot import plot_image
+    >>> plot_image(image, title="Simulated Image")
+    >>> plt.show()
     """
 
     name: str = "Observatory"
@@ -90,7 +98,7 @@ class Observatory:
         exp_time: float,
         dateobs: datetime = datetime.now(UTC),
         light: int = 1,
-        tmass: bool = False,
+        filter_band: Filters | str = Filters.G,
         n_star_limit: int = 2000,
         rng: numpy.random.Generator = numpy.random.default_rng(),
         seed: int | None = None,
@@ -112,8 +120,8 @@ class Observatory:
             Observation date and time in UTC.
         light : int, optional
             Light pollution level (1-5).
-        tmass : bool, optional
-            Include 2MASS stars in the image.
+        filter_band : Filters or str, optional
+            Photometric filter to use for the simulation (default: Filters.G).
         n_star_limit : int, optional
             Maximum number of stars to include in the image.
         rng : numpy.random.Generator, optional
@@ -139,7 +147,94 @@ class Observatory:
             focuser=self.focuser,
             telescope=self.telescope,
             site=self.site,
-            tmass=tmass,
+            filter_band=filter_band,
+            n_star_limit=n_star_limit,
+            rng=rng,
+            seed=seed,
+            timeout=timeout,
+            sources=sources,
+            apply_pixel_defects=apply_pixel_defects,
+        )
+
+    def generate_image_stack(
+        self,
+        ra: float,
+        dec: float,
+        exp_time: float,
+        dateobs: datetime = datetime.now(UTC),
+        light: int = 1,
+        filter_band: Filters | str = Filters.G,
+        n_star_limit: int = 2000,
+        rng: numpy.random.Generator = numpy.random.default_rng(),
+        seed: int | None = None,
+        timeout: float | None = None,
+        sources: Sources | None = None,
+        apply_pixel_defects: bool = True,
+    ) -> numpy.ndarray:
+        """
+        Generate a stack of images from different stages in the image simulation
+        pipeline.
+
+        From first to last, the images are:
+        1. Base image with bias, dark, and flat applied.
+        2. Astronomical image with sources, sky background, and noise.
+        3. Final ADU image with pixel defects applied (if enabled).
+
+        Parameters
+        ----------
+        ra : float
+            Right ascension of the image center (degrees).
+        dec : float
+            Declination of the image center (degrees).
+        exp_time : float
+            Exposure time in seconds.
+        dateobs : datetime, optional
+            Observation date and time (default: now, UTC).
+        light : int, optional
+            If 1, simulate light exposure; if 0, simulate dark exposure.
+        camera : Camera, optional
+            Camera configuration.
+        focuser : Focuser, optional
+            Focuser configuration.
+        telescope : Telescope, optional
+            Telescope configuration.
+        site : Site, optional
+            Observatory site configuration.
+        filter_band : Filters or str, optional
+            The filter to use for the flux column. Default is "G".
+        n_star_limit : int, optional
+            Maximum number of stars to simulate.
+        rng : numpy.random.Generator, optional
+            Random number generator.
+        seed : int or None, optional
+            Seed for the random number generator.
+        timeout : float or None, optional
+            Timeout for Gaia query.
+        sources : Sources or None, optional
+            Precomputed sources to use instead of querying Gaia.
+        apply_pixel_defects : bool, optional
+            Whether to apply pixel defects to the image.
+
+        Returns
+        -------
+        np.ndarray
+            Simulated image stack as a 3D array (uint16, shape (3, height, width)).
+            The first slice is the base image, the second is the astronomical image,
+            and the third is the ADU image with pixel defects applied.
+
+
+        """
+        return generate_image_stack(
+            ra=ra,
+            dec=dec,
+            exp_time=exp_time,
+            dateobs=dateobs,
+            light=light,
+            camera=self.camera,
+            focuser=self.focuser,
+            telescope=self.telescope,
+            site=self.site,
+            filter_band=filter_band,
             n_star_limit=n_star_limit,
             rng=rng,
             seed=seed,

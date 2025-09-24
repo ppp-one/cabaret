@@ -30,7 +30,7 @@ To generate an image from RA/DEC coordinates, run:
 ```python
 import cabaret
 
-image = cabaret.generate_image(
+image = cabaret.Observatory().generate_image(
     ra=12.33230,  # right ascension in degrees
     dec=30.4343,  # declination in degrees
     exp_time=10,  # exposure time in seconds
@@ -41,15 +41,9 @@ To display the image (`matplotlib` required here):
 
 ```python
 import matplotlib.pyplot as plt
-import numpy as np
+from cabaret.plot import plot_image
 
-med = np.median(science)
-std = np.std(science)
-
-fig, ax = plt.subplots()
-img = ax.imshow(science, cmap="gray", vmin=med - 1 * std, vmax=med + 1 * std)
-cbar = plt.colorbar(img, ax=ax)
-colorbar.set_label("Intensity (ADU)")
+plot_image(image)
 plt.show()
 ```
 
@@ -85,6 +79,7 @@ image = observatory.generate_image(
     dec=30.4343,  # declination in degrees
     exp_time=10,  # exposure time in seconds
     dateobs=datetime.datetime.now(datetime.UTC),  # time of observation
+    filter_band="G",  # Photometric filter used in simulation
 )
 ```
 

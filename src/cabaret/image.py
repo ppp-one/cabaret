@@ -9,7 +9,7 @@ from astropy.time import Time
 
 from cabaret.camera import Camera
 from cabaret.focuser import Focuser
-from cabaret.queries import get_gaia_sources
+from cabaret.queries import Filters, get_gaia_sources
 from cabaret.site import Site
 from cabaret.sources import Sources
 from cabaret.telescope import Telescope
@@ -61,11 +61,11 @@ def moffat_profile(
 
 def generate_star_image_slow(
     pos: np.ndarray,
-    fluxes: list,
+    fluxes: list[float],
     FWHM: float,
-    frame_size: tuple,
+    frame_size: tuple[int, int],
     rng: numpy.random.Generator,
-):
+) -> np.ndarray:
     """
     Render stars onto an image using a slow loop-based approach.
 
@@ -74,7 +74,7 @@ def generate_star_image_slow(
     pos : np.ndarray
         Pixel positions of stars (shape: 2, n_stars).
     fluxes : list
-        List of fluxes for each star.
+        list of fluxes for each star.
     FWHM : float
         Full width at half maximum for the Moffat profile.
     frame_size : tuple
@@ -103,9 +103,9 @@ def generate_star_image_slow(
 
 def generate_star_image(
     pos: np.ndarray,
-    fluxes: list,
+    fluxes: list[float],
     FWHM: float,
-    frame_size: tuple,
+    frame_size: tuple[int, int],
     rng: numpy.random.Generator,
 ) -> np.ndarray:
     """
@@ -116,7 +116,7 @@ def generate_star_image(
     pos : np.ndarray
         Pixel positions of stars (shape: 2, n_stars).
     fluxes : list
-        List of fluxes for each star.
+        list of fluxes for each star.
     FWHM : float
         Full width at half maximum for the Moffat profile.
     frame_size : tuple
@@ -159,33 +159,52 @@ def generate_star_image(
     return image
 
 
-def get_sources(center, fovx, fovy, tmass, dateobs, n_star_limit, timeout, sources):
+def get_sources(
+    center: SkyCoord,
+    fovx: float,
+    fovy: float,
+    dateobs: datetime,
+    n_star_limit: int,
+    filter_band: Filters | str,
+    timeout: float | None,
+    sources: Sources | None = None,
+) -> Sources:
     """Get sources from Gaia or use provided sources."""
     if not isinstance(sources, Sources):
         sources = get_gaia_sources(
-            center,
-            (fovx * 1.5, fovy * 1.5),
-            tmass=tmass,
+            center=center,
+            fov=u.Quantity((fovx * 1.5, fovy * 1.5), "deg"),
             dateobs=dateobs,
             limit=n_star_limit,
+            filter_band=filter_band,
             timeout=timeout,
         )
     return sources
 
 
-def add_sun_sky_background(image, site, telescope, camera, exp_time, dateobs, logger):
+def add_sun_sky_background(
+    image: np.ndarray,
+    site: Site,
+    telescope: Telescope,
+    camera: Camera,
+    exp_time: float,
+    dateobs: datetime,
+    logger: logging.Logger,
+) -> np.ndarray:
     """Add sky background and sunlight if location is specified."""
     if site.latitude is not None and site.longitude is not None:
         logger.info(
             "Since location specified, calculating sunlight brightness"
             " based on sun's position"
         )
-        location = EarthLocation(lat=site.latitude * u.deg, lon=site.longitude * u.deg)
+        location = EarthLocation(
+            lat=u.Quantity(site.latitude, "deg"), lon=u.Quantity(site.longitude, "deg")
+        )
         obs_time = Time(dateobs, scale="utc")
         sun = get_sun(obs_time)
         altaz_frame = AltAz(obstime=obs_time, location=location)
         sun_altaz = sun.transform_to(altaz_frame)
-        sun_altitude = sun_altaz.alt.degree
+        sun_altitude: float = sun_altaz.alt.degree  # type: ignore
         logger.info(f"Sun altitude: {sun_altitude:.5f} deg at {dateobs} UTC")
 
         a, b, c = (
@@ -208,7 +227,16 @@ def add_sun_sky_background(image, site, telescope, camera, exp_time, dateobs, lo
     return image
 
 
-def add_stars(image, sources, camera, focuser, telescope, site, exp_time, rng):
+def add_stars(
+    image: np.ndarray,
+    sources: Sources,
+    camera: Camera,
+    focuser: Focuser,
+    telescope: Telescope,
+    site: Site,
+    exp_time: float,
+    rng: numpy.random.Generator,
+) -> np.ndarray:
     """Add stars to the image using the Moffat profile and sky background."""
     if len(sources) > 0:
         fluxes = (
@@ -246,27 +274,27 @@ def add_stars(image, sources, camera, focuser, telescope, site, exp_time, rng):
 
 
 def add_stars_and_sky(
-    base,
-    ra,
-    dec,
-    exp_time,
-    dateobs,
-    light,
-    camera,
-    focuser,
-    telescope,
-    site,
-    tmass,
-    n_star_limit,
-    rng,
-    timeout,
-    sources,
-):
+    base: np.ndarray,
+    ra: float,
+    dec: float,
+    exp_time: float,
+    dateobs: datetime,
+    light: int,
+    camera: Camera,
+    focuser: Focuser,
+    telescope: Telescope,
+    site: Site,
+    filter_band: Filters | str,
+    n_star_limit: int,
+    rng: numpy.random.Generator,
+    timeout: float | None,
+    sources: Sources | None,
+) -> np.ndarray:
     """Add stars and sky background to the base image."""
     if light == 1:
         center = SkyCoord(ra=ra, dec=dec, unit="deg")
         fovx = (
-            (1 / np.abs(np.cos(center.dec.rad)))
+            (1 / np.abs(np.cos(center.dec.rad)))  # type: ignore
             * camera.width
             * camera.plate_scale
             / 3600
@@ -274,7 +302,14 @@ def add_stars_and_sky(
         fovy = np.sqrt(2) * camera.height * camera.plate_scale / 3600
         logger.info("Querying Gaia for sources...")
         sources = get_sources(
-            center, fovx, fovy, tmass, dateobs, n_star_limit, timeout, sources
+            center=center,
+            fovx=fovx,
+            fovy=fovy,
+            dateobs=dateobs,
+            n_star_limit=n_star_limit,
+            filter_band=filter_band,
+            timeout=timeout,
+            sources=sources,
         )
         logger.info(f"Found {len(sources)} sources (user set limit of {n_star_limit}).")
         image = base
@@ -282,7 +317,14 @@ def add_stars_and_sky(
             image, site, telescope, camera, exp_time, dateobs, logger
         )
         image = add_stars(
-            image, sources, camera, focuser, telescope, site, exp_time, rng
+            image=image,
+            sources=sources,
+            camera=camera,
+            focuser=focuser,
+            telescope=telescope,
+            site=site,
+            exp_time=exp_time,
+            rng=rng,
         )
     else:
         image = base
@@ -299,7 +341,7 @@ def generate_image(
     focuser: Focuser = Focuser(),
     telescope: Telescope = Telescope(),
     site: Site = Site(),
-    tmass: bool = False,
+    filter_band: Filters | str = Filters.G,
     n_star_limit: int = 2000,
     rng: numpy.random.Generator = numpy.random.default_rng(),
     seed: int | None = None,
@@ -330,8 +372,8 @@ def generate_image(
         Telescope configuration.
     site : Site, optional
         Observatory site configuration.
-    tmass : bool, optional
-        Whether to use 2MASS J-band magnitudes for fluxes.
+    filter_band : Filters or str, optional
+        The filter to use for the flux column. Default is "G".
     n_star_limit : int, optional
         Maximum number of stars to simulate.
     rng : numpy.random.Generator, optional
@@ -360,21 +402,21 @@ def generate_image(
 
     if light == 1:
         image = add_stars_and_sky(
-            base,
-            ra,
-            dec,
-            exp_time,
-            dateobs,
-            light,
-            camera,
-            focuser,
-            telescope,
-            site,
-            tmass,
-            n_star_limit,
-            rng,
-            timeout,
-            sources,
+            base=base,
+            ra=ra,
+            dec=dec,
+            exp_time=exp_time,
+            dateobs=dateobs,
+            light=light,
+            camera=camera,
+            focuser=focuser,
+            telescope=telescope,
+            site=site,
+            filter_band=filter_band,
+            n_star_limit=n_star_limit,
+            rng=rng,
+            timeout=timeout,
+            sources=sources,
         )
     else:
         image = base
@@ -385,6 +427,108 @@ def generate_image(
     image = camera.to_adu_image(image)
 
     return image
+
+
+def generate_image_stack(
+    ra: float,
+    dec: float,
+    exp_time: float,
+    dateobs: datetime = datetime.now(UTC),
+    light: int = 1,
+    camera: Camera = Camera(),
+    focuser: Focuser = Focuser(),
+    telescope: Telescope = Telescope(),
+    site: Site = Site(),
+    filter_band: Filters | str = Filters.G,
+    n_star_limit: int = 2000,
+    rng: numpy.random.Generator = numpy.random.default_rng(),
+    seed: int | None = None,
+    timeout: float | None = None,
+    sources: Sources | None = None,
+    apply_pixel_defects: bool = True,
+) -> np.ndarray:
+    """
+    Generate a stack of images from different stages in the image simulation pipeline.
+
+    Parameters
+    ----------
+    ra : float
+        Right ascension of the image center (degrees).
+    dec : float
+        Declination of the image center (degrees).
+    exp_time : float
+        Exposure time in seconds.
+    dateobs : datetime, optional
+        Observation date and time (default: now, UTC).
+    light : int, optional
+        If 1, simulate light exposure; if 0, simulate dark exposure.
+    camera : Camera, optional
+        Camera configuration.
+    focuser : Focuser, optional
+        Focuser configuration.
+    telescope : Telescope, optional
+        Telescope configuration.
+    site : Site, optional
+        Observatory site configuration.
+    filter_band : Filters or str, optional
+        The filter to use for the flux column. Default is "G".
+    n_star_limit : int, optional
+        Maximum number of stars to simulate.
+    rng : numpy.random.Generator, optional
+        Random number generator.
+    seed : int or None, optional
+        Seed for the random number generator.
+    timeout : float or None, optional
+        Timeout for Gaia query.
+    sources : Sources or None, optional
+        Precomputed sources to use instead of querying Gaia.
+    apply_pixel_defects : bool, optional
+        Whether to apply pixel defects to the image.
+
+    Returns
+    -------
+    np.ndarray
+        Simulated image stack as a 3D numpy array (uint16, shape (3, height, width)).
+        The first slice is the base image, the second is the astronomical image,
+        and the third is the ADU image with pixel defects applied.
+
+
+    """
+    if seed is not None:
+        rng = numpy.random.default_rng(seed)
+
+    if camera.plate_scale is None:
+        camera.set_plate_scale_from_focal_length(telescope.focal_length)
+
+    base = camera.make_base_image(exp_time=exp_time, rng=rng)
+
+    if light == 1:
+        image = add_stars_and_sky(
+            base=np.zeros_like(base),
+            ra=ra,
+            dec=dec,
+            exp_time=exp_time,
+            dateobs=dateobs,
+            light=light,
+            camera=camera,
+            focuser=focuser,
+            telescope=telescope,
+            site=site,
+            filter_band=filter_band,
+            n_star_limit=n_star_limit,
+            rng=rng,
+            timeout=timeout,
+            sources=sources,
+        )
+    else:
+        image = base
+
+    if apply_pixel_defects:
+        adu_image = camera.apply_pixel_defects(image.copy(), exp_time)
+
+    adu_image = camera.to_adu_image(adu_image)
+
+    return np.stack([base, image, adu_image])
 
 
 if __name__ == "__main__":
@@ -412,13 +556,13 @@ if __name__ == "__main__":
     if importlib.util.find_spec("matplotlib") is not None:
         import matplotlib.pyplot as plt
 
+        from cabaret.plot import plot_image
+
         print("Plotting image...")
         med = np.median(science)
         std = np.std(science)
         print(med, std)
 
         fig, ax = plt.subplots()
-        img = ax.imshow(science, cmap="gray", vmin=med - 1 * std, vmax=med + 1 * std)
-        cbar = plt.colorbar(img, ax=ax)
-        cbar.set_label("ADU")
+        plot_image(image, ax=ax, title="Simulated Image")
         plt.show()

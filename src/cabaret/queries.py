@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from datetime import datetime
+from enum import Enum
 
 import numpy as np
 from astropy import units as u
@@ -9,6 +10,73 @@ from astropy.units import Quantity
 from astroquery.gaia import Gaia
 
 from cabaret.sources import Sources
+
+__all__ = [
+    "Filters",
+    "tmass_mag_to_photons",
+    "gaia_query",
+    "get_gaia_sources",
+]
+
+
+class Filters(Enum):
+    """Allowed Gaia and 2MASS flux filter_band strings."""
+
+    G = "phot_g_mean_flux"
+    BP = "phot_bp_mean_flux"
+    RP = "phot_rp_mean_flux"
+    J = "j_m"
+    H = "h_m"
+    KS = "ks_m"
+
+    @classmethod
+    def is_valid(cls, value: str) -> bool:
+        """Check if the filter_band string is valid."""
+        return value.upper() in cls.__members__
+
+    @classmethod
+    def options(cls) -> tuple[str, ...]:
+        """Return all valid filter_band options."""
+        return tuple(cls.__members__.keys())
+
+    @classmethod
+    def to_column(cls, value: str) -> str:
+        """Return the column name for a given filter_band string."""
+        try:
+            return cls[value.upper()].value
+        except KeyError:
+            raise ValueError(
+                f"Invalid filter_band string: {value}. "
+                f"Valid options are: {cls.options()}"
+            )
+
+    @classmethod
+    def from_string(cls, value: str) -> "Filters":
+        """Return the Filters enum member for a given string."""
+        try:
+            return cls[value.upper()]
+        except KeyError:
+            raise ValueError(
+                f"Invalid filter_band string: {value}. "
+                f"Valid options are: {cls.options()}"
+            )
+
+    @classmethod
+    def is_tmass(cls, value: str) -> bool:
+        """Check if the filter_band string is a 2MASS filter_band."""
+        return value.upper() in ("J", "H", "KS")
+
+    @classmethod
+    def ensure_enum(cls, value: "Filters | str") -> "Filters":
+        """Convert a string or Filters to Filters enum."""
+        if isinstance(value, cls):
+            return value
+        elif isinstance(value, str):
+            return cls.from_string(value)
+        else:
+            raise ValueError(
+                f"Value must be a Filters enum or string, got {type(value)}"
+            )
 
 
 def tmass_mag_to_photons(mags: np.ndarray) -> np.ndarray:
@@ -70,8 +138,8 @@ def gaia_query(
     fov: float | Quantity,
     limit: int = 100000,
     circular: bool = True,
-    tmass: bool = False,
     timeout: float | None = None,
+    filter_band: Filters = Filters.G,
 ) -> Table:
     """Query Gaia and return the raw Astropy Table.
 
@@ -80,8 +148,10 @@ def gaia_query(
     >>> from cabaret.queries import gaia_query
     >>> from astropy.coordinates import SkyCoord
     >>> center = SkyCoord(ra=10.68458, dec=41.26917, unit='deg')
-    >>> table = gaia_query(center, fov=0.1, limit=10, timeout=30, tmass=False)
+    >>> table = gaia_query(center, fov=0.1, limit=10, timeout=30)
     """
+    filter_band = Filters.ensure_enum(filter_band)
+
     if isinstance(center, SkyCoord):
         ra = center.ra.deg
         dec = center.dec.deg
@@ -98,19 +168,22 @@ def gaia_query(
 
     radius = np.max([ra_fov, dec_fov]) / 2
 
+    gaia_flux_column = (
+        filter_band.value if not Filters.is_tmass(filter_band.name) else Filters.G.value
+    )
     select_cols = [
         "gaia.ra",
         "gaia.dec",
         "gaia.pmra",
         "gaia.pmdec",
-        "gaia.phot_rp_mean_flux",
+        f"{gaia_flux_column}",
     ]
     joins = []
     where = []
-    order_by = "gaia.phot_rp_mean_flux DESC"  # Prefer brighter stars
+    order_by = f"{filter_band.value} DESC"  # Prefer brighter stars
 
-    if tmass:
-        select_cols.append("tmass.j_m")
+    if Filters.is_tmass(filter_band.name):
+        select_cols.append(filter_band.value)
         joins.extend(
             [
                 "INNER JOIN gaiadr2.tmass_best_neighbour AS tmass_match "
@@ -119,10 +192,10 @@ def gaia_query(
                 + "ON tmass.tmass_oid = tmass_match.tmass_oid",
             ]
         )
-        order_by = "tmass.j_m ASC"  # Prefer brighter stars
-        where.append("tmass.j_m IS NOT NULL")
+        order_by = f"{filter_band.value} ASC"  # <-- fix here
+        where.append(f"{filter_band.value} IS NOT NULL")  # <-- fix here
     else:
-        where.append("gaia.phot_rp_mean_flux IS NOT NULL")
+        where.append(f"{filter_band.value} IS NOT NULL")
 
     if circular:
         where.append(
@@ -167,9 +240,9 @@ def get_gaia_sources(
     fov: float | Quantity,
     limit: int = 100000,
     circular: bool = True,
-    tmass: bool = False,
     dateobs: datetime | None = None,
     timeout: float | None = None,
+    filter_band: Filters | str = Filters.G,
 ) -> Sources:
     """
     Query the Gaia archive to retrieve the RA-DEC coordinates of stars
@@ -189,12 +262,11 @@ def get_gaia_sources(
     circular : bool, optional
         Whether to perform a circular or a rectangular query.
         By default, it is set to True.
-    tmass : bool, optional
-        Whether to retrieve the 2MASS J magnitudes catelog.
-        By default, it is set to False.
     dateobs : datetime.datetime, optional
         The date of the observation. If given, the proper motions of the sources
         will be taken into account. By default, it is set to None.
+    filter_band : Filters or str, optional
+        The filter to use for the flux column. Default is Filters.G.
     timeout : float, optional
         The maximum time to wait for the Gaia query to complete, in seconds.
         If None, there is no timeout. By default, it is set to None.
@@ -208,8 +280,8 @@ def get_gaia_sources(
 
     Notes
     -----
-    If `tmass` is True, the fluxes are calculated from the 2MASS J-band magnitudes, see
-    `cabaret.queries.tmass_mag_to_photons`.
+    If `filter_band` is a 2MASS filter (J, H, KS), the fluxes are calculated
+    from the 2MASS magnitudes using `cabaret.queries.tmass_mag_to_photons`.
 
     Raises
     ------
@@ -233,22 +305,24 @@ def get_gaia_sources(
             14004.42013396,  12271.11779953]))
 
     """
+    filter_band_instance = Filters.ensure_enum(filter_band)
+
     table = gaia_query(
         center=center,
         fov=fov,
         limit=limit,
         circular=circular,
-        tmass=tmass,
         timeout=timeout,
+        filter_band=filter_band_instance,
     )
 
     if dateobs is not None:
         table = apply_proper_motion(table, dateobs)
 
-    if tmass:
-        fluxes = tmass_mag_to_photons(table["j_m"].value.data)
+    if Filters.is_tmass(filter_band_instance.name):
+        fluxes = tmass_mag_to_photons(table[filter_band_instance.value].value.data)
     else:
-        fluxes = table["phot_rp_mean_flux"].value.data
+        fluxes = table[filter_band_instance.value].value.data
     table.remove_rows(np.isnan(fluxes))
     fluxes = fluxes[~np.isnan(fluxes)]
 
