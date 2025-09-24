@@ -104,16 +104,6 @@ class Camera:
     average_quantum_efficiency: float = 0.8  # fraction
     pixel_defects: dict = field(default_factory=dict)
 
-    @property
-    def shape(self) -> tuple[int, int]:
-        """Tuple of (height, width) of the camera in pixels."""
-        return (self.height, self.width)
-
-    @property
-    def size(self) -> int:
-        """Total number of pixels in the camera."""
-        return self.height * self.width
-
     def __post_init__(self):
         if self.pixel_defects:
             self.pixel_defects = {
@@ -124,6 +114,102 @@ class Camera:
                 )
                 for key, value in self.pixel_defects.items()
             }
+
+    @property
+    def shape(self) -> tuple[int, int]:
+        """Tuple of (height, width) of the camera in pixels."""
+        return (self.height, self.width)
+
+    @property
+    def size(self) -> int:
+        """Total number of pixels in the camera."""
+        return self.height * self.width
+
+    def make_base_image(
+        self, exp_time, rng: np.random.Generator | None = None
+    ) -> np.ndarray:
+        """Generate the detector base image (bias, dark, read noise).
+
+        Parameters
+        ----------
+        exp_time : float
+            Exposure time in seconds.
+        rng : np.random.Generator, optional
+            Random number generator for reproducibility. If None, a new generator
+            will be created.
+
+        Returns
+        -------
+        np.ndarray
+            The base image with bias, dark current, and read noise added.
+        """
+        if rng is None:
+            rng = np.random.default_rng()
+
+        base = np.ones((self.height, self.width)).astype(np.float64)
+
+        base += rng.poisson(base * self.dark_current * exp_time).astype(np.float64)
+
+        base += rng.normal(0, self.read_noise, (self.height, self.width)).astype(
+            np.float64
+        )
+
+        return base
+
+    def apply_pixel_defects(self, image: np.ndarray, exp_time: float) -> np.ndarray:
+        """Apply pixel defects to the image.
+
+        Parameters
+        ----------
+        image : np.ndarray
+            The image to which the pixel defects will be applied.
+        exp_time : float
+            Exposure time in seconds.
+
+        Returns
+        -------
+        np.ndarray
+            The image with pixel defects applied.
+        """
+        for defect in self.pixel_defects.values():
+            image = defect.introduce_pixel_defect(image, self, exp_time)
+        return image
+
+    def to_adu_image(self, image: np.ndarray) -> np.ndarray:
+        """Convert to ADU, add bias, clip, and cast to uint16.
+
+        Parameters
+        ----------
+        image : np.ndarray
+            The image to be finalized.
+
+        Returns
+        -------
+        np.ndarray
+            The finalized image as a uint16 numpy array.
+
+        """
+        image = image / self.gain + self.bias
+
+        image = np.clip(image, 0, self.max_adu)
+
+        return image.astype(np.uint16)
+
+    def set_plate_scale_from_focal_length(self, focal_length: float):
+        """Set the plate scale based on the focal length of the telescope.
+
+        Parameters
+        ----------
+        focal_length : float
+            Focal length of the telescope in mm.
+
+        Returns
+        -------
+        None
+        """
+        self.plate_scale = (
+            np.arctan((self.pitch * 1e-6) / (focal_length)) * (180 / np.pi) * 3600
+        )  # "/pixel
 
     def _create_pixel_defect(
         self,
@@ -136,7 +222,6 @@ class Camera:
             "telegraphic": TelegraphicPixelDefect,
             "noise": RandomNoisePixelDefect,
             "quantum_efficiency_map": QuantumEfficiencyMapPixelDefect,
-            "cti": ChargeTransferInefficiencyPixelDefect,
             "readout_smear": ReadoutSmearPixelDefect,
         }
         defect_type = type
@@ -544,82 +629,6 @@ class QuantumEfficiencyMapPixelDefect(PixelDefect):
 
         image = image * self.quantum_efficiency_map / camera.average_quantum_efficiency
         image = np.clip(image, 0, camera.max_adu)
-        return image
-
-
-@dataclass
-class ChargeTransferInefficiencyPixelDefect(PixelDefect):
-    """
-    Simulates charge transfer inefficiency (CTI) by trailing charge along columns or
-    rows.
-
-    Each affected pixel leaks a fraction of its value to downstream pixels along the
-    readout direction.
-
-    Parameters
-    ----------
-    cti_fraction : float
-        Fraction of charge transferred per pixel.
-    dimension : int
-        Direction of readout: 0 for columns (default), 1 for rows.
-    seed : int
-        Random seed for reproducibility.
-
-    Examples
-    --------
-    >>> from cabaret import Observatory, Sources
-    >>> pixel_defects = {
-    ...     "cti": {"type": "cti", "cti_fraction": 0.05, "rate": 0.5, "dimension": 0}
-    ... }
-    >>> observatory = Observatory(
-    ...     camera={"width": 40, "height": 40, "pixel_defects": pixel_defects}
-    ... )
-    >>> sources = Sources.get_test_source()
-    >>> ra, dec = sources.ra.mean().deg, sources.dec.mean().deg,
-    >>> image = observatory.generate_image(
-    ...     exp_time=3, ra=ra, dec=dec, sources=sources
-    ... )
-    >>> clean_image = observatory.generate_image(
-    ...     exp_time=3, ra=ra, dec=dec, sources=sources, apply_pixel_defects=False
-    ... )
-
-    >>> import matplotlib.pyplot as plt
-    >>> fig, axes = plt.subplots(1, 2, figsize=(7, 5), sharex=True, sharey=True)
-    >>> im0 = axes[0].imshow(clean_image, cmap='gray')
-    >>> cbar0 = fig.colorbar(im0, ax=axes[0], orientation="horizontal", pad=0.2)
-    >>> cbar0.set_label('ADU')
-    >>> im1 = axes[1].imshow(image, cmap='gray')
-    >>> cbar1 = fig.colorbar(im1, ax=axes[1], orientation="horizontal", pad=0.2)
-    >>> cbar1.set_label('ADU')
-    >>> axes[0].set_title('Image without defects')
-    >>> axes[1].set_title('Image with CTI defects')
-    >>> axes[0].set_ylabel('Pixels')
-    >>> for ax in axes:
-    ...     ax.set_xlabel('Pixels')
-    >>> plt.subplots_adjust(wspace=0.1)
-    >>> plt.show()
-    """
-
-    cti_fraction: float = 0.01  # Fraction of charge transferred per pixel
-    dimension: int = 0  # 0: columns (default), 1: rows
-    seed: int = 0
-
-    def introduce_pixel_defect(self, image, camera, **kwargs):
-        if self._pixels is None:
-            self.set_pixels(self._select_random_pixels(camera), camera)
-        # For each affected pixel, trail charge along the selected dimension
-        if self.dimension == 0:
-            # Trail down columns (y increases)
-            for y, x in self.pixels:
-                for y2 in range(y + 1, camera.height):
-                    image[y2, x] += image[y, x] * self.cti_fraction
-        elif self.dimension == 1:
-            # Trail along rows (x increases)
-            for y, x in self.pixels:
-                for x2 in range(x + 1, camera.width):
-                    image[y, x2] += image[y, x] * self.cti_fraction
-        else:
-            raise ValueError("dimension must be 0 (columns) or 1 (rows)")
         return image
 
 

@@ -31,6 +31,7 @@ docs = [
   "toml",
   "numpydoc"
 ]
+plot = ["matplotlib"]
 test = ["pytest"]
 
 [tool.hatch.version]
