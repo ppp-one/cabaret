@@ -606,7 +606,7 @@ class QuantumEfficiencyMapPixelDefect(PixelDefect):
         )
 
     def introduce_pixel_defect(
-        self, image: np.ndarray, camera: Camera, seed: int | None = None
+        self, image: np.ndarray, camera: Camera, seed: int | None = None, **kwargs
     ):
         if seed is not None:
             self._rng = numpy.random.default_rng(seed)
