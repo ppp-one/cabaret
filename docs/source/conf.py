@@ -23,13 +23,8 @@ version = importlib.metadata.version("cabaret")
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    # "sphinx.ext.viewcode",
-    # "myst_nb",
-    # "numpydoc",
-    # "IPython.sphinxext.ipython_console_highlighting",
-]
-extensions = [
     "myst_nb",
+    # "numpydoc",
     "sphinx_copybutton",
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
@@ -40,6 +35,7 @@ extensions = [
     "IPython.sphinxext.ipython_console_highlighting",
 ]
 
+nb_render_image_options = {"align": "center"}
 
 # Add mappings for intersphinx
 intersphinx_mapping = {
