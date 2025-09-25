@@ -1,0 +1,6 @@
+nbstripout_fast:
+  keep_count: false
+  keep_output: false
+  drop_empty_cells: true
+  extra_keys: []
+  keep_keys: []

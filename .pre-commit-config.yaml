@@ -16,6 +16,14 @@ repos:
       - id: ruff-format
         args: [ --config=pyproject.toml ]
         types_or: [python, pyi, jupyter, toml]
+  - repo: https://github.com/deshaw/nbstripout-fast
+    rev: v1.1.1
+    hooks:
+      - id: nbstripout-fast
+        name: nbstripout-fast
+        entry: nbstripout-fast
+        types: [jupyter]
+        language: python
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
