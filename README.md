@@ -50,4 +50,4 @@ plt.show()
 
 ## Documentation
 
-Explore the full documentation, API reference, and advanced usage examples at [ppp-one.github.io/cabaret/](https://ppp-one.github.io/cabaret/)
+Explore the full documentation, API reference, and advanced usage examples at [cabaret.readthedocs.io](https://cabaret.readthedocs.io/).
