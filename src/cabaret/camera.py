@@ -200,7 +200,10 @@ class Camera:
         None
         """
         self.plate_scale = (
-            np.arctan((self.pitch * 1e-6) / (focal_length)) * (180 / np.pi) * 3600
+            2
+            * np.arctan((self.pitch * 1e-6) / (2 * focal_length))
+            * (180 / np.pi)
+            * 3600
         )  # "/pixel
 
     def _create_pixel_defect(
