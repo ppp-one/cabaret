@@ -91,6 +91,9 @@ class Camera:
     average_quantum_efficiency: float = 0.8
     """Average quantum efficiency (fraction)."""
 
+    rotation: float = 0.0
+    """Rotation angle of the camera in degrees."""
+
     pixel_defects: dict = field(default_factory=dict)
     """Dictionary of pixel defect configurations."""
 
@@ -243,8 +246,21 @@ class Camera:
         if self.plate_scale is None:
             raise ValueError("plate_scale must be set to compute WCS.")
 
+        # Convert plate scale to degrees per pixel
+        scale_deg = self.plate_scale / 3600  # arcsec to deg
+
+        theta = np.deg2rad(self.rotation)
+        cos_theta = np.cos(theta)
+        sin_theta = np.sin(theta)
+
+        # CD matrix with rotation
+        cd11 = -scale_deg * cos_theta
+        cd12 = scale_deg * sin_theta
+        cd21 = -scale_deg * sin_theta
+        cd22 = -scale_deg * cos_theta
+
         wcs = WCS(naxis=2)
-        wcs.wcs.cdelt = [-self.plate_scale / 3600, -self.plate_scale / 3600]
+        wcs.wcs.cd = np.array([[cd11, cd12], [cd21, cd22]])
         wcs.wcs.cunit = ["deg", "deg"]
         wcs.wcs.crpix = [int(self.width / 2), int(self.height / 2)]
         wcs.wcs.crval = [center.ra.deg, center.dec.deg]
