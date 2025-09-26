@@ -3,7 +3,6 @@ from datetime import datetime
 from enum import Enum
 
 import numpy as np
-from astropy import units as u
 from astropy.coordinates import SkyCoord
 from astropy.table import Table
 from astropy.units import Quantity
@@ -162,9 +161,8 @@ def gaia_launch_job_with_timeout(query, timeout=None, **kwargs) -> Table:
 
 def gaia_query(
     center: tuple[float, float] | SkyCoord,
-    fov: float | Quantity,
+    radius: float | Quantity,
     limit: int = 100000,
-    circular: bool = True,
     timeout: float | None = None,
     filter_band: Filters = Filters.G,
 ) -> Table:
@@ -184,16 +182,6 @@ def gaia_query(
         dec = center.dec.deg  # type: ignore
     else:
         ra, dec = center
-
-    if not isinstance(fov, u.Quantity):
-        fov = u.Quantity(fov, "deg")
-
-    if fov.ndim == 1:
-        ra_fov, dec_fov = fov.to("deg").value
-    else:
-        ra_fov = dec_fov = fov.to("deg").value
-
-    radius = np.max([ra_fov, dec_fov]) / 2
 
     gaia_flux_column = (
         filter_band.value if not Filters.is_tmass(filter_band.name) else Filters.G.value
@@ -224,16 +212,11 @@ def gaia_query(
     else:
         where.append(f"{filter_band.value} IS NOT NULL")
 
-    if circular:
-        where.append(
-            f"1=CONTAINS(POINT('ICRS', {ra}, {dec}), "
-            f"CIRCLE('ICRS', gaia.ra, gaia.dec, {radius}))"
-        )
-    else:
-        where.append(
-            f"gaia.ra BETWEEN {ra - ra_fov / 2} AND {ra + ra_fov / 2} "
-            f"AND gaia.dec BETWEEN {dec - dec_fov / 2} AND {dec + dec_fov / 2}"
-        )
+    radius_val = radius.value if isinstance(radius, Quantity) else float(radius)
+    where.append(
+        f"1=CONTAINS(POINT('ICRS', {ra}, {dec}), "
+        f"CIRCLE('ICRS', gaia.ra, gaia.dec, {radius_val}))"
+    )
 
     select_clause = ", ".join(select_cols)
     joins_clause = "\n".join(joins)
@@ -264,9 +247,8 @@ def apply_proper_motion(table: Table, dateobs: datetime):
 
 def get_gaia_sources(
     center: tuple[float, float] | SkyCoord,
-    fov: float | Quantity,
+    radius: float | Quantity,
     limit: int = 100000,
-    circular: bool = True,
     dateobs: datetime | None = None,
     timeout: float | None = None,
     filter_band: Filters | str = Filters.G,
@@ -280,15 +262,12 @@ def get_gaia_sources(
     center : tuple or astropy.coordinates.SkyCoord
         The sky coordinates of the center of the FOV.
         If a tuple is given, it should contain the RA and DEC in degrees.
-    fov : float or astropy.units.Quantity
-        The field-of-view of the FOV in degrees. If a float is given,
-        it is assumed to be in degrees.
+    radius : float or astropy.units.Quantity
+        The radius of the FOV in degrees. If a Quantity is given, it must be
+        convertible to degrees.
     limit : int, optional
         The maximum number of sources to retrieve from the Gaia archive.
         By default, it is set to 10000.
-    circular : bool, optional
-        Whether to perform a circular or a rectangular query.
-        By default, it is set to True.
     dateobs : datetime.datetime, optional
         The date of the observation. If given, the proper motions of the sources
         will be taken into account. By default, it is set to None.
@@ -336,9 +315,8 @@ def get_gaia_sources(
 
     table = gaia_query(
         center=center,
-        fov=fov,
+        radius=radius,
         limit=limit,
-        circular=circular,
         timeout=timeout,
         filter_band=filter_band_instance,
     )

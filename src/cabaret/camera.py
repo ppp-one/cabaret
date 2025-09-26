@@ -252,6 +252,28 @@ class Camera:
         """Create a blank image filled with zeros for testing."""
         return np.zeros((self.height, self.width), dtype=np.uint16)
 
+    def on_camera_mask(self, pixel_coords: np.ndarray) -> np.ndarray:
+        """Clip the given pixel coordinates to the camera's bounds.
+
+        Parameters
+        ----------
+        pixel_coords : np.ndarray
+            An array of shape (n, 2) containing the pixel coordinates to be clipped.
+
+        Returns
+        -------
+        np.ndarray
+            An array of shape (m, 2) containing the pixel coordinates within the
+            camera's bounds.
+        """
+        in_camera = (
+            (pixel_coords[0, :] >= 0)
+            & (pixel_coords[0, :] < self.width)
+            & (pixel_coords[1, :] >= 0)
+            & (pixel_coords[1, :] < self.height)
+        )
+        return in_camera
+
 
 @dataclass
 class PixelDefect(ABC):

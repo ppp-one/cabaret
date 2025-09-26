@@ -161,8 +161,7 @@ def generate_star_image(
 
 def get_sources(
     center: SkyCoord,
-    fovx: float,
-    fovy: float,
+    radius: float,
     dateobs: datetime,
     n_star_limit: int,
     filter_band: Filters | str,
@@ -173,12 +172,13 @@ def get_sources(
     if not isinstance(sources, Sources):
         sources = get_gaia_sources(
             center=center,
-            fov=u.Quantity((fovx * 1.5, fovy * 1.5), "deg"),
+            radius=u.Quantity(radius, "deg"),
             dateobs=dateobs,
             limit=n_star_limit,
             filter_band=filter_band,
             timeout=timeout,
         )
+        logger.info(f"Found {len(sources)} sources (user set limit of {n_star_limit}).")
     return sources
 
 
@@ -253,10 +253,15 @@ def add_stars(
 
         wcs = camera.get_wcs(SkyCoord(ra=ra, dec=dec, unit="deg"))
         gaias_pixel = sources.to_pixel(wcs)
-
+        on_camera_mask = camera.on_camera_mask(gaias_pixel)
+        logger.debug(
+            f"Number of stars on camera: {on_camera_mask.sum()}"
+            f" out of {len(sources)} total stars "
+            f"({on_camera_mask.sum() / len(sources) * 100})%."
+        )
         stars = generate_star_image(
-            gaias_pixel,
-            fluxes,
+            gaias_pixel[:, on_camera_mask],
+            fluxes[on_camera_mask],
             focuser.seeing_multiplier * site.seeing / camera.plate_scale,
             (camera.width, camera.height),
             rng=rng,
@@ -296,25 +301,22 @@ def add_stars_and_sky(
     """Add stars and sky background to the base image."""
     if light == 1:
         center = SkyCoord(ra=ra, dec=dec, unit="deg")
-        fovx = (
-            (1 / np.abs(np.cos(center.dec.rad)))  # type: ignore
-            * camera.width
-            * camera.plate_scale
-            / 3600
-        )
-        fovy = np.sqrt(2) * camera.height * camera.plate_scale / 3600
+
+        assert camera.plate_scale is not None, "Camera plate scale must be set."
+        fovy = camera.height * camera.plate_scale / 3600
+        fovx = camera.width * camera.plate_scale / 3600
+        radius = np.sqrt(fovx**2 + fovy**2) / 2
+
         logger.info("Querying Gaia for sources...")
         sources = get_sources(
             center=center,
-            fovx=fovx,
-            fovy=fovy,
+            radius=radius,
             dateobs=dateobs,
             n_star_limit=n_star_limit,
             filter_band=filter_band,
             timeout=timeout,
             sources=sources,
         )
-        logger.info(f"Found {len(sources)} sources (user set limit of {n_star_limit}).")
         image = base
         image = add_sun_sky_background(
             image, site, telescope, camera, exp_time, dateobs, logger
