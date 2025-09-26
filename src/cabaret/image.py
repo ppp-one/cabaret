@@ -236,6 +236,8 @@ def add_stars(
     site: Site,
     exp_time: float,
     rng: numpy.random.Generator,
+    ra: float | None,
+    dec: float | None,
 ) -> np.ndarray:
     """Add stars to the image using the Moffat profile and sky background."""
     if len(sources) > 0:
@@ -246,9 +248,10 @@ def add_stars(
             * exp_time
         )  # [electrons]
 
-        wcs = camera.get_wcs(
-            SkyCoord(ra=sources.ra.deg.mean(), dec=sources.dec.deg.mean(), unit="deg")
-        )
+        if ra is None or dec is None:
+            ra, dec = sources.ra.deg.mean(), sources.dec.deg.mean()
+
+        wcs = camera.get_wcs(SkyCoord(ra=ra, dec=dec, unit="deg"))
         gaias_pixel = sources.to_pixel(wcs)
 
         stars = generate_star_image(
@@ -325,6 +328,8 @@ def add_stars_and_sky(
             site=site,
             exp_time=exp_time,
             rng=rng,
+            ra=ra,
+            dec=dec,
         )
     else:
         image = base
