@@ -191,7 +191,7 @@ class Observatory:
         seed: int | None = None,
         timeout: float | None = None,
         sources: Sources | None = None,
-        convert_all_to_adu: bool = False,
+        convert_all_to_adu: bool = True,
         wcs: WCS | None = None,
         fwhm_multiplier: float = 5.0,
     ) -> numpy.ndarray:
@@ -202,7 +202,7 @@ class Observatory:
         From first to last, the images are:
         1. Base image with bias, dark, and flat applied.
         2. Astronomical image with sources, sky background, and noise.
-        3. Final ADU image with pixel defects applied.
+        3. Final image with pixel defects applied.
 
         Parameters
         ----------

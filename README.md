@@ -2,6 +2,8 @@
 ![](example.jpg)
 *cabaret* is a Python package to simulate astronomical images using the [GAIA catalog](https://en.wikipedia.org/wiki/Gaia_catalogues) of stars.
 
+Documentation can be found at [cabaret.readthedocs.io](https://cabaret.readthedocs.io/).
+
 ## Installation
 
 You can install *cabaret* in a Python (`>=3.11`) environment with
@@ -47,7 +49,5 @@ from cabaret.plot import plot_image
 plot_image(image)
 plt.show()
 ```
-
-## Documentation
 
 Explore the full documentation, API reference, and advanced usage examples at [cabaret.readthedocs.io](https://cabaret.readthedocs.io/).
