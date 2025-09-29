@@ -136,6 +136,4 @@ image = observatory.generate_image(
 )
 ```
 
-## Documentation
-
 Explore the full documentation, API reference, and advanced usage examples at [cabaret.readthedocs.io](https://cabaret.readthedocs.io/).
