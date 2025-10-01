@@ -9,17 +9,17 @@ tags:
   - observatory instrumentation
 authors:
   - name: Peter Pedersen
-    orcid: XXXX-XXXX-XXXX-XXXX
+    orcid: 0000-0002-5220-609X
     affiliation: 1
   - name: David Degen
-    orcid: XXXX-XXXX-XXXX-XXXX
+    orcid: 0009-0008-1068-481X
     affiliation: 1
   - name: Lionel Garcia
-    orcid: XXXX-XXXX-XXXX-XXXX
+    orcid: 0000-0002-4296-2246
     affiliation: 2
 
 affiliations:
- - name: Institution Name, Address, Country
+ - name: ETH Zürich, Department of Physics, ETH Zurich, Wolfgang-Pauli-Strasse 2, 8093 Zurich, Switzerland
    index: 1
  - name: Institution Name, Address, Country
    index: 2
