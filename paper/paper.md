@@ -11,12 +11,15 @@ authors:
   - name: Peter Pedersen
     orcid: 0000-0002-5220-609X
     affiliation: 1
+    equal-contrib: true
   - name: David Degen
     orcid: 0009-0008-1068-481X
     affiliation: 1
+    equal-contrib: true
   - name: Lionel Garcia
     orcid: 0000-0002-4296-2246
     affiliation: 2
+    equal-contrib: true
 
 affiliations:
  - name: ETH Zürich, Department of Physics, ETH Zurich, Wolfgang-Pauli-Strasse 2, 8093 Zurich, Switzerland
@@ -36,7 +39,7 @@ Astronomical research increasingly relies on realistic simulations to interpret 
 
 The development of modern astronomical instrumentation and analysis pipelines requires extensive testing with realistic data. While real observational data is invaluable, it has limitations: observations are expensive, time-consuming, and often lack the ground truth necessary for validation. Synthetic images provide a controlled environment where all parameters are known, making them essential for testing algorithms, training machine learning models, and validating software systems.
 
-Existing image simulation tools often fall into two categories: highly specialized packages designed for specific surveys or instruments, and general-purpose simulators that require extensive configuration and domain expertise. `cabaret` fills a gap by providing an accessible, easy-to-use package that generates realistic stellar field images with minimal setup while maintaining the flexibility to customize observatory parameters for specific use cases.
+Existing image simulation tools often fall into two categories: highly specialized packages designed for specific surveys or instruments, and general-purpose simulators that require extensive configuration and domain expertise [@ufig]. `cabaret` fills a gap by providing an accessible, easy-to-use package that generates realistic stellar field images with minimal setup while maintaining the flexibility to customize observatory parameters for specific use cases.
 
 The package is designed around several key principles:
 
@@ -53,7 +56,7 @@ The package is also particularly relevant for projects like SPECULOOS (Search fo
 
 ## Gaia Catalog Integration
 
-`cabaret` provides access to the Gaia catalog through the `astroquery` package, automatically querying and retrieving stellar positions, proper motions, fluxes, for any field of view. Users simply specify the sky coordinates and field size, and `cabaret` handles the catalog retrieval and flux conversion. Alternatively, users can provide their own source catalogs for full control over the simulated stellar population.
+`cabaret` provides access to the Gaia catalog through the `astroquery` [@astroquery] package, automatically querying and retrieving stellar positions, proper motions, fluxes, for any field of view. Users simply specify the sky coordinates and field size, and `cabaret` handles the catalog retrieval and flux conversion. Alternatively, users can provide their own source catalogs for full control over the simulated stellar population.
 
 ## Configurable Observatory Model
 
@@ -108,12 +111,12 @@ All generated images include proper World Coordinate System (WCS) headers, enabl
 
 # Implementation
 
-`cabaret` is implemented in pure Python with minimal dependencies (`numpy`, `astropy`, `astroquery`), making it easy to install and integrate into existing workflows. The package follows modern Python best practices:
+`cabaret` is implemented in pure Python with minimal dependencies (`numpy` [@numpy], `astropy` [@astropy], `astroquery` [@astroquery]), making it easy to install and integrate into existing workflows. The package follows modern Python best practices:
 
 - Type hints throughout the codebase
 - Dataclass-based configuration for clean, validated interfaces
 - Comprehensive docstrings with usage examples
-- Automated testing with `pytest`
+- Automated testing with `pytest` [@pytest]
 - Continuous integration and documentation hosting
 
 The image generation algorithm uses an efficient windowed rendering approach, where stars are rendered only within a small region around their position (typically 5× the FWHM). This dramatically reduces computation time compared to global convolution methods while maintaining accuracy.
@@ -190,6 +193,6 @@ The package has been successfully used in the development of `alpaca-simulators`
 
 # Acknowledgements
 
-We acknowledge contributions from the broader astronomical software community, particularly the developers of `astropy` and `astroquery`, which provide essential functionality for `cabaret`. This work made use of the Gaia catalog, ESA's space mission for stellar astrometry.
+We acknowledge the contributions of several key libraries to the functionality of cabaret, specifically `astropy` [@astropy],`astroquery` [@astroquery], and `numpy` [@numpy]. Additionally, we utilized `Matplotlib` [@matplotlib] for the plots in this paper and the package's documentation. We also utilized `prose` [@prose], `photutils` [@photutils], and `pandas` [@reback2020pandas] in the comparison with real observations. Furthermore, testing was conducted using `pytest` [@pytest] to ensure the reliability of our code. This work made use of the Gaia catalog, ESA's space mission for stellar astrometry.
 
 # References
