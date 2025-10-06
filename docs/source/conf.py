@@ -64,7 +64,7 @@ html_context = {
 
 html_theme_options = {
     "path_to_docs": "docs",
-    "repository_url": "https://github.com/ppp-one/astra",
+    "repository_url": "https://github.com/ppp-one/cabaret",
     "repository_branch": "main",
     "use_repository_button": True,
     "use_fullscreen_button": False,
