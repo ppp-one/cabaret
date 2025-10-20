@@ -72,7 +72,7 @@ def get_sky_background(
     aptarea: float,
 ) -> float:
     """Estimate the sky background in photons / arcsec^2 / s."""
-    return gain * np.percentile(image_data, 10) / (exptime * plate_scale**2 * aptarea)
+    return gain * np.percentile(image_data, 50) / (exptime * plate_scale**2 * aptarea)
 
 
 def set_up_observatory(

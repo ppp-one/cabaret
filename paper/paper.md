@@ -27,87 +27,78 @@ affiliations:
  - name: Institution Name, Address, Country
    index: 2
 
-date: 1 October 2025
+date: 1 November 2025
 bibliography: paper.bib
 ---
 
 # Summary
 
-Astronomical research increasingly relies on realistic simulations to interpret observations, test hypotheses, and develop new analysis techniques. `cabaret` is a Python package designed to simulate astronomical images using the [Gaia catalog](https://www.cosmos.esa.int/web/gaia) of stars, providing researchers and educators with a fast, flexible tool for generating synthetic stellar field images. The package seamlessly integrates real astronomical data from Gaia with customizable observatory configurations, enabling users to simulate images that accurately reflect observational conditions including telescope optics, camera properties, atmospheric seeing, and detector effects. `cabaret` is particularly well-suited for validating data reduction pipelines, training machine learning models, developing observatory control software, and educational applications where realistic astronomical data is needed.
+Astronomical research increasingly relies on realistic simulations to interpret observations, test hypotheses, and develop new analysis techniques. `cabaret` is a Python package designed to simulate astronomical images using the Gaia [@gaia] and 2MASS [@tmass] catalog of stars, providing researchers and educators with a fast, flexible tool for generating synthetic stellar field images. The package integrates real astronomical data from Gaia and cross-matched 2MASS with customizable observatory configurations, enabling users to simulate images that accurately reflect site and instrumental conditions. `cabaret` is particularly well-suited for validating data reduction pipelines, training machine learning models, developing observatory control software, and educational applications where simulated astronomical data is needed.
 
 # Statement of need
 
-The development of modern astronomical instrumentation and analysis pipelines requires extensive testing with realistic data. While real observational data is invaluable, it has limitations: observations are expensive, time-consuming, and often lack the ground truth necessary for validation. Synthetic images provide a controlled environment where all parameters are known, making them essential for testing algorithms, training machine learning models, and validating software systems.
+To increase confidence in the development of modern astronomical instrumentation and software, it is necessary to model and test with simulated data.
 
-Existing image simulation tools often fall into two categories: highly specialized packages designed for specific surveys or instruments, and general-purpose simulators that require extensive configuration and domain expertise [@ufig]. `cabaret` fills a gap by providing an accessible, easy-to-use package that generates realistic stellar field images with minimal setup while maintaining the flexibility to customize observatory parameters for specific use cases.
+<!-- Existing image simulation tools often fall into two categories: highly specialized packages designed for specific surveys or instruments [REFs], or over-simplified simulators [REFs] which lack the necessary realism suitable for scientific application.  -->
+\**existing lit*\* `cabaret` fills a gap by providing an accessible, easy-to-use package that generates realistic stellar field images with minimal setup while maintaining the flexibility to customize observatory parameters for specific use cases.
 
-The package is designed around several key principles:
+`cabaret` has already proven valuable in `alpaca-simulators` [@alpaca], a comprehensive astronomy observatory simulator, by providing realistic image generation. `alpaca-simulators` enables thorough testing of observatory control software without requiring access to physical hardware, such as testing plate solving, guiding algorithms, and flat fielding sequences.
 
-- **Accessibility**: With just a few lines of Python code, users can generate their first synthetic image using Gaia catalog data.
-- **Realism**: Images incorporate stellar positions and flux values from Gaia, combined with Moffat point spread functions (PSF) and detector effects.
-- **Flexibility**: All observatory components (telescope, camera, focuser, site) are configurable through a simple API, allowing users to match specific instruments or explore parameter spaces.
-- **Reproducibility**: All simulations are deterministic when a random seed is provided, ensuring reproducible results for scientific workflows.
+The package has been used in projects like SPECULOOS (Search for habitable Planets EClipsing ULtra-cOOl Stars) [@speculoos], which monitors ultracool dwarf stars to detect transiting exoplanets. For such surveys, the ability to generate synthetic images that closely match real observations is valuable for validating photometric pipelines, characterizing systematic uncertainties, and optimizing observing pointing strategies.
 
-`cabaret` has already proven valuable in the development of `alpaca-simulators` [@alpaca], a comprehensive simulator for ASCOM Alpaca devices. By providing realistic device simulation and image generation, `alpaca-simulators` enables thorough testing of robotic telescope control software and observatory automation systems without requiring access to physical hardware.
+# Operation
 
-The package is also particularly relevant for projects like SPECULOOS (Search for habitable Planets EClipsing ULtra-cOOl Stars) [@speculoos], which monitors ultracool dwarf stars to detect transiting exoplanets. For such surveys, the ability to generate synthetic images that closely match real observations is crucial for validating photometric pipelines, characterizing systematic uncertainties, and optimizing observing strategies.
-
-# Key Features
-
-## Gaia Catalog Integration
-
-`cabaret` provides access to the Gaia catalog through the `astroquery` [@astroquery] package, automatically querying and retrieving stellar positions, proper motions, fluxes, for any field of view. Users simply specify the sky coordinates and field size, and `cabaret` handles the catalog retrieval and flux conversion. Alternatively, users can provide their own source catalogs for full control over the simulated stellar population.
-
-## Configurable Observatory Model
+`cabaret` provides access to the Gaia and cross-matched 2MASS catalog through the `astroquery` [@astroquery] package, automatically querying and retrieving stellar positions, proper motions, fluxes, for a specified field of view. Alternatively, users can provide their own source catalogs for full control over the simulated stellar population.
 
 The package implements a modular observatory model with four main components:
 
-- **Telescope**: Configurable aperture, focal length, and optical properties
-- **Camera**: Customizable detector dimensions, pixel scale, gain, dark current, readout noise, and exposure time
+- **Telescope**: Configurable aperture and focal length
+- **Camera**: Customizable detector dimensions, pixel scale, gain, dark current, and readout noise
 - **Focuser**: Position and offset parameters for focus effects
 - **Site**: Atmospheric seeing and sky background conditions
 
-All components can be instantiated with sensible defaults or customized to match real instruments. For example, simulating images from a specific telescope requires only specifying its aperture and focal length:
+All components can be instantiated with the package's defaults or customized to match real instruments. For example, simulating images from a specific telescope requires only specifying its aperture and focal length:
 
 ```python
 import cabaret
 
-telescope = cabaret.Telescope(aperture=1000, focal_length=8000)
+telescope = cabaret.Telescope(aperture=1, focal_length=8)
 observatory = cabaret.Observatory(telescope=telescope)
 image = observatory.generate_image(ra=12.33, dec=30.43, exp_time=10)
 ```
 
-## Point Spread Function Modeling
+Stars are rendered using a Moffat profile [@moffat], a physically-motivated functional form used to model atmospheric seeing.
 
-Stars are rendered using a Moffat profile, a physically-motivated functional form commonly used to model atmospheric seeing. The full width at half maximum (FWHM) can be specified directly or computed from seeing conditions and airmass. The package supports:
+# Validation
 
-- Configurable Moffat β parameter for PSF shape
-- Adaptive rendering radius based on FWHM
-- Proper flux normalization
-- Poisson noise in photon generation
+To validate the field production accuracy of `cabaret`, we compared it to 355 fields observed by the SPECULOOS survey [@speculoos] using its I+z filter, as illustrated in \autoref{fig:comparison}. For each field, we generated a simulated image with matching observatory and site parameters, using the Gaia \(R_p\) filter as the closest equivalent. Source detection was then performed on both the real and simulated images with `DAOStarFinder` [@photutils], applying a threshold of seven times the frame’s standard deviation as determined by `sigma_clipped_stats` [@astropy].
 
-## Detector Effects and Noise
+In the example presented in \autoref{fig:comparison}, the overall field distribution 
 
-`cabaret` includes a comprehensive set of detector effects to create realistic images:
+![A comparison of real and simulated image.\label{fig:comparison}](./figures/field-comparison.svg)
 
-- **Photon shot noise**: Poisson-distributed noise from stellar photons
-- **Readout noise**: Gaussian noise from detector readout
-- **Dark current**: Temperature-dependent dark current accumulation
-- **Bias level**: Configurable detector bias
-- **Gain**: Conversion from electrons to analog-to-digital units (ADU)
-- **Saturation**: Proper handling of well depth and ADU limits
-- **Pixel defects**: Support for cold pixels, hot pixels, quantum efficiency variations, and readout smear
+We found
 
-These effects can be enabled or disabled individually, allowing users to isolate specific contributions or create idealized images for testing.
+![A comparison of real and simulated image.\label{fig:histograms}](./figures/field-comparison-histograms.svg)
 
-## World Coordinate System
 
-All generated images include proper World Coordinate System (WCS) headers, enabling seamless integration with astronomical analysis tools. The WCS implementation correctly handles:
+![A comparison of real and simulated image.\label{fig:percent-difference}](./figures/percent-difference-histogram.svg)
 
-- Tangent plane projection
-- Pixel scale from camera and telescope properties
-- Coordinate system transformations
-- FITS header generation
+<!-- The package is designed around several key principles:
+
+- **Accessibility**: With just a few lines of Python code, users can generate their first synthetic image.
+- **Realism**: Images incorporate source positions, accounting for proper motion, and flux values from Gaia or 2MASS. This is combined with noise modelling [CCD equation ref -- we miss scintillation noise], atmospheric seeing modelling, and injected detector defects.
+- **Flexibility**: All observatory components (telescope, camera, focuser, site) are configurable through a simple API, allowing users to match specific instruments or explore parameter spaces.
+- **Reproducibility**: All simulations are deterministic when a random seed is provided, ensuring reproducible results for scientific workflows. -->
+
+
+
+
+
+# Key Features
+
+To be edited/deleted:
+
 
 # Implementation
 
@@ -123,60 +114,6 @@ The image generation algorithm uses an efficient windowed rendering approach, wh
 
 The package is designed to be extensible, with clear interfaces for adding new detector effects, PSF models, or catalog sources.
 
-# Example Usage and Validation
-
-\autoref{fig:comparison} shows a comparison between a real SPECULOOS observation and a simulated image generated with `cabaret` using matching observatory parameters. The simulated image accurately reproduces the stellar field, PSF characteristics, background noise, and overall appearance of the real observation, demonstrating the package's ability to create realistic synthetic data for pipeline validation and testing.
-
-![Comparison between a real SPECULOOS observation (left) and a simulated image generated with `cabaret` (right). Both images show the same field of view with matching exposure time and seeing conditions. The simulated image successfully reproduces the stellar positions, brightness distribution, and detector characteristics of the real observation.\label{fig:comparison}](figures/speculoos_comparison.png)
-
-The basic workflow for generating a synthetic image is straightforward:
-
-```python
-import cabaret
-
-# Create observatory with default configuration
-observatory = cabaret.Observatory()
-
-# Generate image from Gaia catalog
-image = observatory.generate_image(
-    ra=12.33230,      # right ascension in degrees
-    dec=30.4343,      # declination in degrees
-    exp_time=10,      # exposure time in seconds
-)
-```
-
-For more advanced use cases, all observatory components can be customized:
-
-```python
-from cabaret import Observatory, Camera, Telescope, Site
-
-# Configure a specific instrument
-camera = Camera(
-    width=2048,
-    height=2048,
-    pitch=13.5,         # microns
-    gain=1.5,           # e-/ADU
-    read_noise=10,      # electrons
-    dark_current=0.1,   # e-/pixel/s
-)
-
-telescope = Telescope(
-    aperture=1000,      # mm
-    focal_length=8000,  # mm
-)
-
-site = Site(
-    latitude=28.3,      # degrees
-    longitude=-16.5,    # degrees
-    elevation=2400,     # meters
-)
-
-observatory = Observatory(
-    camera=camera,
-    telescope=telescope,
-    site=site,
-)
-```
 
 # Applications
 
