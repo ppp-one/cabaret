@@ -4,6 +4,7 @@ from typing import Any
 
 import numpy as np
 from astropy.io import fits
+from astropy.wcs import WCS
 
 
 class FITSManager:
@@ -38,6 +39,7 @@ class FITSManager:
         ra: float | None = None,
         dec: float | None = None,
         dateobs: datetime | None = None,
+        wcs: WCS | None = None,
         overwrite: bool = True,
     ) -> fits.HDUList:
         """
@@ -64,6 +66,8 @@ class FITSManager:
             Declination of the image center in degrees. Passed to the header.
         dateobs : datetime, optional
             The observation date and time. Passed to the header.
+        wcs : WCS, optional
+            World Coordinate System information for the image. Passed to the header.
         overwrite : bool, optional
             Whether to overwrite existing file (default: True).
         """
@@ -75,6 +79,7 @@ class FITSManager:
                 ra=ra,
                 dec=dec,
                 dateobs=dateobs,
+                wcs=wcs,
                 user_header=user_header,
             )
         elif not isinstance(hdu_list, fits.HDUList):
@@ -92,6 +97,7 @@ class FITSManager:
         ra: float | None = None,
         dec: float | None = None,
         dateobs: datetime | None = None,
+        wcs: WCS | None = None,
         user_header: dict[str, Any] | fits.Header | None = None,
     ) -> fits.HDUList:
         """
@@ -111,6 +117,8 @@ class FITSManager:
             Declination of the image center in degrees.
         dateobs : datetime, optional
             The observation date and time.
+        wcs : WCS, optional
+            World Coordinate System information for the image.
         user_header : dict or fits.Header, optional
             Additional header keywords to add.
 
@@ -125,7 +133,7 @@ class FITSManager:
             user_header=user_header,
         )
         FITSManager.add_image_info_to_header(
-            header, exp_time=exp_time, ra=ra, dec=dec, dateobs=dateobs
+            header, exp_time=exp_time, ra=ra, dec=dec, dateobs=dateobs, wcs=wcs
         )
         hdu = fits.PrimaryHDU(data=image, header=header)
         hdul = fits.HDUList([hdu])
@@ -138,6 +146,7 @@ class FITSManager:
         ra: float | None = None,
         dec: float | None = None,
         dateobs: datetime | None = None,
+        wcs: WCS | None = None,
     ):
         """Add image-specific info to a FITS header."""
         if exp_time is not None:
@@ -148,6 +157,10 @@ class FITSManager:
             header["DEC"] = (float(dec), "Declination of image center [deg]")
         if dateobs is None:
             dateobs = datetime.now()
+        if wcs is not None:
+            wcs_header = wcs.to_header()
+            for card in wcs_header.cards:
+                header[card.keyword] = (card.value, card.comment)
         header["DATE-OBS"] = (dateobs.isoformat(), "UTC datetime start of exposure")
 
     @staticmethod

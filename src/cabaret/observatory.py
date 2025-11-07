@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 import numpy.random
+from astropy.coordinates import SkyCoord
 from astropy.io import fits
 from astropy.wcs import WCS
 
@@ -297,6 +298,8 @@ class Observatory:
         seed: int | None = None,
         timeout: float | None = None,
         sources: Sources | None = None,
+        wcs: WCS | None = None,
+        fwhm_multiplier: float = 5.0,
         user_header: dict[str, Any] | fits.Header | None = None,
         overwrite: bool = True,
     ) -> fits.HDUList:
@@ -334,6 +337,11 @@ class Observatory:
         sources : Sources, optional
             A collection of sources with their sky coordinates and fluxes.
             If provided, these sources will be used instead of querying Gaia.
+        wcs : WCS or None, optional
+            World Coordinate System information for the image.
+        fwhm_multiplier : float, optional
+            Multiplier to determine the rendering radius around each star
+            (default: 5.0).
         overwrite : bool, optional
             Whether to overwrite existing file (default: True).
 
@@ -359,7 +367,13 @@ class Observatory:
             seed=seed,
             timeout=timeout,
             sources=sources,
+            wcs=wcs,
+            fwhm_multiplier=fwhm_multiplier,
         )
+
+        if wcs is None:
+            wcs = self.camera.get_wcs(SkyCoord(ra=ra, dec=dec, unit="deg"))
+
         hdu_list = FITSManager.to_hdu_list(
             observatory=self,
             image=image,
@@ -368,6 +382,7 @@ class Observatory:
             dec=dec,
             exp_time=exp_time,
             dateobs=dateobs,
+            wcs=wcs,
         )
         if file_path is not None:
             hdu_list = FITSManager.save(
