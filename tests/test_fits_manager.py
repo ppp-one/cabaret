@@ -32,12 +32,11 @@ def test_add_image_info_to_header():
     header = fits.Header()
     dateobs = datetime(2024, 1, 1, 12, 0, 0)
     FITSManager.add_image_info_to_header(
-        header, exp_time=10, ra=123.4, dec=56.7, dateobs=dateobs, light=2
+        header, exp_time=10, ra=123.4, dec=56.7, dateobs=dateobs
     )
     assert header["EXPTIME"] == 10.0
     assert header["RA"] == 123.4
     assert header["DEC"] == 56.7
-    assert header["LIGHTLVL"] == 2.0
     assert header["DATE-OBS"].startswith("2024-01-01T12:00:00")
 
 
@@ -51,7 +50,6 @@ def test_to_hdu_list_and_save(tmp_path, observatory):
         ra=ra,
         dec=dec,
         dateobs=datetime(2024, 1, 1, 12, 0, 0),
-        light=3,
         user_header={"TESTKEY": ("testval", "test comment")},
     )
     assert hdul[0].header["EXPTIME"] == 30.0
@@ -69,7 +67,6 @@ def test_to_hdu_list_and_save(tmp_path, observatory):
         ra=ra,
         dec=dec,
         dateobs=datetime(2024, 1, 1, 12, 0, 0),
-        light=3,
         user_header={"TESTKEY": ("testval", "test comment")},
         overwrite=True,
     )

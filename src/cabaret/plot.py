@@ -16,6 +16,7 @@ def plot_image(
     add_colorbar=True,
     colorbar_kwargs={},
     transparent=True,
+    contrast=0.25,
 ):
     """Plot a 2D image with zscale normalization.
 
@@ -40,7 +41,7 @@ def plot_image(
         fig, ax = plt.subplots()
     else:
         fig = plt.gcf()
-    interval = ZScaleInterval()
+    interval = ZScaleInterval(contrast=contrast)
     vmin, vmax = interval.get_limits(image)
     img = ax.imshow(image, vmin=vmin, vmax=vmax, cmap=cmap, rasterized=True)
     if title is not None:

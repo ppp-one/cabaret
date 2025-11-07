@@ -38,7 +38,6 @@ class FITSManager:
         ra: float | None = None,
         dec: float | None = None,
         dateobs: datetime | None = None,
-        light: int | None = None,
         overwrite: bool = True,
     ) -> fits.HDUList:
         """
@@ -65,8 +64,6 @@ class FITSManager:
             Declination of the image center in degrees. Passed to the header.
         dateobs : datetime, optional
             The observation date and time. Passed to the header.
-        light : int, optional
-            Light pollution level (1-5). Passed to the header.
         overwrite : bool, optional
             Whether to overwrite existing file (default: True).
         """
@@ -78,7 +75,6 @@ class FITSManager:
                 ra=ra,
                 dec=dec,
                 dateobs=dateobs,
-                light=light,
                 user_header=user_header,
             )
         elif not isinstance(hdu_list, fits.HDUList):
@@ -96,7 +92,6 @@ class FITSManager:
         ra: float | None = None,
         dec: float | None = None,
         dateobs: datetime | None = None,
-        light: int | None = None,
         user_header: dict[str, Any] | fits.Header | None = None,
     ) -> fits.HDUList:
         """
@@ -116,8 +111,6 @@ class FITSManager:
             Declination of the image center in degrees.
         dateobs : datetime, optional
             The observation date and time.
-        light : int, optional
-            Light pollution level (1-5).
         user_header : dict or fits.Header, optional
             Additional header keywords to add.
 
@@ -132,7 +125,7 @@ class FITSManager:
             user_header=user_header,
         )
         FITSManager.add_image_info_to_header(
-            header, exp_time=exp_time, ra=ra, dec=dec, dateobs=dateobs, light=light
+            header, exp_time=exp_time, ra=ra, dec=dec, dateobs=dateobs
         )
         hdu = fits.PrimaryHDU(data=image, header=header)
         hdul = fits.HDUList([hdu])
@@ -145,7 +138,6 @@ class FITSManager:
         ra: float | None = None,
         dec: float | None = None,
         dateobs: datetime | None = None,
-        light: int | None = None,
     ):
         """Add image-specific info to a FITS header."""
         if exp_time is not None:
@@ -154,8 +146,6 @@ class FITSManager:
             header["RA"] = (float(ra), "Right ascension of image center [deg]")
         if dec is not None:
             header["DEC"] = (float(dec), "Declination of image center [deg]")
-        if light is not None:
-            header["LIGHTLVL"] = (float(light), "Light pollution level (1-5)")
         if dateobs is None:
             dateobs = datetime.now()
         header["DATE-OBS"] = (dateobs.isoformat(), "UTC datetime start of exposure")

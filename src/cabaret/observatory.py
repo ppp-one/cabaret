@@ -138,7 +138,7 @@ class Observatory:
         dateobs : datetime, optional
             Observation date and time in UTC.
         light : int, optional
-            Light pollution level (1-5).
+
         filter_band : Filters or str, optional
             Photometric filter to use for the simulation (default: Filters.G).
         airmass : float, optional
@@ -317,7 +317,7 @@ class Observatory:
         dateobs : datetime, optional
             Observation date and time in UTC.
         light : int, optional
-            Light pollution level (1-5).
+            If 1, simulate light exposure; if 0, simulate dark exposure.
         filter_band : Filters or str, optional
             Photometric filter to use for the simulation (default: Filters.G).
         airmass : float, optional
@@ -368,7 +368,6 @@ class Observatory:
             dec=dec,
             exp_time=exp_time,
             dateobs=dateobs,
-            light=light,
         )
         if file_path is not None:
             hdu_list = FITSManager.save(
