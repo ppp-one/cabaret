@@ -230,7 +230,7 @@ class Camera:
         Parameters
         ----------
         focal_length : float
-            Focal length of the telescope in mm.
+            Focal length of the telescope in m.
 
         Returns
         -------

@@ -218,16 +218,16 @@ class FITSManager:
         )
         telescope = observatory.telescope
         header["FOCALLEN"] = (
-            telescope.focal_length * 1000,
-            "[mm] Focal length of telescope",
+            telescope.focal_length,
+            "[m] Focal length of telescope",
         )
         header["APTDIA"] = (
-            telescope.diameter * 1000,
-            "[mm] Aperture diameter of telescope",
+            telescope.diameter,
+            "[m] Aperture diameter of telescope",
         )
         header["APTAREA"] = (
-            telescope.collecting_area * 1e6,
-            "[mm^2] Aperture area of telescope",
+            telescope.collecting_area,
+            "[m^2] Aperture area of telescope",
         )
         header["SITE"] = (
             getattr(observatory.site, "name", "cabaret_site"),
