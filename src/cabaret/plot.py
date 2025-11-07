@@ -38,7 +38,7 @@ def plot_image(
         If True, set figure background to transparent.
     """
     if ax is None:
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(8, 8))
     else:
         fig = plt.gcf()
     interval = ZScaleInterval(contrast=contrast)
