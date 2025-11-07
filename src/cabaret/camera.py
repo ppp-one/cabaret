@@ -273,12 +273,12 @@ class Camera:
     def _create_pixel_defect(
         self,
         name: str,
-        type: Literal["constant", "telegraphic", "noise", "fixed_pattern"] = "constant",
+        type: Literal["constant", "column", "noise", "fixed_pattern"] = "constant",
         **kwargs,
     ) -> "PixelDefect":
         defect_classes = {
             "constant": ConstantPixelDefect,
-            "telegraphic": TelegraphicPixelDefect,
+            "column": ColumnPixelDefect,
             "noise": RandomNoisePixelDefect,
             "quantum_efficiency_map": QuantumEfficiencyMapPixelDefect,
             "readout_smear": ReadoutSmearPixelDefect,
@@ -503,15 +503,15 @@ class ConstantPixelDefect(PixelDefect):
 
 
 @dataclass
-class TelegraphicPixelDefect(PixelDefect):
-    """A pixel defect that simulates telegraphic noise by selecting entire rows or
+class ColumnPixelDefect(PixelDefect):
+    """A pixel defect that simulates column noise by selecting entire rows or
     columns of pixels to be defective.
 
     Examples
     --------
     >>> from cabaret import Observatory, Sources
     >>> pixel_defects = {
-    ...     "telegraphic": {"type": "telegraphic", "value": 20, "rate": 0.01, "dim": 1}
+    ...     "column": {"type": "column", "value": 20, "rate": 0.01, "dim": 1}
     ... }
     >>> observatory = Observatory(camera={"pixel_defects": pixel_defects})
     >>> sources = Sources.get_test_sources()
@@ -527,7 +527,7 @@ class TelegraphicPixelDefect(PixelDefect):
     >>> import matplotlib.pyplot as plt
     >>> fig, axes = plt.subplots(1, 2, figsize=(7, 5), sharex=True, sharey=True)
     >>> _ = plot_image(clean_image, ax=axes[0], title="Image without defects")
-    >>> _ = plot_image(image, ax=axes[1], title="Image with telegraphic defects")
+    >>> _ = plot_image(image, ax=axes[1], title="Image with column defects")
     >>> plt.subplots_adjust(wspace=0.1)
     >>> plt.show()
     """

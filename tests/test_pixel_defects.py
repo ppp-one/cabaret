@@ -3,9 +3,9 @@ import pytest
 
 from cabaret.camera import (
     Camera,
+    ColumnPixelDefect,
     ConstantPixelDefect,
     RandomNoisePixelDefect,
-    TelegraphicPixelDefect,
 )
 
 
@@ -110,16 +110,16 @@ def test_constant_pixel_defect_invalid_pixel_selection(camera):
         defect.set_pixels(np.array([[camera.height, camera.width]]), camera)
 
 
-def test_telegraphic_pixel_defect_initialization():
-    defect = TelegraphicPixelDefect(name="test_defect", rate=0.1, value=1024, dim=0)
+def test_column_pixel_defect_initialization():
+    defect = ColumnPixelDefect(name="test_defect", rate=0.1, value=1024, dim=0)
     assert defect.name == "test_defect"
     assert defect.rate == 0.1
     assert defect.value == 1024
     assert defect.dim == 0
 
 
-def test_telegraphic_pixel_defect_introduce(camera, image):
-    defect = TelegraphicPixelDefect(name="test_defect", rate=0.1, value=1024, dim=0)
+def test_column_pixel_defect_introduce(camera, image):
+    defect = ColumnPixelDefect(name="test_defect", rate=0.1, value=1024, dim=0)
     # defect.set_pixels(defect._select_random_pixel(camera), camera)
     modified_image = defect.introduce_pixel_defect(image.copy(), camera)
 
@@ -128,15 +128,15 @@ def test_telegraphic_pixel_defect_introduce(camera, image):
         assert modified_image[pixel[0], pixel[1]] == 1024
 
 
-def test_telegraphic_pixel_defect_no_defect_pixels(camera, image):
-    defect = TelegraphicPixelDefect(name="test_defect", rate=0.0, value=255, dim=0)
+def test_column_pixel_defect_no_defect_pixels(camera, image):
+    defect = ColumnPixelDefect(name="test_defect", rate=0.0, value=255, dim=0)
     modified_image = defect.introduce_pixel_defect(image.copy(), camera)
 
     assert np.array_equal(modified_image, image)
 
 
-def test_telegraphic_pixel_defect_zero_defect_pixels(camera, image):
-    defect = TelegraphicPixelDefect(name="test_defect", rate=0.0, value=255, dim=0)
+def test_column_pixel_defect_zero_defect_pixels(camera, image):
+    defect = ColumnPixelDefect(name="test_defect", rate=0.0, value=255, dim=0)
     modified_image = defect.introduce_pixel_defect(image.copy(), camera)
 
     assert np.array_equal(modified_image, image)

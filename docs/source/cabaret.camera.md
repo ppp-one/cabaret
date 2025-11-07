@@ -15,7 +15,7 @@ See the `Camera` class for more details and examples on configuring pixel defect
    :toctree: generated
 
    ConstantPixelDefect
-   TelegraphicPixelDefect
+   ColumnPixelDefect
    RandomNoisePixelDefect
    QuantumEfficiencyMapPixelDefect
    ReadoutSmearPixelDefect
