@@ -18,3 +18,6 @@ class Site:
 
     longitude: float | None = None
     """Site longitude in degrees."""
+
+    elevation: float | None = None
+    """Site elevation in meters."""

@@ -116,6 +116,7 @@ class Observatory:
         dateobs: datetime | None = None,
         light: int = 1,
         filter_band: Filters | str = Filters.G,
+        airmass: float = 1.5,
         n_star_limit: int = 2000,
         rng: numpy.random.Generator = numpy.random.default_rng(),
         seed: int | None = None,
@@ -140,6 +141,8 @@ class Observatory:
             Light pollution level (1-5).
         filter_band : Filters or str, optional
             Photometric filter to use for the simulation (default: Filters.G).
+        airmass : float, optional
+            Airmass value for the observation (default: 1.5).
         n_star_limit : int, optional
             Maximum number of stars to include in the image.
         rng : numpy.random.Generator, optional
@@ -169,6 +172,7 @@ class Observatory:
             telescope=self.telescope,
             site=self.site,
             filter_band=filter_band,
+            airmass=airmass,
             n_star_limit=n_star_limit,
             rng=rng,
             seed=seed,
@@ -186,6 +190,7 @@ class Observatory:
         dateobs: datetime | None = None,
         light: int = 1,
         filter_band: Filters | str = Filters.G,
+        airmass: float = 1.5,
         n_star_limit: int = 2000,
         rng: numpy.random.Generator = numpy.random.default_rng(),
         seed: int | None = None,
@@ -226,6 +231,8 @@ class Observatory:
             Observatory site configuration.
         filter_band : Filters or str, optional
             The filter to use for the flux column. Default is "G".
+        airmass : float, optional
+            Airmass value for the observation (default: 1.5).
         n_star_limit : int, optional
             Maximum number of stars to simulate.
         rng : numpy.random.Generator, optional
@@ -264,6 +271,7 @@ class Observatory:
             telescope=self.telescope,
             site=self.site,
             filter_band=filter_band,
+            airmass=airmass,
             n_star_limit=n_star_limit,
             rng=rng,
             seed=seed,
@@ -283,6 +291,7 @@ class Observatory:
         dateobs: datetime | None = None,
         light: int = 1,
         filter_band: Filters | str = Filters.G,
+        airmass: float = 1.5,
         n_star_limit: int = 2000,
         rng: numpy.random.Generator = numpy.random.default_rng(),
         seed: int | None = None,
@@ -311,6 +320,8 @@ class Observatory:
             Light pollution level (1-5).
         filter_band : Filters or str, optional
             Photometric filter to use for the simulation (default: Filters.G).
+        airmass : float, optional
+            Airmass value for the observation (default: 1.5).
         n_star_limit : int, optional
             Maximum number of stars to include in the image.
         rng : numpy.random.Generator, optional
@@ -342,6 +353,7 @@ class Observatory:
             telescope=self.telescope,
             site=self.site,
             filter_band=filter_band,
+            airmass=airmass,
             n_star_limit=n_star_limit,
             rng=rng,
             seed=seed,

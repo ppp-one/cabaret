@@ -224,6 +224,33 @@ class Camera:
 
         return image.astype(np.uint16)
 
+    def bin_image(self, image: np.ndarray) -> np.ndarray:
+        """Bin the image according to the camera's binning factors.
+
+        Parameters
+        ----------
+        image : np.ndarray
+            The image to be binned.
+
+        Returns
+        -------
+        np.ndarray
+            The binned image.
+        """
+        if self.bin_x == 1 and self.bin_y == 1:
+            return image
+
+        binned_height = image.shape[0] // self.bin_y
+        binned_width = image.shape[1] // self.bin_x
+
+        binned_image = (
+            image[: binned_height * self.bin_y, : binned_width * self.bin_x]
+            .reshape(binned_height, self.bin_y, binned_width, self.bin_x)
+            .sum(axis=(1, 3))
+        )
+
+        return binned_image
+
     def set_plate_scale_from_focal_length(self, focal_length: float):
         """Set the plate scale based on the focal length of the telescope.
 

@@ -60,12 +60,67 @@ def moffat_profile(
     return mp / mp_sum
 
 
+def scintillation_noise(
+    r: float,
+    t: float,
+    N_star: float,
+    h: float = 2440,
+    C: float = 1.56,
+    airmass: float = 1.5,
+) -> float:
+    """
+    Calculate the scintillation noise for a given set of parameters.
+
+    Parameters
+    ----------
+    r : float
+        Aperture radius in meters.
+    t : float
+        Exposure time in seconds.
+    N_star : float
+        Number of stars.
+    h : float
+        Altitude of the observatory in meters. Default is 2440 for Paranal Observatory.
+    C : float
+        Empirical coefficient. Default is 1.56, optimized for the
+        20-cm NGTS telescopes at Paranal Observatory.
+    airmass : float, optional
+        Airmass value. Default is 1.5.
+
+    Returns
+    -------
+    float
+        The calculated scintillation noise.
+
+    Reference
+    ---------
+    https://academic.oup.com/mnras/article/509/4/6111/6442285
+    """
+
+    return (
+        np.sqrt(
+            1e-5
+            * C**2
+            * pow(2 * r, -4 / 3)
+            * t**-1
+            * airmass**3
+            * np.exp(-2 * h / 8000)
+        )
+        * N_star
+        * t
+    )
+
+
 def generate_star_image(
     pos: np.ndarray,
     fluxes: list[float],
     FWHM: float,
     frame_size: tuple[int, int],
     rng: numpy.random.Generator,
+    telescope_aperture: float,
+    site_elevation: float,
+    exp_time: float,
+    airmass: float = 1.5,
     fwhm_multiplier: float = 5.0,
 ) -> np.ndarray:
     """
@@ -109,13 +164,28 @@ def generate_star_image(
         x_min, x_max = max(0, x_min), min(x_max, frame_size[0] - 1)
         y_min, y_max = max(0, y_min), min(y_max, frame_size[1] - 1)
 
-        star = rng.poisson(flux) * moffat_profile(
+        scint_noise = scintillation_noise(
+            r=telescope_aperture / 2,
+            t=exp_time,
+            N_star=flux,
+            h=site_elevation,
+            C=1.56,
+            airmass=airmass,
+        )
+
+        star_flux = rng.poisson(flux) + rng.normal(0, scint_noise)
+
+        if star_flux < 0:
+            star_flux = 0
+
+        star = star_flux * moffat_profile(
             xx[y_min : y_max + 1, x_min : x_max + 1],
             yy[y_min : y_max + 1, x_min : x_max + 1],
             x0,
             y0,
             FWHM,
         )
+
         image[y_min : y_max + 1, x_min : x_max + 1] += star
 
     return image
@@ -202,6 +272,8 @@ def add_stars(
     ra: float | None,
     dec: float | None,
     wcs: WCS | None,
+    dateobs: datetime | None,
+    airmass: float | None,
     fwhm_multiplier: float = 5.0,
 ) -> np.ndarray:
     """Add stars to the image using the Moffat profile and sky background."""
@@ -225,12 +297,39 @@ def add_stars(
             f" out of {len(sources)} total stars "
             f"({on_camera_mask.sum() / len(sources) * 100})%."
         )
+
+        if airmass is not None:
+            logger.debug(f"Using provided airmass: {airmass:.3f}.")
+        elif site.latitude and site.longitude:
+            location = EarthLocation(
+                lat=u.Quantity(site.latitude, "deg"),
+                lon=u.Quantity(site.longitude, "deg"),
+            )
+            altitude_azimuth_frame = AltAz(obstime=Time(dateobs), location=location)
+            center_coord = SkyCoord(ra=ra, dec=dec, unit="deg")
+            center_altaz = center_coord.transform_to(altitude_azimuth_frame)
+            zenith_angle = 90.0 - center_altaz.alt.degree  # degrees
+            airmass = 1.0 / np.cos(np.radians(zenith_angle))
+
+            if airmass < 1.0:
+                logger.warning(
+                    f"Calculated airmass {airmass:.3f} is less than 1.0."
+                    " Setting airmass to 1.0."
+                )
+                airmass = 1.0  # minimum airmass is 1.0
+        else:
+            airmass = 1.5  # default value
+
         stars = generate_star_image(
             gaias_pixel[:, on_camera_mask],
             fluxes[on_camera_mask],
             focuser.seeing_multiplier * site.seeing / camera.plate_scale,
             (camera.width, camera.height),
             rng=rng,
+            telescope_aperture=telescope.diameter,
+            site_elevation=site.elevation if site.elevation is not None else 0,
+            exp_time=exp_time,
+            airmass=airmass,
             fwhm_multiplier=fwhm_multiplier,
         ).astype(np.float64)
 
@@ -260,6 +359,7 @@ def add_stars_and_sky(
     telescope: Telescope,
     site: Site,
     filter_band: Filters | str,
+    airmass: float,
     n_star_limit: int,
     rng: numpy.random.Generator,
     timeout: float | None,
@@ -305,6 +405,8 @@ def add_stars_and_sky(
             ra=ra,
             dec=dec,
             wcs=wcs,
+            dateobs=dateobs,
+            airmass=airmass,
             fwhm_multiplier=fwhm_multiplier,
         )
     else:
@@ -323,6 +425,7 @@ def generate_image(
     telescope: Telescope = Telescope(),
     site: Site = Site(),
     filter_band: Filters | str = Filters.G,
+    airmass: float = 1.5,
     n_star_limit: int = 2000,
     rng: numpy.random.Generator = numpy.random.default_rng(),
     seed: int | None = None,
@@ -356,6 +459,8 @@ def generate_image(
         Observatory site configuration.
     filter_band : Filters or str, optional
         The filter to use for the flux column. Default is "G".
+    airmass : float, optional
+        Airmass at the image center (default: 1.5).
     n_star_limit : int, optional
         Maximum number of stars to simulate.
     rng : numpy.random.Generator, optional
@@ -397,6 +502,7 @@ def generate_image(
             telescope=telescope,
             site=site,
             filter_band=filter_band,
+            airmass=airmass,
             n_star_limit=n_star_limit,
             rng=rng,
             timeout=timeout,
@@ -408,6 +514,8 @@ def generate_image(
         image = base
 
     image = camera.apply_pixel_defects(image, exp_time)
+
+    image = camera.bin_image(image)
 
     image = camera.to_adu_image(image)
 
@@ -425,6 +533,7 @@ def generate_image_stack(
     telescope: Telescope = Telescope(),
     site: Site = Site(),
     filter_band: Filters | str = Filters.G,
+    airmass: float = 1.5,
     n_star_limit: int = 2000,
     rng: numpy.random.Generator = numpy.random.default_rng(),
     seed: int | None = None,
@@ -459,6 +568,8 @@ def generate_image_stack(
         Observatory site configuration.
     filter_band : Filters or str, optional
         The filter to use for the flux column. Default is "G".
+    airmass : float, optional
+        Airmass at the image center (default: 1.5).
     n_star_limit : int, optional
         Maximum number of stars to simulate.
     rng : numpy.random.Generator, optional
@@ -506,6 +617,7 @@ def generate_image_stack(
             telescope=telescope,
             site=site,
             filter_band=filter_band,
+            airmass=airmass,
             n_star_limit=n_star_limit,
             rng=rng,
             timeout=timeout,
