@@ -137,7 +137,7 @@ class Observatory:
         dateobs : datetime, optional
             Observation date and time in UTC.
         light : int, optional
-            Light pollution level (1-5).
+            If 1, simulate light exposure; if 0, simulate dark exposure.
         filter_band : Filters or str, optional
             Photometric filter to use for the simulation (default: Filters.G).
         n_star_limit : int, optional

@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Publishing DTD v1.2 20190208//EN"
+                  "JATS-publishing1.dtd">
+<article xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink" dtd-version="1.2" article-type="other">
+<front>
+<journal-meta>
+<journal-id></journal-id>
+<journal-title-group>
+<journal-title>Journal of Open Source Software</journal-title>
+<abbrev-journal-title>JOSS</abbrev-journal-title>
+</journal-title-group>
+<issn publication-format="electronic">2475-9066</issn>
+<publisher>
+<publisher-name>Open Journals</publisher-name>
+</publisher>
+</journal-meta>
+<article-meta>
+<article-id pub-id-type="publisher-id">0</article-id>
+<article-id pub-id-type="doi">N/A</article-id>
+<title-group>
+<article-title>cabaret: A Python package for simulating astronomical
+images</article-title>
+</title-group>
+<contrib-group>
+<contrib contrib-type="author" equal-contrib="yes">
+<contrib-id contrib-id-type="orcid">https://orcid.org/0000-0002-5220-609X</contrib-id>
+<name>
+<surname>Pedersen</surname>
+<given-names>Peter</given-names>
+</name>
+<xref ref-type="aff" rid="aff-1"/>
+</contrib>
+<contrib contrib-type="author" equal-contrib="yes">
+<contrib-id contrib-id-type="orcid">https://orcid.org/0009-0008-1068-481X</contrib-id>
+<name>
+<surname>Degen</surname>
+<given-names>David</given-names>
+</name>
+<xref ref-type="aff" rid="aff-1"/>
+</contrib>
+<contrib contrib-type="author" equal-contrib="yes">
+<contrib-id contrib-id-type="orcid">https://orcid.org/0000-0002-4296-2246</contrib-id>
+<name>
+<surname>Garcia</surname>
+<given-names>Lionel</given-names>
+</name>
+<xref ref-type="aff" rid="aff-2"/>
+</contrib>
+<aff id="aff-1">
+<institution-wrap>
+<institution>ETH Zürich, Department of Physics, ETH Zurich,
+Wolfgang-Pauli-Strasse 2, 8093 Zurich, Switzerland</institution>
+</institution-wrap>
+</aff>
+<aff id="aff-2">
+<institution-wrap>
+<institution>Institution Name, Address, Country</institution>
+</institution-wrap>
+</aff>
+</contrib-group>
+<pub-date date-type="pub" publication-format="electronic" iso-8601-date="2025-11-01">
+<day>1</day>
+<month>11</month>
+<year>2025</year>
+</pub-date>
+<volume>¿VOL?</volume>
+<issue>¿ISSUE?</issue>
+<fpage>¿PAGE?</fpage>
+<permissions>
+<copyright-statement>Authors of papers retain copyright and release the
+work under a Creative Commons Attribution 4.0 International License (CC
+BY 4.0)</copyright-statement>
+<copyright-year>1970</copyright-year>
+<copyright-holder>The article authors</copyright-holder>
+<license license-type="open-access" xlink:href="https://creativecommons.org/licenses/by/4.0/">
+<license-p>Authors of papers retain copyright and release the work under
+a Creative Commons Attribution 4.0 International License (CC BY
+4.0)</license-p>
+</license>
+</permissions>
+<kwd-group kwd-group-type="author">
+<kwd>Python</kwd>
+<kwd>astronomy</kwd>
+<kwd>image simulation</kwd>
+<kwd>Gaia catalog</kwd>
+<kwd>stellar fields</kwd>
+<kwd>observatory instrumentation</kwd>
+</kwd-group>
+</article-meta>
+</front>
+<body>
+<sec id="summary">
+  <title>Summary</title>
+  <p>Astronomical research increasingly relies on realistic simulations
+  to interpret observations, test hypotheses, and develop new analysis
+  techniques. <monospace>cabaret</monospace> is a Python package
+  designed to simulate astronomical images using the Gaia
+  (<xref alt="Gaia Collaboration, 2023" rid="ref-gaia" ref-type="bibr">Gaia
+  Collaboration, 2023</xref>) and cross-matched 2MASS
+  (<xref alt="Skrutskie et al., 2006" rid="ref-tmass" ref-type="bibr">Skrutskie
+  et al., 2006</xref>) catalog of stars, providing researchers and
+  educators with a fast, flexible tool for generating synthetic stellar
+  field images. The package integrates real astronomical data with
+  customizable observatory configurations, enabling users to simulate
+  images that accurately reflect site and instrumental conditions.
+  <monospace>cabaret</monospace> is particularly well-suited for
+  validating data reduction pipelines, training machine learning models,
+  developing observatory control software, and educational applications
+  where simulated astronomical data is needed.</p>
+</sec>
+<sec id="statement-of-need">
+  <title>Statement of need</title>
+  <p>To increase confidence in the development of modern astronomical
+  instrumentation and software, it is necessary to model and test with
+  simulated data.</p>
+  <p>*<italic>existing lit</italic>* <monospace>cabaret</monospace>
+  fills a gap by providing an accessible, easy-to-use package that
+  generates realistic stellar field images with minimal setup while
+  maintaining the flexibility to customize observatory parameters for
+  specific use cases.</p>
+</sec>
+<sec id="operation">
+  <title>Operation</title>
+  <p><monospace>cabaret</monospace> provides stellar positions and
+  fluxes from the Gaia and cross-matched 2MASS catalog through the
+  <monospace>astroquery</monospace>
+  (<xref alt="Ginsburg &amp; others, 2019" rid="ref-astroquery" ref-type="bibr">Ginsburg
+  &amp; others, 2019</xref>) package, retrieving stellar positions,
+  proper motions, fluxes, for a specified field of view. Alternatively,
+  users can provide their own source catalogs for full control over the
+  simulated stellar population.</p>
+  <p>The package implements a modular observatory model with four main
+  components:</p>
+  <list list-type="bullet">
+    <list-item>
+      <p><bold>Telescope</bold>: Configurable aperture, focal length,
+      and collecting area</p>
+    </list-item>
+    <list-item>
+      <p><bold>Camera</bold>: Customizable detector dimensions, camera
+      rotation, bias level, pixel pitch, gain, dark current, readout
+      noise, average quantum efficiency, and pixel defects</p>
+    </list-item>
+    <list-item>
+      <p><bold>Focuser</bold>: Position and offset parameters for focus
+      effects</p>
+    </list-item>
+    <list-item>
+      <p><bold>Site</bold>: Atmospheric seeing, sky background
+      conditions, and location (latitude, longitude, elevation)</p>
+    </list-item>
+  </list>
+  <p>All components can be instantiated with the package’s defaults or
+  customized to match real instruments. For example, simulating images
+  from a specific telescope requires only specifying its aperture and
+  focal length:</p>
+  <code language="python">import cabaret
+
+telescope = cabaret.Telescope(aperture=1, focal_length=8)
+observatory = cabaret.Observatory(telescope=telescope)
+image = observatory.generate_image(ra=12.33, dec=30.43, exp_time=10)</code>
+  <p>Stars are rendered using a Moffat profile
+  (<xref alt="Moffat, 1969" rid="ref-moffat" ref-type="bibr">Moffat,
+  1969</xref>), a physically-motivated functional form used to model
+  atmospheric seeing.</p>
+</sec>
+<sec id="validation">
+  <title>Validation</title>
+  <p>To validate the field production accuracy of
+  <monospace>cabaret</monospace>, we compared it to 355 fields observed
+  by the SPECULOOS survey
+  (<xref alt="Delrez &amp; others, 2018" rid="ref-speculoos" ref-type="bibr">Delrez
+  &amp; others, 2018</xref>) using its I+z filter, as illustrated in
+  <xref alt="[fig:comparison]" rid="figU003Acomparison">[fig:comparison]</xref>.
+  For each field, we generated a simulated image with matching
+  observatory and seeing condition parameters, using the Gaia
+  (R<inline-formula><alternatives>
+  <tex-math><![CDATA[_p]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msub><mml:mi></mml:mi><mml:mi>p</mml:mi></mml:msub></mml:math></alternatives></inline-formula>)
+  filter as the closest equivalent. Source detection was then performed
+  on both the real and simulated images with
+  <monospace>DAOStarFinder</monospace>
+  (<xref alt="Bradley et al., 2025" rid="ref-photutils" ref-type="bibr">Bradley
+  et al., 2025</xref>), applying a threshold of seven times the frame’s
+  standard deviation as determined by
+  <monospace>sigma_clipped_stats</monospace>
+  (<xref alt="Astropy Collaboration, 2018" rid="ref-astropy" ref-type="bibr">Astropy
+  Collaboration, 2018</xref>).</p>
+  <p>In the example presented in
+  <xref alt="[fig:comparison]" rid="figU003Acomparison">[fig:comparison]</xref>,
+  the overall field distribution</p>
+  <fig>
+    <caption><p>A comparison of real and simulated
+    image.<styled-content id="figU003Acomparison"></styled-content></p></caption>
+    <graphic mimetype="image" mime-subtype="svg+xml" xlink:href="./figures/field-comparison.svg" />
+  </fig>
+  <p>We found</p>
+  <fig>
+    <caption><p>A comparison of real and simulated
+    image.<styled-content id="figU003Ahistograms"></styled-content></p></caption>
+    <graphic mimetype="image" mime-subtype="svg+xml" xlink:href="./figures/field-comparison-histograms.svg" />
+  </fig>
+  <fig>
+    <caption><p>A comparison of real and simulated
+    image.<styled-content id="figU003Apercent-difference"></styled-content></p></caption>
+    <graphic mimetype="image" mime-subtype="svg+xml" xlink:href="./figures/percent-difference-histogram.svg" />
+  </fig>
+</sec>
+<sec id="key-features">
+  <title>Key Features</title>
+  <p>To be edited/deleted:</p>
+</sec>
+<sec id="implementation">
+  <title>Implementation</title>
+  <p><monospace>cabaret</monospace> is implemented in pure Python with
+  minimal dependencies (<monospace>numpy</monospace>
+  (<xref alt="Harris et al., 2020" rid="ref-numpy" ref-type="bibr">Harris
+  et al., 2020</xref>), <monospace>astropy</monospace>
+  (<xref alt="Astropy Collaboration, 2018" rid="ref-astropy" ref-type="bibr">Astropy
+  Collaboration, 2018</xref>), <monospace>astroquery</monospace>
+  (<xref alt="Ginsburg &amp; others, 2019" rid="ref-astroquery" ref-type="bibr">Ginsburg
+  &amp; others, 2019</xref>)), making it easy to install and integrate
+  into existing workflows. The package follows modern Python best
+  practices:</p>
+  <list list-type="bullet">
+    <list-item>
+      <p>Type hints throughout the codebase</p>
+    </list-item>
+    <list-item>
+      <p>Dataclass-based configuration for clean, validated
+      interfaces</p>
+    </list-item>
+    <list-item>
+      <p>Comprehensive docstrings with usage examples</p>
+    </list-item>
+    <list-item>
+      <p>Automated testing with <monospace>pytest</monospace>
+      (<xref alt="Krekel et al., 2004" rid="ref-pytest" ref-type="bibr">Krekel
+      et al., 2004</xref>)</p>
+    </list-item>
+    <list-item>
+      <p>Continuous integration and documentation hosting</p>
+    </list-item>
+  </list>
+  <p>The image generation algorithm uses an efficient windowed rendering
+  approach, where stars are rendered only within a small region around
+  their position (typically 5× the FWHM). This dramatically reduces
+  computation time compared to global convolution methods while
+  maintaining accuracy.</p>
+  <p>The package is designed to be extensible, with clear interfaces for
+  adding new detector effects, PSF models, or catalog sources.</p>
+</sec>
+<sec id="applications">
+  <title>Applications</title>
+  <p><monospace>cabaret</monospace> is designed for a wide range of
+  applications:</p>
+  <list list-type="bullet">
+    <list-item>
+      <p><bold>Pipeline validation</bold>: Test photometry, astrometry,
+      and image processing algorithms with known ground truth</p>
+    </list-item>
+    <list-item>
+      <p><bold>Machine learning</bold>: Generate training datasets for
+      neural networks doing source detection, classification, or
+      deblending</p>
+    </list-item>
+    <list-item>
+      <p><bold>Observatory control</bold>: Simulate telescope and camera
+      behavior for software development and testing</p>
+    </list-item>
+    <list-item>
+      <p><bold>Education</bold>: Teach students about observational
+      astronomy, detector physics, and data analysis</p>
+    </list-item>
+    <list-item>
+      <p><bold>Survey planning</bold>: Explore parameter spaces to
+      optimize observing strategies</p>
+    </list-item>
+    <list-item>
+      <p><bold>Systematic uncertainty characterization</bold>: Quantify
+      the impact of various instrumental and atmospheric effects</p>
+    </list-item>
+  </list>
+  <p>The package has been successfully used in the development of
+  <monospace>alpaca-simulators</monospace>, which provides a complete
+  simulation environment for ASCOM Alpaca devices, enabling developers
+  to test observatory control software without physical hardware.</p>
+</sec>
+<sec id="acknowledgements">
+  <title>Acknowledgements</title>
+  <p>We acknowledge the contributions of several key libraries to the
+  functionality of cabaret, specifically <monospace>astropy</monospace>
+  (<xref alt="Astropy Collaboration, 2018" rid="ref-astropy" ref-type="bibr">Astropy
+  Collaboration, 2018</xref>),<monospace>astroquery</monospace>
+  (<xref alt="Ginsburg &amp; others, 2019" rid="ref-astroquery" ref-type="bibr">Ginsburg
+  &amp; others, 2019</xref>), and <monospace>numpy</monospace>
+  (<xref alt="Harris et al., 2020" rid="ref-numpy" ref-type="bibr">Harris
+  et al., 2020</xref>). Additionally, we utilized
+  <monospace>Matplotlib</monospace>
+  (<xref alt="Hunter, 2007" rid="ref-matplotlib" ref-type="bibr">Hunter,
+  2007</xref>) for the plots in this paper and the package’s
+  documentation. We also utilized <monospace>prose</monospace>
+  (<xref alt="Garcia et al., 2022" rid="ref-prose" ref-type="bibr">Garcia
+  et al., 2022</xref>), <monospace>photutils</monospace>
+  (<xref alt="Bradley et al., 2025" rid="ref-photutils" ref-type="bibr">Bradley
+  et al., 2025</xref>), and <monospace>pandas</monospace>
+  (<xref alt="reback2020pandas?" rid="ref-reback2020pandas" ref-type="bibr"><bold>reback2020pandas?</bold></xref>)
+  in the comparison with real observations. Furthermore, testing was
+  conducted using <monospace>pytest</monospace>
+  (<xref alt="Krekel et al., 2004" rid="ref-pytest" ref-type="bibr">Krekel
+  et al., 2004</xref>) to ensure the reliability of our code. This work
+  made use of the Gaia catalog, ESA’s space mission for stellar
+  astrometry.</p>
+</sec>
+</body>
+<back>
+<ref-list>
+  <title></title>
+  <ref id="ref-speculoos">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Delrez</surname><given-names>L.</given-names></name>
+        <name><surname>others</surname></name>
+      </person-group>
+      <article-title>SPECULOOS: Search for habitable Planets EClipsing ULtra-cOOl Stars</article-title>
+      <source>Proceedings of SPIE</source>
+      <year iso-8601-date="2018">2018</year>
+      <volume>10700</volume>
+      <pub-id pub-id-type="doi">10.1117/12.2312475</pub-id>
+      <fpage>107001I</fpage>
+      <lpage></lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-gaia">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <string-name>Gaia Collaboration</string-name>
+      </person-group>
+      <article-title>Gaia Data Release 3: Summary of the content and survey properties</article-title>
+      <source>Astronomy &amp; Astrophysics</source>
+      <year iso-8601-date="2023">2023</year>
+      <volume>674</volume>
+      <pub-id pub-id-type="doi">10.1051/0004-6361/202243940</pub-id>
+      <fpage>A1</fpage>
+      <lpage></lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-tmass">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Skrutskie</surname><given-names>Michael F</given-names></name>
+        <name><surname>Cutri</surname><given-names>RM</given-names></name>
+        <name><surname>Stiening</surname><given-names>R</given-names></name>
+        <name><surname>Weinberg</surname><given-names>MD</given-names></name>
+        <name><surname>Schneider</surname><given-names>S</given-names></name>
+        <name><surname>Carpenter</surname><given-names>JM</given-names></name>
+        <name><surname>Beichman</surname><given-names>Capps</given-names></name>
+        <name><surname>Capps</surname><given-names>R</given-names></name>
+        <name><surname>Chester</surname><given-names>T</given-names></name>
+        <name><surname>Elias</surname><given-names>J</given-names></name>
+        <name><surname>others</surname></name>
+      </person-group>
+      <article-title>The two micron all sky survey (2MASS)</article-title>
+      <source>The Astronomical Journal</source>
+      <publisher-name>IOP Publishing</publisher-name>
+      <year iso-8601-date="2006">2006</year>
+      <volume>131</volume>
+      <issue>2</issue>
+      <fpage>1163</fpage>
+      <lpage></lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-astropy">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <string-name>Astropy Collaboration</string-name>
+      </person-group>
+      <article-title>The Astropy Project: Building an Open-science Project and Status of the v2.0 Core Package</article-title>
+      <source>The Astronomical Journal</source>
+      <year iso-8601-date="2018">2018</year>
+      <volume>156</volume>
+      <issue>3</issue>
+      <pub-id pub-id-type="doi">10.3847/1538-3881/aabc4f</pub-id>
+      <fpage>123</fpage>
+      <lpage></lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-astroquery">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Ginsburg</surname><given-names>Adam</given-names></name>
+        <name><surname>others</surname></name>
+      </person-group>
+      <article-title>Astroquery: An Astronomical Web-querying Package in Python</article-title>
+      <source>The Astronomical Journal</source>
+      <year iso-8601-date="2019">2019</year>
+      <volume>157</volume>
+      <issue>3</issue>
+      <pub-id pub-id-type="doi">10.3847/1538-3881/aafc33</pub-id>
+      <fpage>98</fpage>
+      <lpage></lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-moffat">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Moffat</surname><given-names>A. F. J.</given-names></name>
+      </person-group>
+      <article-title>A theoretical investigation of focal stellar images in the photographic emulsion and application to photographic photometry</article-title>
+      <source>Astronomy and Astrophysics</source>
+      <year iso-8601-date="1969">1969</year>
+      <volume>3</volume>
+      <fpage>455</fpage>
+      <lpage></lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-matplotlib">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Hunter</surname><given-names>John D.</given-names></name>
+      </person-group>
+      <article-title>Matplotlib: A 2D graphics environment</article-title>
+      <source>Computing in Science Engineering</source>
+      <year iso-8601-date="2007-05">2007</year><month>05</month>
+      <volume>9</volume>
+      <issue>3</issue>
+      <issn>1558-366X</issn>
+      <pub-id pub-id-type="doi">10.1109/MCSE.2007.55</pub-id>
+      <fpage>90</fpage>
+      <lpage>95</lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-numpy">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Harris</surname><given-names>Charles R.</given-names></name>
+        <name><surname>Millman</surname><given-names>K. Jarrod</given-names></name>
+        <name><surname>Walt</surname><given-names>Stéfan J. van der</given-names></name>
+        <name><surname>Gommers</surname><given-names>Ralf</given-names></name>
+        <name><surname>Virtanen</surname><given-names>Pauli</given-names></name>
+        <name><surname>Cournapeau</surname><given-names>David</given-names></name>
+        <name><surname>Wieser</surname><given-names>Eric</given-names></name>
+        <name><surname>Taylor</surname><given-names>Julian</given-names></name>
+        <name><surname>Berg</surname><given-names>Sebastian</given-names></name>
+        <name><surname>Smith</surname><given-names>Nathaniel J.</given-names></name>
+        <name><surname>Kern</surname><given-names>Robert</given-names></name>
+        <name><surname>Picus</surname><given-names>Matti</given-names></name>
+        <name><surname>Hoyer</surname><given-names>Stephan</given-names></name>
+        <name><surname>Kerkwijk</surname><given-names>Marten H. van</given-names></name>
+        <name><surname>Brett</surname><given-names>Matthew</given-names></name>
+        <name><surname>Haldane</surname><given-names>Allan</given-names></name>
+        <name><surname>Río</surname><given-names>Jaime Fernández del</given-names></name>
+        <name><surname>Wiebe</surname><given-names>Mark</given-names></name>
+        <name><surname>Peterson</surname><given-names>Pearu</given-names></name>
+        <name><surname>Gérard-Marchant</surname><given-names>Pierre</given-names></name>
+        <name><surname>Sheppard</surname><given-names>Kevin</given-names></name>
+        <name><surname>Reddy</surname><given-names>Tyler</given-names></name>
+        <name><surname>Weckesser</surname><given-names>Warren</given-names></name>
+        <name><surname>Abbasi</surname><given-names>Hameer</given-names></name>
+        <name><surname>Gohlke</surname><given-names>Christoph</given-names></name>
+        <name><surname>Oliphant</surname><given-names>Travis E.</given-names></name>
+      </person-group>
+      <article-title>Array programming with NumPy</article-title>
+      <source>Nature</source>
+      <publisher-name>Springer Science; Business Media LLC</publisher-name>
+      <year iso-8601-date="2020-09">2020</year><month>09</month>
+      <volume>585</volume>
+      <issue>7825</issue>
+      <uri>https://doi.org/10.1038/s41586-020-2649-2</uri>
+      <pub-id pub-id-type="doi">10.1038/s41586-020-2649-2</pub-id>
+      <fpage>357</fpage>
+      <lpage>362</lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-prose">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Garcia</surname><given-names>Lionel J.</given-names></name>
+        <name><surname>Timmermans</surname><given-names>Mathilde</given-names></name>
+        <name><surname>Pozuelos</surname><given-names>Francisco J.</given-names></name>
+        <name><surname>Ducrot</surname><given-names>Elsa</given-names></name>
+        <name><surname>Gillon</surname><given-names>Michaël</given-names></name>
+        <name><surname>Delrez</surname><given-names>Laetitia</given-names></name>
+        <name><surname>Wells</surname><given-names>Robert D.</given-names></name>
+        <name><surname>Jehin</surname><given-names>Emmanuël</given-names></name>
+      </person-group>
+      <article-title>PROSE: a PYTHON framework for modular astronomical images processing</article-title>
+      <source></source>
+      <year iso-8601-date="2022-02">2022</year><month>02</month>
+      <volume>509</volume>
+      <issue>4</issue>
+      <uri>https://arxiv.org/abs/2111.02814</uri>
+      <pub-id pub-id-type="doi">10.1093/mnras/stab3113</pub-id>
+      <fpage>4817</fpage>
+      <lpage>4828</lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-photutils">
+    <element-citation publication-type="software">
+      <person-group person-group-type="author">
+        <name><surname>Bradley</surname><given-names>Larry</given-names></name>
+        <name><surname>Sipőcz</surname><given-names>Brigitta</given-names></name>
+        <name><surname>Robitaille</surname><given-names>Thomas</given-names></name>
+        <name><surname>Tollerud</surname><given-names>Erik</given-names></name>
+        <name><surname>Vinı́cius</surname><given-names>Zè</given-names></name>
+        <name><surname>Deil</surname><given-names>Christoph</given-names></name>
+        <name><surname>Barbary</surname><given-names>Kyle</given-names></name>
+        <name><surname>Wilson</surname><given-names>Tom J</given-names></name>
+        <name><surname>Busko</surname><given-names>Ivo</given-names></name>
+        <name><surname>Donath</surname><given-names>Axel</given-names></name>
+        <name><surname>Günther</surname><given-names>Hans Moritz</given-names></name>
+        <name><surname>Cara</surname><given-names>Mihai</given-names></name>
+        <name><surname>Lim</surname><given-names>P. L.</given-names></name>
+        <name><surname>Meßlinger</surname><given-names>Sebastian</given-names></name>
+        <name><surname>Burnett</surname><given-names>Zach</given-names></name>
+        <name><surname>Conseil</surname><given-names>Simon</given-names></name>
+        <name><surname>Droettboom</surname><given-names>Michael</given-names></name>
+        <name><surname>Bostroem</surname><given-names>Azalee</given-names></name>
+        <name><surname>Bray</surname><given-names>E. M.</given-names></name>
+        <name><surname>Bratholm</surname><given-names>Lars Andersen</given-names></name>
+        <name><surname>Jamieson</surname><given-names>William</given-names></name>
+        <name><surname>Ginsburg</surname><given-names>Adam</given-names></name>
+        <name><surname>Barentsen</surname><given-names>Geert</given-names></name>
+        <name><surname>Craig</surname><given-names>Matt</given-names></name>
+        <name><surname>Pascual</surname><given-names>Sergio</given-names></name>
+        <name><surname>Rathi</surname><given-names>Shivangee</given-names></name>
+        <name><surname>Perrin</surname><given-names>Marshall</given-names></name>
+        <name><surname>Morris</surname><given-names>Brett M.</given-names></name>
+      </person-group>
+      <article-title>Astropy/photutils: 2.2.0</article-title>
+      <publisher-name>Zenodo</publisher-name>
+      <year iso-8601-date="2025-02">2025</year><month>02</month>
+      <uri>https://doi.org/10.5281/zenodo.14889440</uri>
+      <pub-id pub-id-type="doi">10.5281/zenodo.14889440</pub-id>
+    </element-citation>
+  </ref>
+  <ref id="ref-pytest">
+    <element-citation publication-type="software">
+      <person-group person-group-type="author">
+        <name><surname>Krekel</surname><given-names>Holger</given-names></name>
+        <name><surname>Oliveira</surname><given-names>Bruno</given-names></name>
+        <name><surname>Pfannschmidt</surname><given-names>Ronny</given-names></name>
+        <name><surname>Bruynooghe</surname><given-names>Floris</given-names></name>
+        <name><surname>Laugher</surname><given-names>Brianna</given-names></name>
+        <name><surname>Bruhin</surname><given-names>Florian</given-names></name>
+      </person-group>
+      <article-title>Pytest x.y</article-title>
+      <year iso-8601-date="2004">2004</year>
+      <uri>https://github.com/pytest-dev/pytest</uri>
+    </element-citation>
+  </ref>
+</ref-list>
+</back>
+</article>

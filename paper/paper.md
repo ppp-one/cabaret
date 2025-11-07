@@ -33,7 +33,7 @@ bibliography: paper.bib
 
 # Summary
 
-Astronomical research increasingly relies on realistic simulations to interpret observations, test hypotheses, and develop new analysis techniques. `cabaret` is a Python package designed to simulate astronomical images using the Gaia [@gaia] and 2MASS [@tmass] catalog of stars, providing researchers and educators with a fast, flexible tool for generating synthetic stellar field images. The package integrates real astronomical data from Gaia and cross-matched 2MASS with customizable observatory configurations, enabling users to simulate images that accurately reflect site and instrumental conditions. `cabaret` is particularly well-suited for validating data reduction pipelines, training machine learning models, developing observatory control software, and educational applications where simulated astronomical data is needed.
+Astronomical research increasingly relies on realistic simulations to interpret observations, test hypotheses, and develop new analysis techniques. `cabaret` is a Python package designed to simulate astronomical images using the Gaia [@gaia] and cross-matched 2MASS [@tmass] catalog of stars, providing researchers and educators with a fast, flexible tool for generating synthetic stellar field images. The package integrates real astronomical data with customizable observatory configurations, enabling users to simulate images that accurately reflect site and instrumental conditions. `cabaret` is particularly well-suited for validating data reduction pipelines, training machine learning models, developing observatory control software, and educational applications where simulated astronomical data is needed.
 
 # Statement of need
 
@@ -42,20 +42,18 @@ To increase confidence in the development of modern astronomical instrumentation
 <!-- Existing image simulation tools often fall into two categories: highly specialized packages designed for specific surveys or instruments [REFs], or over-simplified simulators [REFs] which lack the necessary realism suitable for scientific application.  -->
 \**existing lit*\* `cabaret` fills a gap by providing an accessible, easy-to-use package that generates realistic stellar field images with minimal setup while maintaining the flexibility to customize observatory parameters for specific use cases.
 
-`cabaret` has already proven valuable in `alpaca-simulators` [@alpaca], a comprehensive astronomy observatory simulator, by providing realistic image generation. `alpaca-simulators` enables thorough testing of observatory control software without requiring access to physical hardware, such as testing plate solving, guiding algorithms, and flat fielding sequences.
-
-The package has been used in projects like SPECULOOS (Search for habitable Planets EClipsing ULtra-cOOl Stars) [@speculoos], which monitors ultracool dwarf stars to detect transiting exoplanets. For such surveys, the ability to generate synthetic images that closely match real observations is valuable for validating photometric pipelines, characterizing systematic uncertainties, and optimizing observing pointing strategies.
+<!-- `cabaret` has already proven valuable in `alpaca-simulators` [@alpaca], a comprehensive astronomy observatory simulator, by providing realistic image generation. `alpaca-simulators` enables thorough testing of observatory control software without requiring access to physical hardware, such as testing plate solving, guiding algorithms, and flat fielding sequences. -->
 
 # Operation
 
-`cabaret` provides access to the Gaia and cross-matched 2MASS catalog through the `astroquery` [@astroquery] package, automatically querying and retrieving stellar positions, proper motions, fluxes, for a specified field of view. Alternatively, users can provide their own source catalogs for full control over the simulated stellar population.
+`cabaret` provides stellar positions and fluxes from the Gaia and cross-matched 2MASS catalog through the `astroquery` [@astroquery] package, retrieving stellar positions, proper motions, fluxes, for a specified field of view and bandpass. Alternatively, users can provide their own source catalogs for full control over the simulated stellar population.
 
 The package implements a modular observatory model with four main components:
 
-- **Telescope**: Configurable aperture and focal length
-- **Camera**: Customizable detector dimensions, pixel scale, gain, dark current, and readout noise
+- **Telescope**: Configurable aperture, focal length, and collecting area
+- **Camera**: Customizable detector dimensions, camera rotation, bias level, pixel pitch, gain, dark current, readout noise, average quantum efficiency, and pixel defects
 - **Focuser**: Position and offset parameters for focus effects
-- **Site**: Atmospheric seeing and sky background conditions
+- **Site**: Atmospheric seeing, sky background conditions, and location (latitude, longitude, elevation)
 
 All components can be instantiated with the package's defaults or customized to match real instruments. For example, simulating images from a specific telescope requires only specifying its aperture and focal length:
 
@@ -71,16 +69,17 @@ Stars are rendered using a Moffat profile [@moffat], a physically-motivated func
 
 # Validation
 
-To validate the field production accuracy of `cabaret`, we compared it to 355 fields observed by the SPECULOOS survey [@speculoos] using its I+z filter, as illustrated in \autoref{fig:comparison}. For each field, we generated a simulated image with matching observatory and site parameters, using the Gaia \(R_p\) filter as the closest equivalent. Source detection was then performed on both the real and simulated images with `DAOStarFinder` [@photutils], applying a threshold of seven times the frame’s standard deviation as determined by `sigma_clipped_stats` [@astropy].
-
-In the example presented in \autoref{fig:comparison}, the overall field distribution 
+To validate the field production accuracy of `cabaret`, we compared it to 355 fields observed by the SPECULOOS survey [@speculoos] using its I+z filter, as illustrated in \autoref{fig:comparison}. For each field, we generated a simulated image with matching observatory and seeing condition parameters, using the Gaia RP filter as the closest equivalent. 
 
 ![A comparison of real and simulated image.\label{fig:comparison}](./figures/field-comparison.svg)
 
-We found
+In the example presented in \autoref{fig:comparison}, the overall field histograms of pixel values between the real and simulated images show good agreement (\autoref{fig:histograms}). Any differences may stem from unmodeled instrumental effects, such as detector non-linear and saturation effects, imperfect point spread functions, scattered light, which are not currently included in `cabaret` simulations. Similarly, differences in instrumental throughput between the Gaia RP filter and the SPECULOOS I+z filter could contribute to discrepancies.
 
 ![A comparison of real and simulated image.\label{fig:histograms}](./figures/field-comparison-histograms.svg)
 
+Source detection was then performed on both the real and simulated images with `DAOStarFinder` [@photutils], applying a threshold of seven times the frame’s standard deviation as determined by `sigma_clipped_stats` [@astropy]. The percentage difference in the detected stars' fluxes between the real and simulated images is shown in \autoref{fig:percent-difference}. The mean percentage difference across all 355 fields was $-22.54\pm14.11$%, 
+
+indicating that `cabaret` can accurately reproduce observed stellar fluxes within a few percent, suitable for many scientific applications.
 
 ![A comparison of real and simulated image.\label{fig:percent-difference}](./figures/percent-difference-histogram.svg)
 
