@@ -179,9 +179,9 @@ class GaiaQuery:
             select_cols.append(filter_band.value)
             joins.extend(
                 [
-                    "INNER JOIN gaiadr2.tmass_best_neighbour AS tmass_match "
+                    "JOIN gaiadr2.tmass_best_neighbour AS tmass_match "
                     + "ON tmass_match.source_id = gaia.source_id",
-                    "INNER JOIN gaiadr1.tmass_original_valid AS tmass "
+                    "JOIN gaiadr1.tmass_original_valid AS tmass "
                     + "ON tmass.tmass_oid = tmass_match.tmass_oid",
                 ]
             )
@@ -192,8 +192,10 @@ class GaiaQuery:
 
         radius = radius.value if isinstance(radius, Quantity) else float(radius)
         where.append(
-            f"1=CONTAINS(POINT('ICRS', {ra}, {dec}), "
-            f"CIRCLE('ICRS', gaia.ra, gaia.dec, {radius}))"
+            f"gaia.ra BETWEEN {ra} - {radius} / COS(RADIANS({dec})) "
+            f"AND {ra} + {radius} / COS(RADIANS({dec})) "
+            f"AND gaia.dec BETWEEN {dec} - {radius} "
+            f"AND {dec} + {radius}"
         )
 
         select_clause = ", ".join(select_cols)
