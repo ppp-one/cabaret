@@ -248,7 +248,7 @@ class Observatory:
         sources : Sources or None, optional
             Precomputed sources to use instead of querying Gaia.
         convert_all_to_adu : bool, optional
-            Whether to convert all images to ADU. Default is False.
+            Whether to convert all images to ADU. Default is True.
         wcs : WCS or None, optional
             World Coordinate System information for the image.
         fwhm_multiplier : float, optional

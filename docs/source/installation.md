@@ -14,7 +14,10 @@ cd cabaret
 pip install .
 ```
 
-For development, install from source and run the following command
+For development, we recommend [uv](https://docs.astral.sh/uv/)
 ```bash
-pip install ".[dev,docs,test]"
+git clone https://github.com/ppp-one/cabaret.git
+cd cabaret
+uv sync --dev          # installs the package + dev + test dependencies
+uv sync --group docs   # additionally install documentation dependencies
 ```

@@ -1,4 +1,4 @@
-from concurrent.futures import ThreadPoolExecutor, TimeoutError
+import threading
 from datetime import datetime
 from enum import Enum
 
@@ -464,16 +464,27 @@ class GaiaQuery:
         if timeout is None:
             return _run()
 
-        with ThreadPoolExecutor() as executor:
-            future = executor.submit(_run)
+        result: list = []
+        exc: list = []
+
+        def _run_safe():
             try:
-                return future.result(timeout=timeout)
-            except TimeoutError:
-                raise TimeoutError(
-                    "Gaia query timed out."
-                    " You may want to increase the timeout or reduce the query size."
-                    f" Query was: {query}"
-                )
+                result.append(_run())
+            except Exception as e:
+                exc.append(e)
+
+        t = threading.Thread(target=_run_safe, daemon=True)
+        t.start()
+        t.join(timeout=timeout)
+        if t.is_alive():
+            raise TimeoutError(
+                "Gaia query timed out."
+                " You may want to increase the timeout or reduce the query size."
+                f" Query was: {query}"
+            )
+        if exc:
+            raise exc[0]
+        return result[0]
 
     @staticmethod
     def _tmass_mag_to_photons(mags: np.ndarray, filter_band: Filters) -> np.ndarray:

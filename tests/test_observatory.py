@@ -6,11 +6,16 @@ from astropy.io import fits
 from cabaret.camera import Camera
 from cabaret.focuser import Focuser
 from cabaret.observatory import Observatory
+from cabaret.queries import GaiaTAPSource
 from cabaret.site import Site
 from cabaret.sources import Sources
 from cabaret.telescope import Telescope
 
-from .utils import has_internet
+from .utils import has_tap_source
+
+skip_no_vizier = pytest.mark.skipif(
+    not has_tap_source(GaiaTAPSource.VIZIER), reason="VizieR TAP unavailable"
+)
 
 
 def test_observatory_initialization():
@@ -49,7 +54,7 @@ def test_generate_image_from_sources():
     assert img is not None
 
 
-@pytest.mark.skipif(not has_internet(), reason="Requires internet")
+@skip_no_vizier
 def test_generate_image():
     observatory = Observatory()
     dateobs = datetime.now(UTC)
@@ -59,7 +64,7 @@ def test_generate_image():
     assert img is not None
 
 
-@pytest.mark.skipif(not has_internet(), reason="Requires internet")
+@skip_no_vizier
 def test_generate_fits_image():
     observatory = Observatory()
     hdu_list = observatory.generate_fits_image(
@@ -68,7 +73,7 @@ def test_generate_fits_image():
     assert isinstance(hdu_list, fits.HDUList)
 
 
-@pytest.mark.skipif(not has_internet(), reason="Requires internet")
+@skip_no_vizier
 def test_generate_fits_image_with_file_path(tmp_path):
     observatory = Observatory()
     file_path = tmp_path / "test_image.fits"
