@@ -10,14 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-python@v5
-      - name: Install dependencies
-        run: |
-          pip install ".[docs]"
+      - name: Install uv and set up Python version
+        uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57
+      - name: Sync dependencies
+        run: uv sync --locked --group docs
       - name: Sphinx build
         run: |
           cd docs
-          python -m sphinx -b html source build/html
+          uv run python -m sphinx -b html source build/html
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}

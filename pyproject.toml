@@ -2,6 +2,29 @@
 build-backend = "hatchling.build"
 requires = ["hatchling", "hatch-vcs"]
 
+[dependency-groups]
+dev = [
+  {include-group = "test"},
+  "pre-commit>=4.5.1",
+  "ruff>=0.15.10"
+]
+docs = [
+  "docformatter[tomli]>=1.7.7",
+  "ipywidgets>=8.1.8",
+  "matplotlib>=3.10.8",
+  "myst-nb>=1.4.0",
+  "numpydoc>=1.10.0",
+  "sphinx>=9.0.4",
+  "sphinx-book-theme>=1.2.0",
+  "sphinx-copybutton>=0.5.2",
+  "sphinx-design>=0.7.0",
+  "toml>=0.10.2"
+]
+test = [
+  "matplotlib>=3.10.8",
+  "pytest>=9.0.3"
+]
+
 [project]
 authors = [
   {name = "Peter Pedersen"},
@@ -17,21 +40,7 @@ requires-python = ">=3.11"
 version = "0.4.6"
 
 [project.optional-dependencies]
-dev = ["ruff", "pre-commit", "pytest"]
-docs = [
-  "sphinx",
-  "matplotlib",
-  "myst-nb",
-  "sphinx-book-theme",
-  "sphinx-design",
-  "ipywidgets",
-  "sphinx-copybutton",
-  "docformatter[tomli]",
-  "toml",
-  "numpydoc"
-]
 plot = ["matplotlib"]
-test = ["pytest", "matplotlib"]
 
 [tool.hatch.version]
 source = "vcs"
@@ -44,10 +53,3 @@ line-length = 88
 [tool.ruff.lint]
 fixable = ["ALL"]
 select = ["E", "F", "I001", "UP"]
-
-[dependency-groups]
-dev = [
-    "pre-commit>=4.5.1",
-    "pytest>=9.0.3",
-    "ruff>=0.15.10",
-]
