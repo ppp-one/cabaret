@@ -100,12 +100,32 @@ class GaiaTAPSource(Enum):
     >>> from cabaret.queries import GaiaTAPSource
     >>> GaiaTAPSource.VIZIER
     <GaiaTAPSource.VIZIER: 'https://tapvizier.cds.unistra.fr/TAPVizieR/tap'>
+    >>> GaiaTAPSource.ensure_enum("GAIA")
+    <GaiaTAPSource.GAIA: 'https://gea.esac.esa.int/tap-server/tap'>
     """
 
     GAIA = "https://gea.esac.esa.int/tap-server/tap"
     """ESA Gaia Archive TAP service."""
     VIZIER = "https://tapvizier.cds.unistra.fr/TAPVizieR/tap"
     """CDS VizieR TAP service (hosts a copy of Gaia DR3)."""
+
+    @classmethod
+    def ensure_enum(cls, value: "GaiaTAPSource | str") -> "GaiaTAPSource":
+        """Convert a string or GaiaTAPSource to GaiaTAPSource enum."""
+        if isinstance(value, cls):
+            return value
+        elif isinstance(value, str):
+            try:
+                return cls[value.upper()]
+            except KeyError:
+                raise ValueError(
+                    f"Invalid TAP source {value!r}. "
+                    f"Valid options are: {[m.name for m in cls]}"
+                )
+        else:
+            raise ValueError(
+                f"Value must be a GaiaTAPSource enum or string, got {type(value)}"
+            )
 
 
 # Per-source ADQL building blocks. All sources expose the same normalised
@@ -189,7 +209,7 @@ class GaiaQuery:
         filter_band: Filters = Filters.G,
         limit: int = 100000,
         timeout: float | None = None,
-        tap_source: GaiaTAPSource | None = None,
+        tap_source: GaiaTAPSource | str | None = None,
     ) -> Table:
         """Query a Gaia DR3 TAP service within a given radius around the center.
 
@@ -209,9 +229,10 @@ class GaiaQuery:
         timeout : float, optional
             The maximum time to wait for the Gaia query to complete, in seconds.
             If None, there is no timeout. By default, it is set to None.
-        tap_source : GaiaTAPSource or None, optional
-            TAP service to query. If None, uses ``GaiaQuery.DEFAULT_TAP_SOURCE``
-            (default: ``GaiaTAPSource.VIZIER``).
+        tap_source : GaiaTAPSource, str, or None, optional
+            TAP service to query. Accepts a ``GaiaTAPSource`` member or its name
+            as a string (e.g. ``"GAIA"`` or ``"VIZIER"``). If None, uses
+            ``GaiaQuery.DEFAULT_TAP_SOURCE`` (default: ``GaiaTAPSource.VIZIER``).
 
         Returns
         -------
@@ -229,6 +250,7 @@ class GaiaQuery:
         """
         if tap_source is None:
             tap_source = GaiaQuery.DEFAULT_TAP_SOURCE
+        tap_source = GaiaTAPSource.ensure_enum(tap_source)
 
         filter_band = Filters.ensure_enum(filter_band)
 
@@ -304,7 +326,7 @@ class GaiaQuery:
         dateobs: datetime | None = None,
         limit: int = 100000,
         timeout: float | None = None,
-        tap_source: GaiaTAPSource | None = None,
+        tap_source: GaiaTAPSource | str | None = None,
     ) -> Sources:
         """
         Query a Gaia DR3 TAP service to retrieve the RA-DEC coordinates of stars
@@ -329,9 +351,10 @@ class GaiaQuery:
         timeout : float, optional
             The maximum time to wait for the Gaia query to complete, in seconds.
             If None, there is no timeout. By default, it is set to None.
-        tap_source : GaiaTAPSource or None, optional
-            TAP service to query. If None, uses ``GaiaQuery.DEFAULT_TAP_SOURCE``
-            (default: ``GaiaTAPSource.VIZIER``).
+        tap_source : GaiaTAPSource, str, or None, optional
+            TAP service to query. Accepts a ``GaiaTAPSource`` member or its name
+            as a string (e.g. ``"GAIA"`` or ``"VIZIER"``). If None, uses
+            ``GaiaQuery.DEFAULT_TAP_SOURCE`` (default: ``GaiaTAPSource.VIZIER``).
 
         Returns
         -------

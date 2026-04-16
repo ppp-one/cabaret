@@ -32,7 +32,7 @@ A notable feature of the Camera class is its support for pixel defects, which ar
 The simulation of images uses two important concepts:
 
 - **Filters**: Photometric bands (e.g., G, R, I) that determine the wavelength range in which the catalog fluxes are extracted for the simulation.
-- **GaiaQuery**: GaiaQuery: Provides methods to query star catalogs such as Gaia and 2MASS, returning tables or ready-to-use Sources objects for simulations.
+- **GaiaQuery**: Provides methods to query star catalogs such as Gaia and 2MASS, returning tables or ready-to-use Sources objects for simulations. The TAP service endpoint can be selected via `GaiaTAPSource` (or by passing ``"GAIA"`` / ``"VIZIER"`` as a string).
 - **Sources**: Representations of stars with positions and fluxes, either queried from catalogs or provided directly.
 
 ```{eval-rst}
@@ -42,6 +42,7 @@ The simulation of images uses two important concepts:
 
    cabaret.Filters
    cabaret.GaiaQuery
+   cabaret.GaiaTAPSource
    cabaret.Sources
 ```
 

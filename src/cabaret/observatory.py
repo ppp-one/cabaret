@@ -125,7 +125,7 @@ class Observatory:
         sources: Sources | None = None,
         wcs: WCS | None = None,
         fwhm_multiplier: float = 5.0,
-        tap_source: GaiaTAPSource | None = None,
+        tap_source: GaiaTAPSource | str | None = None,
     ) -> numpy.ndarray:
         """Generate a simulated image of the sky.
 
@@ -202,7 +202,7 @@ class Observatory:
         convert_all_to_adu: bool = True,
         wcs: WCS | None = None,
         fwhm_multiplier: float = 5.0,
-        tap_source: GaiaTAPSource | None = None,
+        tap_source: GaiaTAPSource | str | None = None,
     ) -> numpy.ndarray:
         """
         Generate a stack of images from different stages in the image simulation
@@ -306,7 +306,7 @@ class Observatory:
         fwhm_multiplier: float = 5.0,
         user_header: dict[str, Any] | fits.Header | None = None,
         overwrite: bool = True,
-        tap_source: GaiaTAPSource | None = None,
+        tap_source: GaiaTAPSource | str | None = None,
     ) -> fits.HDUList:
         """Generate a simulated FITS image of the sky.
 
