@@ -1,4 +1,5 @@
 import threading
+from collections.abc import Sequence
 from datetime import datetime
 from enum import Enum
 
@@ -176,8 +177,8 @@ class GaiaQuery:
     """Class to query Gaia DR3 data and retrieve sources.
 
     The class provides methods to query a configurable TAP service and return
-    either the raw Astropy Table or a Sources instance with RA-DEC coordinates
-    and fluxes.
+    either the raw Astropy Table, a flux-normalised multi-band Table, or a
+    Sources instance with RA-DEC coordinates and fluxes.
 
     The TAP service is selected via ``GaiaQuery.DEFAULT_TAP_SOURCE`` (class
     level) or the per-call ``tap_source`` argument.  The default is
@@ -206,7 +207,7 @@ class GaiaQuery:
     def query(
         center: tuple[float, float] | SkyCoord,
         radius: float | Angle,
-        filter_band: Filters = Filters.G,
+        filter_bands: "Filters | str | Sequence[Filters | str]" = Filters.G,
         limit: int = 100000,
         timeout: float | None = None,
         tap_source: GaiaTAPSource | str | None = None,
@@ -221,8 +222,14 @@ class GaiaQuery:
         radius : float or astropy.units.Quantity
             The radius of the FOV in degrees. If a Quantity is given, it must be
             convertible to degrees.
-        filter_band : Filters or str, optional
-            The filter to use for the flux column. Default is Filters.G.
+        filter_bands : Filters, str, or sequence thereof, optional
+            One or more filter bands to include as flux columns. Accepts a single
+            ``Filters`` member or its name as a string, or a list of either.
+            Default is ``Filters.G``. When multiple bands are requested, the
+            ``ORDER BY`` is determined by the first band (brightest-first
+            convention: DESC for Gaia fluxes, ASC for 2MASS magnitudes).
+            If any 2MASS band is included the 2MASS cross-match join is added.
+            All requested bands must be non-NULL for a row to be returned.
         limit : int, optional
             The maximum number of sources to retrieve from the Gaia archive.
             By default, it is set to 100000.
@@ -238,11 +245,12 @@ class GaiaQuery:
         -------
         astropy.table.Table
             The raw Astropy Table returned by the TAP service, with columns
-            normalised to ``ra``, ``dec``, ``pmra``, ``pmdec``, and the flux
-            column named after the filter (e.g. ``phot_g_mean_flux``).
+            normalised to ``ra``, ``dec``, ``pmra``, ``pmdec``, and one flux
+            column per requested band named after ``filter_band.value``
+            (e.g. ``phot_g_mean_flux``, ``h_m``).
 
-        Example
-        -------
+        Examples
+        --------
         >>> from cabaret.queries import GaiaQuery
         >>> from astropy.coordinates import SkyCoord
         >>> center = SkyCoord(ra=10.68458, dec=41.26917, unit='deg')
@@ -252,7 +260,7 @@ class GaiaQuery:
             tap_source = GaiaQuery.DEFAULT_TAP_SOURCE
         tap_source = GaiaTAPSource.ensure_enum(tap_source)
 
-        filter_band = Filters.ensure_enum(filter_band)
+        bands = GaiaQuery._normalize_bands(filter_bands)
 
         if isinstance(center, SkyCoord):
             ra = center.ra.deg  # type: ignore
@@ -262,37 +270,39 @@ class GaiaQuery:
 
         cfg = _TAP_CONFIG[tap_source]
 
-        # Flux column expression (source-dependent) aliased to the standard name.
-        if Filters.is_tmass(filter_band.name):
-            gaia_flux_expr = cfg["g_flux"]
-            gaia_flux_alias = Filters.G.value
-            tmass_col_expr = cfg[_TMASS_COL_KEY[filter_band.name]]
-            tmass_col_alias = filter_band.value
-        else:
-            flux_key = filter_band.name.lower() + "_flux"  # g_flux, bp_flux, rp_flux
-            gaia_flux_expr = cfg[flux_key]
-            gaia_flux_alias = filter_band.value
-            tmass_col_expr = None
-            tmass_col_alias = None
-
         select_cols = [
             f"{cfg['ra']} AS ra",
             f"{cfg['dec']} AS dec",
             f"{cfg['pmra']} AS pmra",
             f"{cfg['pmdec']} AS pmdec",
-            f"{gaia_flux_expr} AS {gaia_flux_alias}",
         ]
-        joins = []
-        where = []
+        where: list[str] = []
+        joins: list[str] = []
+        need_tmass_join = False
+        seen: set[Filters] = set()
 
-        if Filters.is_tmass(filter_band.name):
-            select_cols.append(f"{tmass_col_expr} AS {tmass_col_alias}")
+        for band in bands:
+            if band in seen:
+                continue
+            seen.add(band)
+            if Filters.is_tmass(band.name):
+                col_expr = cfg[_TMASS_COL_KEY[band.name]]
+                need_tmass_join = True
+            else:
+                col_expr = cfg[band.name.lower() + "_flux"]
+            select_cols.append(f"{col_expr} AS {band.value}")
+            where.append(f"{col_expr} IS NOT NULL")
+
+        if need_tmass_join:
             joins.extend(cfg["tmass_joins"])
-            order_by = f"{tmass_col_alias} ASC"
-            where.append(f"{tmass_col_expr} IS NOT NULL")
-        else:
-            order_by = f"{gaia_flux_alias} DESC"
-            where.append(f"{gaia_flux_expr} IS NOT NULL")
+
+        # ORDER BY first band, brightest-first convention.
+        first = bands[0]
+        order_by = (
+            f"{first.value} ASC"
+            if Filters.is_tmass(first.name)
+            else f"{first.value} DESC"
+        )
 
         radius = radius.value if isinstance(radius, Quantity) else float(radius)
         where.append(
@@ -305,7 +315,7 @@ class GaiaQuery:
         joins_clause = "\n".join(joins)
         where_clause = " AND ".join(where)
 
-        query = f"""
+        adql = f"""
         SELECT TOP {limit} {select_clause}
         FROM {cfg["from"]}
         {joins_clause}
@@ -314,8 +324,95 @@ class GaiaQuery:
         """
 
         table = GaiaQuery._launch_job_with_timeout(
-            query, tap_source=tap_source, timeout=timeout
+            adql, tap_source=tap_source, timeout=timeout
         )
+        return table
+
+    @staticmethod
+    def get_flux_table(
+        center: tuple[float, float] | SkyCoord,
+        radius: float | Angle,
+        filter_bands: "Filters | str | Sequence[Filters | str]" = Filters.G,
+        dateobs: datetime | None = None,
+        limit: int = 100000,
+        timeout: float | None = None,
+        tap_source: GaiaTAPSource | str | None = None,
+    ) -> Table:
+        """Query and return a Table with all columns expressed as physical fluxes.
+
+        Identical to :meth:`query` but additionally:
+
+        * applies proper-motion correction when ``dateobs`` is given, and
+        * converts any 2MASS magnitude columns to photons/s using
+          :meth:`_tmass_mag_to_photons` and renames them (e.g. ``"j_m"`` →
+          ``"j_flux"``).
+
+        Gaia flux columns (G, BP, RP) are already in e-/s and are returned
+        unchanged, keeping their original names (e.g. ``"phot_g_mean_flux"``).
+
+        Parameters
+        ----------
+        center : tuple or astropy.coordinates.SkyCoord
+            The sky coordinates of the center of the FOV.
+        radius : float or astropy.units.Quantity
+            The radius of the FOV in degrees.
+        filter_bands : Filters, str, or sequence thereof, optional
+            One or more filter bands. Default is ``Filters.G``.
+        dateobs : datetime.datetime or None, optional
+            Observation date for proper-motion correction. Default is None.
+        limit : int, optional
+            Maximum number of sources to retrieve. Default is 100000.
+        timeout : float or None, optional
+            Query timeout in seconds. Default is None (no timeout).
+        tap_source : GaiaTAPSource, str, or None, optional
+            TAP service to query. Default is ``GaiaQuery.DEFAULT_TAP_SOURCE``.
+
+        Returns
+        -------
+        astropy.table.Table
+            Table with columns ``ra``, ``dec``, ``pmra``, ``pmdec``, and one
+            flux column per requested band. Gaia band columns keep their TAP
+            names (e.g. ``"phot_g_mean_flux"``); 2MASS band columns are renamed
+            from ``"<band>_m"`` to ``"<band>_flux"`` (e.g. ``"h_flux"``).
+
+        Examples
+        --------
+        >>> from cabaret.queries import GaiaQuery, Filters
+        >>> from astropy.coordinates import SkyCoord
+        >>> center = SkyCoord(ra=10.68458, dec=41.26917, unit='deg')
+        >>> table = GaiaQuery.get_flux_table(
+        ...     center, radius=0.1, filter_bands=[Filters.G, Filters.H, Filters.KS],
+        ...     limit=10, timeout=30,
+        ... )  # doctest: +SKIP
+        """
+        bands = GaiaQuery._normalize_bands(filter_bands)
+
+        table = GaiaQuery.query(
+            center=center,
+            radius=radius,
+            filter_bands=bands,
+            limit=limit,
+            timeout=timeout,
+            tap_source=tap_source,
+        )
+
+        if dateobs is not None:
+            table = GaiaQuery._apply_proper_motion(table, dateobs)
+
+        seen: set[Filters] = set()
+        for band in bands:
+            if band in seen or not Filters.is_tmass(band.name):
+                seen.add(band)
+                continue
+            seen.add(band)
+            col = band.value
+            new_name = str(col).removesuffix("_m") + "_flux"
+            table[new_name] = GaiaQuery._tmass_mag_to_photons(
+                table[col].value.data,  # type: ignore
+                band,
+            )
+            table.remove_column(col)
+
         return table
 
     @staticmethod
@@ -399,7 +496,7 @@ class GaiaQuery:
             radius=radius,
             limit=limit,
             timeout=timeout,
-            filter_band=filter_band,
+            filter_bands=filter_band,
             tap_source=tap_source,
         )
 
@@ -532,3 +629,12 @@ class GaiaQuery:
         table["dec"] += years * table["pmdec"] / 1000 / 3600  # type: ignore
 
         return table
+
+    @staticmethod
+    def _normalize_bands(
+        filter_bands: "Filters | str | Sequence[Filters | str]",
+    ) -> list["Filters"]:
+        """Normalize filter_bands argument to a list[Filters]."""
+        if isinstance(filter_bands, Filters | str):
+            filter_bands = [filter_bands]
+        return [Filters.ensure_enum(b) for b in filter_bands]
