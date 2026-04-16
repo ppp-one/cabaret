@@ -12,6 +12,7 @@ from cabaret.sources import Sources
 
 __all__ = [
     "Filters",
+    "GaiaTAPSource",
     "GaiaQuery",
 ]
 
@@ -91,11 +92,77 @@ class Filters(Enum):
         return value.upper() in cls.__members__
 
 
-class GaiaQuery:
-    """Class to query the Gaia archive and retrieve sources.
+class GaiaTAPSource(Enum):
+    """TAP service endpoints for Gaia DR3 data.
 
-    The class provides methods to query Gaia and return either the raw Astropy Table
-    or a Sources instance with RA-DEC coordinates and fluxes.
+    Examples
+    --------
+    >>> from cabaret.queries import GaiaTAPSource
+    >>> GaiaTAPSource.VIZIER
+    <GaiaTAPSource.VIZIER: 'https://tapvizier.cds.unistra.fr/TAPVizieR/tap'>
+    """
+
+    GAIA = "https://gea.esac.esa.int/tap-server/tap"
+    """ESA Gaia Archive TAP service."""
+    VIZIER = "https://tapvizier.cds.unistra.fr/TAPVizieR/tap"
+    """CDS VizieR TAP service (hosts a copy of Gaia DR3)."""
+
+
+# Per-source ADQL building blocks. All sources expose the same normalised
+# column names via AS aliases so the rest of the code needs no changes.
+_TAP_CONFIG: dict[GaiaTAPSource, dict] = {
+    GaiaTAPSource.GAIA: {
+        "from": "gaiadr3.gaia_source AS gaia",
+        "ra": "gaia.ra",
+        "dec": "gaia.dec",
+        "pmra": "gaia.pmra",
+        "pmdec": "gaia.pmdec",
+        "g_flux": "phot_g_mean_flux",
+        "bp_flux": "phot_bp_mean_flux",
+        "rp_flux": "phot_rp_mean_flux",
+        "tmass_joins": [
+            "INNER JOIN gaiadr3.tmass_psc_xsc_best_neighbour AS tmass_match"
+            " ON tmass_match.source_id = gaia.source_id",
+            "INNER JOIN external.tmass_psc AS tmass"
+            " ON tmass.designation = tmass_match.original_ext_source_id",
+        ],
+        "j_col": "tmass.j_m",
+        "h_col": "tmass.h_m",
+        "ks_col": "tmass.ks_m",
+    },
+    GaiaTAPSource.VIZIER: {
+        "from": '"I/355/gaiadr3" AS g',
+        "ra": "g.RA_ICRS",
+        "dec": "g.DE_ICRS",
+        "pmra": "g.pmRA",
+        "pmdec": "g.pmDE",
+        "g_flux": "g.FG",
+        "bp_flux": "g.FBP",
+        "rp_flux": "g.FRP",
+        "tmass_joins": [
+            'INNER JOIN "II/246/out" AS t ON g."2MASS" = t."2MASS"',
+        ],
+        "j_col": "t.Jmag",
+        "h_col": "t.Hmag",
+        "ks_col": "t.Kmag",
+    },
+}
+
+# Map Filters enum names to the per-source 2MASS column key in _TAP_CONFIG.
+_TMASS_COL_KEY = {"J": "j_col", "H": "h_col", "KS": "ks_col"}
+
+
+class GaiaQuery:
+    """Class to query Gaia DR3 data and retrieve sources.
+
+    The class provides methods to query a configurable TAP service and return
+    either the raw Astropy Table or a Sources instance with RA-DEC coordinates
+    and fluxes.
+
+    The TAP service is selected via ``GaiaQuery.DEFAULT_TAP_SOURCE`` (class
+    level) or the per-call ``tap_source`` argument.  The default is
+    ``GaiaTAPSource.VIZIER`` (CDS VizieR), which hosts a copy of Gaia DR3 and
+    is a reliable fallback when the ESA Gaia Archive is unavailable.
 
     Examples
     --------
@@ -112,6 +179,9 @@ class GaiaQuery:
     >>> sources = GaiaQuery.get_sources(center, radius=0.05, limit=10, timeout=30)
     """
 
+    DEFAULT_TAP_SOURCE: GaiaTAPSource = GaiaTAPSource.VIZIER
+    """Default TAP service used when ``tap_source=None`` is passed to query methods."""
+
     @staticmethod
     def query(
         center: tuple[float, float] | SkyCoord,
@@ -119,8 +189,9 @@ class GaiaQuery:
         filter_band: Filters = Filters.G,
         limit: int = 100000,
         timeout: float | None = None,
+        tap_source: GaiaTAPSource | None = None,
     ) -> Table:
-        """Query Gaia Archive within a given radius around the center position.
+        """Query a Gaia DR3 TAP service within a given radius around the center.
 
         Parameters
         ----------
@@ -129,7 +200,7 @@ class GaiaQuery:
             If a tuple is given, it should contain the RA and DEC in degrees.
         radius : float or astropy.units.Quantity
             The radius of the FOV in degrees. If a Quantity is given, it must be
-            convertible to degrees.¨
+            convertible to degrees.
         filter_band : Filters or str, optional
             The filter to use for the flux column. Default is Filters.G.
         limit : int, optional
@@ -138,11 +209,16 @@ class GaiaQuery:
         timeout : float, optional
             The maximum time to wait for the Gaia query to complete, in seconds.
             If None, there is no timeout. By default, it is set to None.
+        tap_source : GaiaTAPSource or None, optional
+            TAP service to query. If None, uses ``GaiaQuery.DEFAULT_TAP_SOURCE``
+            (default: ``GaiaTAPSource.VIZIER``).
 
         Returns
         -------
         astropy.table.Table
-            The raw Astropy Table returned by the Gaia archive.
+            The raw Astropy Table returned by the TAP service, with columns
+            normalised to ``ra``, ``dec``, ``pmra``, ``pmdec``, and the flux
+            column named after the filter (e.g. ``phot_g_mean_flux``).
 
         Example
         -------
@@ -151,6 +227,9 @@ class GaiaQuery:
         >>> center = SkyCoord(ra=10.68458, dec=41.26917, unit='deg')
         >>> table = GaiaQuery.query(center, radius=0.1, limit=10, timeout=30)
         """
+        if tap_source is None:
+            tap_source = GaiaQuery.DEFAULT_TAP_SOURCE
+
         filter_band = Filters.ensure_enum(filter_band)
 
         if isinstance(center, SkyCoord):
@@ -159,43 +238,45 @@ class GaiaQuery:
         else:
             ra, dec = center
 
-        gaia_flux_column = (
-            filter_band.value
-            if not Filters.is_tmass(filter_band.name)
-            else Filters.G.value
-        )
+        cfg = _TAP_CONFIG[tap_source]
+
+        # Flux column expression (source-dependent) aliased to the standard name.
+        if Filters.is_tmass(filter_band.name):
+            gaia_flux_expr = cfg["g_flux"]
+            gaia_flux_alias = Filters.G.value
+            tmass_col_expr = cfg[_TMASS_COL_KEY[filter_band.name]]
+            tmass_col_alias = filter_band.value
+        else:
+            flux_key = filter_band.name.lower() + "_flux"  # g_flux, bp_flux, rp_flux
+            gaia_flux_expr = cfg[flux_key]
+            gaia_flux_alias = filter_band.value
+            tmass_col_expr = None
+            tmass_col_alias = None
+
         select_cols = [
-            "gaia.ra",
-            "gaia.dec",
-            "gaia.pmra",
-            "gaia.pmdec",
-            f"{gaia_flux_column}",
+            f"{cfg['ra']} AS ra",
+            f"{cfg['dec']} AS dec",
+            f"{cfg['pmra']} AS pmra",
+            f"{cfg['pmdec']} AS pmdec",
+            f"{gaia_flux_expr} AS {gaia_flux_alias}",
         ]
         joins = []
         where = []
-        order_by = f"{filter_band.value} DESC"  # Prefer brighter stars
 
         if Filters.is_tmass(filter_band.name):
-            select_cols.append(filter_band.value)
-            joins.extend(
-                [
-                    "JOIN gaiadr2.tmass_best_neighbour AS tmass_match "
-                    + "ON tmass_match.source_id = gaia.source_id",
-                    "JOIN gaiadr1.tmass_original_valid AS tmass "
-                    + "ON tmass.tmass_oid = tmass_match.tmass_oid",
-                ]
-            )
-            order_by = f"{filter_band.value} ASC"
-            where.append(f"{filter_band.value} IS NOT NULL")
+            select_cols.append(f"{tmass_col_expr} AS {tmass_col_alias}")
+            joins.extend(cfg["tmass_joins"])
+            order_by = f"{tmass_col_alias} ASC"
+            where.append(f"{tmass_col_expr} IS NOT NULL")
         else:
-            where.append(f"{filter_band.value} IS NOT NULL")
+            order_by = f"{gaia_flux_alias} DESC"
+            where.append(f"{gaia_flux_expr} IS NOT NULL")
 
         radius = radius.value if isinstance(radius, Quantity) else float(radius)
         where.append(
-            f"gaia.ra BETWEEN {ra} - {radius} / COS(RADIANS({dec})) "
-            f"AND {ra} + {radius} / COS(RADIANS({dec})) "
-            f"AND gaia.dec BETWEEN {dec} - {radius} "
-            f"AND {dec} + {radius}"
+            f"1=CONTAINS("
+            f"POINT('ICRS', {cfg['ra']}, {cfg['dec']}), "
+            f"CIRCLE('ICRS', {ra}, {dec}, {radius}))"
         )
 
         select_clause = ", ".join(select_cols)
@@ -204,13 +285,15 @@ class GaiaQuery:
 
         query = f"""
         SELECT TOP {limit} {select_clause}
-        FROM gaiadr2.gaia_source AS gaia
+        FROM {cfg["from"]}
         {joins_clause}
         WHERE {where_clause}
         ORDER BY {order_by}
         """
 
-        table = GaiaQuery._launch_job_with_timeout(query, timeout=timeout)
+        table = GaiaQuery._launch_job_with_timeout(
+            query, tap_source=tap_source, timeout=timeout
+        )
         return table
 
     @staticmethod
@@ -221,9 +304,10 @@ class GaiaQuery:
         dateobs: datetime | None = None,
         limit: int = 100000,
         timeout: float | None = None,
+        tap_source: GaiaTAPSource | None = None,
     ) -> Sources:
         """
-        Query the Gaia archive to retrieve the RA-DEC coordinates of stars
+        Query a Gaia DR3 TAP service to retrieve the RA-DEC coordinates of stars
         within a given radius of a center position, along with their fluxes.
 
         Parameters
@@ -245,6 +329,9 @@ class GaiaQuery:
         timeout : float, optional
             The maximum time to wait for the Gaia query to complete, in seconds.
             If None, there is no timeout. By default, it is set to None.
+        tap_source : GaiaTAPSource or None, optional
+            TAP service to query. If None, uses ``GaiaQuery.DEFAULT_TAP_SOURCE``
+            (default: ``GaiaTAPSource.VIZIER``).
 
         Returns
         -------
@@ -290,6 +377,7 @@ class GaiaQuery:
             limit=limit,
             timeout=timeout,
             filter_band=filter_band,
+            tap_source=tap_source,
         )
 
         if dateobs is not None:
@@ -312,19 +400,26 @@ class GaiaQuery:
         )
 
     @staticmethod
-    def _launch_job_with_timeout(query, timeout=None, **kwargs) -> Table:
+    def _launch_job_with_timeout(
+        query: str,
+        tap_source: GaiaTAPSource,
+        timeout: float | None = None,
+        **kwargs,
+    ) -> Table:
         """
-        Launch a Gaia job and return its results, optionally enforcing a timeout.
+        Launch a TAP job and return its results, optionally enforcing a timeout.
 
         Parameters
         ----------
         query : str
-            The query string passed to Gaia.launch_job.
+            The ADQL query string.
+        tap_source : GaiaTAPSource
+            The TAP service to use.
         timeout : float or None, optional
-            Maximum number of seconds to wait for Gaia.launch_job to complete.
+            Maximum number of seconds to wait for the job to complete.
             If None, the job is run on the main thread (no thread overhead).
         **kwargs
-            Additional keyword arguments forwarded to Gaia.launch_job.
+            Additional keyword arguments forwarded to ``TapPlus.launch_job``.
 
         Returns
         -------
@@ -336,24 +431,25 @@ class GaiaQuery:
         TimeoutError
             If `timeout` is not None and the call does not complete within `timeout`.
         """
-        from astroquery.gaia import Gaia
+        from astroquery.utils.tap.core import TapPlus
 
-        # Run directly on the main thread when no timeout is requested to avoid
-        # unnecessary thread creation and to preserve original callstacks/tracebacks.
-        if timeout is None:
-            job = Gaia.launch_job(query, **kwargs)
+        def _run():
+            tap = TapPlus(url=tap_source.value)
+            job = tap.launch_job(query, **kwargs)
             return job.get_results()  # type: ignore
 
+        if timeout is None:
+            return _run()
+
         with ThreadPoolExecutor() as executor:
-            future = executor.submit(Gaia.launch_job, query, **kwargs)
+            future = executor.submit(_run)
             try:
-                job = future.result(timeout=timeout)
-                return job.get_results()  # type: ignore
+                return future.result(timeout=timeout)
             except TimeoutError:
                 raise TimeoutError(
                     "Gaia query timed out."
                     " You may want to increase the timeout or reduce the query size."
-                    f"Query was: {query}"
+                    f" Query was: {query}"
                 )
 
     @staticmethod
@@ -396,7 +492,7 @@ class GaiaQuery:
                 f"dateobs must be an astropy.time.Time or datetime, got {type(dateobs)}"
             )
 
-        years = dateobs_frac - 2015.5  # type: ignore
+        years = dateobs_frac - 2016.0  # Gaia DR3 reference epoch J2016.0
         table["ra"] += years * table["pmra"] / 1000 / 3600  # type: ignore
         table["dec"] += years * table["pmdec"] / 1000 / 3600  # type: ignore
 

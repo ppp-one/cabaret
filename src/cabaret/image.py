@@ -10,7 +10,7 @@ from astropy.wcs import WCS
 
 from cabaret.camera import Camera
 from cabaret.focuser import Focuser
-from cabaret.queries import Filters, GaiaQuery
+from cabaret.queries import Filters, GaiaQuery, GaiaTAPSource
 from cabaret.site import Site
 from cabaret.sources import Sources
 from cabaret.telescope import Telescope
@@ -199,6 +199,7 @@ def get_sources(
     filter_band: Filters | str,
     timeout: float | None,
     sources: Sources | None = None,
+    tap_source: GaiaTAPSource | None = None,
 ) -> Sources:
     """Get sources from Gaia or use provided sources."""
     if not isinstance(sources, Sources):
@@ -210,6 +211,7 @@ def get_sources(
             limit=n_star_limit,
             filter_band=filter_band,
             timeout=timeout,
+            tap_source=tap_source,
         )
         logger.info(f"Found {len(sources)} sources (user set limit of {n_star_limit}).")
     return sources
@@ -409,6 +411,7 @@ def add_stars_and_sky(
     sources: Sources | None,
     wcs: WCS | None,
     fwhm_multiplier: float = 5.0,
+    tap_source: GaiaTAPSource | None = None,
 ) -> np.ndarray:
     """Add stars and sky background to the base image."""
     if light == 1:
@@ -431,6 +434,7 @@ def add_stars_and_sky(
             filter_band=filter_band,
             timeout=timeout,
             sources=sources,
+            tap_source=tap_source,
         )
         image = base
         image = add_sun_sky_background(
@@ -476,6 +480,7 @@ def generate_image(
     sources: Sources | None = None,
     wcs: WCS | None = None,
     fwhm_multiplier: float = 5.0,
+    tap_source: GaiaTAPSource | None = None,
 ) -> np.ndarray:
     """
     Generate a simulated astronomical image.
@@ -552,6 +557,7 @@ def generate_image(
             sources=sources,
             wcs=wcs,
             fwhm_multiplier=fwhm_multiplier,
+            tap_source=tap_source,
         )
     else:
         image = base
@@ -585,6 +591,7 @@ def generate_image_stack(
     convert_all_to_adu: bool = False,
     wcs: WCS | None = None,
     fwhm_multiplier: float = 5.0,
+    tap_source: GaiaTAPSource | None = None,
 ) -> np.ndarray:
     """
     Generate a stack of images from different stages in the image simulation pipeline.
@@ -667,6 +674,7 @@ def generate_image_stack(
             sources=sources,
             wcs=wcs,
             fwhm_multiplier=fwhm_multiplier,
+            tap_source=tap_source,
         )
     else:
         image = base

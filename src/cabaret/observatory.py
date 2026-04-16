@@ -13,7 +13,7 @@ from cabaret.camera import Camera
 from cabaret.fits_manager import FITSManager
 from cabaret.focuser import Focuser
 from cabaret.image import generate_image, generate_image_stack
-from cabaret.queries import Filters
+from cabaret.queries import Filters, GaiaTAPSource
 from cabaret.site import Site
 from cabaret.sources import Sources
 from cabaret.telescope import Telescope
@@ -125,6 +125,7 @@ class Observatory:
         sources: Sources | None = None,
         wcs: WCS | None = None,
         fwhm_multiplier: float = 5.0,
+        tap_source: GaiaTAPSource | None = None,
     ) -> numpy.ndarray:
         """Generate a simulated image of the sky.
 
@@ -181,6 +182,7 @@ class Observatory:
             sources=sources,
             wcs=wcs,
             fwhm_multiplier=fwhm_multiplier,
+            tap_source=tap_source,
         )
 
     def generate_image_stack(
@@ -200,6 +202,7 @@ class Observatory:
         convert_all_to_adu: bool = True,
         wcs: WCS | None = None,
         fwhm_multiplier: float = 5.0,
+        tap_source: GaiaTAPSource | None = None,
     ) -> numpy.ndarray:
         """
         Generate a stack of images from different stages in the image simulation
@@ -281,6 +284,7 @@ class Observatory:
             convert_all_to_adu=convert_all_to_adu,
             wcs=wcs,
             fwhm_multiplier=fwhm_multiplier,
+            tap_source=tap_source,
         )
 
     def generate_fits_image(
@@ -302,6 +306,7 @@ class Observatory:
         fwhm_multiplier: float = 5.0,
         user_header: dict[str, Any] | fits.Header | None = None,
         overwrite: bool = True,
+        tap_source: GaiaTAPSource | None = None,
     ) -> fits.HDUList:
         """Generate a simulated FITS image of the sky.
 
@@ -369,6 +374,7 @@ class Observatory:
             sources=sources,
             wcs=wcs,
             fwhm_multiplier=fwhm_multiplier,
+            tap_source=tap_source,
         )
 
         if wcs is None:
