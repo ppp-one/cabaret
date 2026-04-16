@@ -476,23 +476,24 @@ class GaiaQuery:
         photons = dlam_lam * flux_m0 * Jy  # [photons sec^-1 m^-2] at mag 0
         return photons * 10 ** (-0.4 * mags)
 
+    # Gaia DR3 reference epoch J2016.0 expressed as a decimal year.
+    _GAIA_DR3_EPOCH = float(Time(2016.0, format="jyear").decimalyear)
+
     @staticmethod
     def _apply_proper_motion(table: Table, dateobs: datetime | Time) -> Table:
         """
         Apply proper motion correction to RA and DEC columns
         for the given observation date.
         """
+        if isinstance(dateobs, datetime):
+            dateobs = Time(dateobs)
 
-        if isinstance(dateobs, Time):
-            dateobs_frac = float(dateobs.decimalyear)
-        elif isinstance(dateobs, datetime):
-            dateobs_frac = dateobs.year + (dateobs.timetuple().tm_yday - 1) / 365.25  # type: ignore
-        else:
+        if not isinstance(dateobs, Time):
             raise ValueError(
                 f"dateobs must be an astropy.time.Time or datetime, got {type(dateobs)}"
             )
 
-        years = dateobs_frac - 2016.0  # Gaia DR3 reference epoch J2016.0
+        years = float(dateobs.decimalyear) - GaiaQuery._GAIA_DR3_EPOCH
         table["ra"] += years * table["pmra"] / 1000 / 3600  # type: ignore
         table["dec"] += years * table["pmdec"] / 1000 / 3600  # type: ignore
 
