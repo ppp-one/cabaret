@@ -677,7 +677,8 @@ class GaiaQuery:
             filter_bands = [filter_bands]
         if not isinstance(filter_bands, Sequence):
             raise ValueError(
-                f"filter_bands must be a Filters, str, or sequence thereof, got {type(filter_bands)}"
+                f"filter_bands must be a Filters, str, or sequence thereof, "
+                f"got {type(filter_bands)}"
             )
         if not filter_bands:
             raise ValueError("At least one filter_band must be specified.")
