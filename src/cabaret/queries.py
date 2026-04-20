@@ -213,7 +213,7 @@ class GaiaQuery:
     def query(
         center: tuple[float, float] | SkyCoord,
         radius: float | Angle,
-        filter_bands: "Filters | str | Sequence[Filters | str]" = Filters.G,
+        filter_bands: Filters | str | Sequence[Filters | str] = Filters.G,
         limit: int = 100000,
         timeout: float | None = None,
         tap_source: GaiaTAPSource | str | None = None,
@@ -230,7 +230,7 @@ class GaiaQuery:
             The radius of the FOV in degrees. If a Quantity is given, it must be
             convertible to degrees.
         filter_bands : Filters, str, or sequence thereof, optional
-            One or more filter bands to include as flux columns. Accepts a single
+            One or more filter bands to include as magnitude columns. Accepts a single
             ``Filters`` member or its name as a string, or a list of either.
             Pass ``"all"`` to request every available band (``Filters.all()``).
             Default is ``Filters.G``. When multiple bands are requested, the
@@ -256,7 +256,7 @@ class GaiaQuery:
         -------
         astropy.table.Table
             The raw Astropy Table returned by the TAP service, with columns
-            normalised to ``ra``, ``dec``, ``pmra``, ``pmdec``, and one flux
+            normalised to ``ra``, ``dec``, ``pmra``, ``pmdec``, and one magnitude
             column per requested band named after ``filter_band.value``
             (e.g. ``phot_g_mean_mag``, ``h_m``).
 
@@ -340,7 +340,7 @@ class GaiaQuery:
     def get_flux_table(
         center: tuple[float, float] | SkyCoord,
         radius: float | Angle,
-        filter_bands: "Filters | str | Sequence[Filters | str]" = Filters.G,
+        filter_bands: Filters | str | Sequence[Filters | str] = Filters.G,
         dateobs: datetime | None = None,
         limit: int = 100000,
         timeout: float | None = None,
@@ -353,12 +353,9 @@ class GaiaQuery:
         Identical to :meth:`query` but additionally:
 
         * applies proper-motion correction when ``dateobs`` is given, and
-        * converts any 2MASS magnitude columns to photons/s/m² using
-          :meth:`_tmass_mag_to_photons` and renames them (e.g. ``"j_m"`` →
-          ``"j_flux"``), and
-        * converts Gaia magnitude columns to photons/s/m² using
-          :meth:`_gaia_mag_to_photons` and renames them (e.g.
-          ``"phot_g_mean_mag"`` → ``"g_flux"``).
+        * converts supported magnitude columns to photons/s/m² using
+          :meth:`_mag_to_photons` and renames them (e.g. ``"j_m"`` →
+          ``"j_flux"`` and ``"phot_g_mean_mag"`` → ``"g_flux"``).
 
         Parameters
         ----------
@@ -431,7 +428,7 @@ class GaiaQuery:
             else:
                 new_name = band.name.lower() + "_flux"  # e.g. "g_flux", "bp_flux"
             table[new_name] = GaiaQuery._mag_to_photons(
-                table[col].value.data,  # type: ignore
+                np.ma.filled(table[col].value, np.nan),  # type: ignore
                 band,
             )
             if not keep_mag:
@@ -518,7 +515,7 @@ class GaiaQuery:
             table = GaiaQuery._apply_proper_motion(table, dateobs)
 
         fluxes = GaiaQuery._mag_to_photons(
-            table[filter_band.value].value.data,  # type: ignore
+            np.ma.filled(table[filter_band.value].value, np.nan),  # type: ignore
             filter_band,
         )
         table.remove_rows(np.isnan(fluxes))
@@ -667,7 +664,7 @@ class GaiaQuery:
 
     @staticmethod
     def _normalize_bands(
-        filter_bands: "Filters | str | Sequence[Filters | str]",
+        filter_bands: Filters | str | Sequence[Filters | str],
     ) -> list["Filters"]:
         """Normalize filter_bands argument to a list[Filters].
 
@@ -678,6 +675,12 @@ class GaiaQuery:
             return Filters.all()
         if isinstance(filter_bands, Filters | str):
             filter_bands = [filter_bands]
+        if not isinstance(filter_bands, Sequence):
+            raise ValueError(
+                f"filter_bands must be a Filters, str, or sequence thereof, got {type(filter_bands)}"
+            )
+        if not filter_bands:
+            raise ValueError("At least one filter_band must be specified.")
         return [Filters.ensure_enum(b) for b in filter_bands]
 
     @staticmethod
