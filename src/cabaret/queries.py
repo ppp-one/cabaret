@@ -25,27 +25,27 @@ class Filters(Enum):
     --------
     >>> from cabaret.queries import Filters
     >>> Filters.G
-    <Filters.G: 'phot_g_mean_flux'>
+    <Filters.G: 'phot_g_mean_mag'>
     >>> Filters.from_string('RP')
-    <Filters.RP: 'phot_rp_mean_flux'>
+    <Filters.RP: 'phot_rp_mean_mag'>
     >>> Filters.is_tmass('J')
     True
     >>> Filters.options()
     ('G', 'BP', 'RP', 'J', 'H', 'KS')
     """
 
-    G = "phot_g_mean_flux"
-    """ Gaia G band flux in [e-/s] """
-    BP = "phot_bp_mean_flux"
-    """ Gaia BP band flux in [e-/s] """
-    RP = "phot_rp_mean_flux"
-    """ Gaia RP band flux in [e-/s] """
+    G = "phot_g_mean_mag"
+    """Gaia G band magnitude [Gaia Vega system]"""
+    BP = "phot_bp_mean_mag"
+    """Gaia BP band magnitude [Gaia Vega system]"""
+    RP = "phot_rp_mean_mag"
+    """Gaia RP band magnitude [Gaia Vega system]"""
     J = "j_m"
-    """ 2MASS J band magnitude """
+    """2MASS J-band magnitude [2MASS Vega system]"""
     H = "h_m"
-    """ 2MASS H band magnitude """
+    """2MASS H-band magnitude [2MASS Vega system]"""
     KS = "ks_m"
-    """ 2MASS KS band magnitude """
+    """2MASS KS-band magnitude [2MASS Vega system]"""
 
     @classmethod
     def options(cls) -> tuple[str, ...]:
@@ -67,13 +67,14 @@ class Filters(Enum):
     def is_tmass(cls, value: "Filters | str") -> bool:
         """Check if the filter_band string is a 2MASS filter_band."""
         if isinstance(value, cls):
-            return value.name in ("J", "H", "KS")
+            name = value.name
         elif isinstance(value, str):
-            return value.upper() in ("J", "H", "KS")
+            name = value.upper()
         else:
             raise ValueError(
-                f"Value must be an Filters enum or string, got {type(value)}"
+                f"Value must be a Filters enum or string, got {type(value)}"
             )
+        return name in ("J", "H", "KS")
 
     @classmethod
     def ensure_enum(cls, value: "Filters | str") -> "Filters":
@@ -86,6 +87,11 @@ class Filters(Enum):
             raise ValueError(
                 f"Value must be a Filters enum or string, got {type(value)}"
             )
+
+    @classmethod
+    def all(cls) -> list["Filters"]:
+        """Return all filter bands in definition order."""
+        return list(cls)
 
     @classmethod
     def is_valid(cls, value: str) -> bool:
@@ -138,9 +144,9 @@ _TAP_CONFIG: dict[GaiaTAPSource, dict] = {
         "dec": "gaia.dec",
         "pmra": "gaia.pmra",
         "pmdec": "gaia.pmdec",
-        "g_flux": "phot_g_mean_flux",
-        "bp_flux": "phot_bp_mean_flux",
-        "rp_flux": "phot_rp_mean_flux",
+        "g_mag": "phot_g_mean_mag",
+        "bp_mag": "phot_bp_mean_mag",
+        "rp_mag": "phot_rp_mean_mag",
         "tmass_joins": [
             "INNER JOIN gaiadr3.tmass_psc_xsc_best_neighbour AS tmass_match"
             " ON tmass_match.source_id = gaia.source_id",
@@ -157,9 +163,9 @@ _TAP_CONFIG: dict[GaiaTAPSource, dict] = {
         "dec": "g.DE_ICRS",
         "pmra": "g.pmRA",
         "pmdec": "g.pmDE",
-        "g_flux": "g.FG",
-        "bp_flux": "g.FBP",
-        "rp_flux": "g.FRP",
+        "g_mag": "g.Gmag",
+        "bp_mag": "g.BPmag",
+        "rp_mag": "g.RPmag",
         "tmass_joins": [
             'INNER JOIN "II/246/out" AS t ON g."2MASS" = t."2MASS"',
         ],
@@ -211,6 +217,7 @@ class GaiaQuery:
         limit: int = 100000,
         timeout: float | None = None,
         tap_source: GaiaTAPSource | str | None = None,
+        allow_nulls: bool = False,
     ) -> Table:
         """Query a Gaia DR3 TAP service within a given radius around the center.
 
@@ -225,11 +232,11 @@ class GaiaQuery:
         filter_bands : Filters, str, or sequence thereof, optional
             One or more filter bands to include as flux columns. Accepts a single
             ``Filters`` member or its name as a string, or a list of either.
+            Pass ``"all"`` to request every available band (``Filters.all()``).
             Default is ``Filters.G``. When multiple bands are requested, the
-            ``ORDER BY`` is determined by the first band (brightest-first
-            convention: DESC for Gaia fluxes, ASC for 2MASS magnitudes).
+            ``ORDER BY`` is determined by the first band (brightest-first,
+            ASC for all magnitude columns).
             If any 2MASS band is included the 2MASS cross-match join is added.
-            All requested bands must be non-NULL for a row to be returned.
         limit : int, optional
             The maximum number of sources to retrieve from the Gaia archive.
             By default, it is set to 100000.
@@ -240,6 +247,10 @@ class GaiaQuery:
             TAP service to query. Accepts a ``GaiaTAPSource`` member or its name
             as a string (e.g. ``"GAIA"`` or ``"VIZIER"``). If None, uses
             ``GaiaQuery.DEFAULT_TAP_SOURCE`` (default: ``GaiaTAPSource.VIZIER``).
+        allow_nulls : bool, optional
+            If False (default), only rows where all requested band columns are
+            non-NULL are returned (``IS NOT NULL`` filter per band). Set to True
+            to allow rows with missing magnitude values through.
 
         Returns
         -------
@@ -247,7 +258,7 @@ class GaiaQuery:
             The raw Astropy Table returned by the TAP service, with columns
             normalised to ``ra``, ``dec``, ``pmra``, ``pmdec``, and one flux
             column per requested band named after ``filter_band.value``
-            (e.g. ``phot_g_mean_flux``, ``h_m``).
+            (e.g. ``phot_g_mean_mag``, ``h_m``).
 
         Examples
         --------
@@ -289,20 +300,17 @@ class GaiaQuery:
                 col_expr = cfg[_TMASS_COL_KEY[band.name]]
                 need_tmass_join = True
             else:
-                col_expr = cfg[band.name.lower() + "_flux"]
+                col_expr = cfg[band.name.lower() + "_mag"]
             select_cols.append(f"{col_expr} AS {band.value}")
-            where.append(f"{col_expr} IS NOT NULL")
+            if not allow_nulls:
+                where.append(f"{col_expr} IS NOT NULL")
 
         if need_tmass_join:
             joins.extend(cfg["tmass_joins"])
 
-        # ORDER BY first band, brightest-first convention.
+        # ORDER BY first band, brightest-first: ASC for all magnitude columns.
         first = bands[0]
-        order_by = (
-            f"{first.value} ASC"
-            if Filters.is_tmass(first.name)
-            else f"{first.value} DESC"
-        )
+        order_by = f"{first.value} ASC"
 
         radius = radius.value if isinstance(radius, Quantity) else float(radius)
         where.append(
@@ -337,18 +345,20 @@ class GaiaQuery:
         limit: int = 100000,
         timeout: float | None = None,
         tap_source: GaiaTAPSource | str | None = None,
+        allow_nulls: bool = False,
+        keep_mag: bool = False,
     ) -> Table:
         """Query and return a Table with all columns expressed as physical fluxes.
 
         Identical to :meth:`query` but additionally:
 
         * applies proper-motion correction when ``dateobs`` is given, and
-        * converts any 2MASS magnitude columns to photons/s using
+        * converts any 2MASS magnitude columns to photons/s/m² using
           :meth:`_tmass_mag_to_photons` and renames them (e.g. ``"j_m"`` →
-          ``"j_flux"``).
-
-        Gaia flux columns (G, BP, RP) are already in e-/s and are returned
-        unchanged, keeping their original names (e.g. ``"phot_g_mean_flux"``).
+          ``"j_flux"``), and
+        * converts Gaia magnitude columns to photons/s/m² using
+          :meth:`_gaia_mag_to_photons` and renames them (e.g.
+          ``"phot_g_mean_mag"`` → ``"g_flux"``).
 
         Parameters
         ----------
@@ -366,14 +376,24 @@ class GaiaQuery:
             Query timeout in seconds. Default is None (no timeout).
         tap_source : GaiaTAPSource, str, or None, optional
             TAP service to query. Default is ``GaiaQuery.DEFAULT_TAP_SOURCE``.
+        allow_nulls : bool, optional
+            Forwarded to :meth:`query`. If True, rows with NULL magnitude values
+            are included in the result. Default is False.
+        keep_mag : bool, optional
+            If True, retain the original magnitude column (e.g.
+            ``"phot_g_mean_mag"``) alongside the converted flux column
+            (e.g. ``"g_flux"``). Default is False.
 
         Returns
         -------
         astropy.table.Table
             Table with columns ``ra``, ``dec``, ``pmra``, ``pmdec``, and one
-            flux column per requested band. Gaia band columns keep their TAP
-            names (e.g. ``"phot_g_mean_flux"``); 2MASS band columns are renamed
+            flux column per requested band, all in photons/s/m². Gaia band
+            columns are renamed from ``"phot_<b>_mean_mag"`` to
+            ``"<b>_flux"`` (e.g. ``"g_flux"``); 2MASS band columns are renamed
             from ``"<band>_m"`` to ``"<band>_flux"`` (e.g. ``"h_flux"``).
+            When ``keep_mag=True``, the original magnitude columns are also
+            present.
 
         Examples
         --------
@@ -394,6 +414,7 @@ class GaiaQuery:
             limit=limit,
             timeout=timeout,
             tap_source=tap_source,
+            allow_nulls=allow_nulls,
         )
 
         if dateobs is not None:
@@ -401,17 +422,20 @@ class GaiaQuery:
 
         seen: set[Filters] = set()
         for band in bands:
-            if band in seen or not Filters.is_tmass(band.name):
-                seen.add(band)
+            if band in seen:
                 continue
             seen.add(band)
             col = band.value
-            new_name = str(col).removesuffix("_m") + "_flux"
-            table[new_name] = GaiaQuery._tmass_mag_to_photons(
+            if Filters.is_tmass(band.name):
+                new_name = str(col).removesuffix("_m") + "_flux"
+            else:
+                new_name = band.name.lower() + "_flux"  # e.g. "g_flux", "bp_flux"
+            table[new_name] = GaiaQuery._mag_to_photons(
                 table[col].value.data,  # type: ignore
                 band,
             )
-            table.remove_column(col)
+            if not keep_mag:
+                table.remove_column(col)
 
         return table
 
@@ -462,8 +486,7 @@ class GaiaQuery:
 
         Notes
         -----
-        If `filter_band` is a 2MASS filter (J, H, KS), the fluxes are calculated
-        from the 2MASS magnitudes using `cabaret.queries.tmass_mag_to_photons`.
+        Fluxes are always returned in photons/s/m² via :meth:`_mag_to_photons`.
 
         Raises
         ------
@@ -476,17 +499,8 @@ class GaiaQuery:
         >>> from astropy.coordinates import SkyCoord
         >>> center = SkyCoord(ra=10.68458, dec=41.26917, unit='deg')
         >>> sources = GaiaQuery.get_sources(
-        ...     center, radius=0.1, timeout=30
+        ...     center, radius=0.1, timeout=30, limit=10
         ... )  # doctest: +SKIP
-        Sources(coords=<SkyCoord (ICRS): (ra, dec) in deg
-            [(10.63950247, 41.26393165), (10.6880729 , 41.22524785),
-            (10.70349581, 41.25357386), (10.70022208, 41.26019689),
-            (10.71333998, 41.29943347), (10.73974676, 41.2942209 ),
-            (10.71181048, 41.29130279), (10.68780207, 41.31717482),
-            (10.63804045, 41.27468757), (10.64397532, 41.25237352)]>, fluxes=array(
-                [169435.62814443,  52203.9396396 ,  41716.18126449,  29035.89106422,
-                22990.85994301,  17672.53437883,  15953.21022642,  15077.12262318,
-                14004.42013396,  12271.11779953]))
 
         """
         filter_band = Filters.ensure_enum(filter_band)
@@ -503,13 +517,10 @@ class GaiaQuery:
         if dateobs is not None:
             table = GaiaQuery._apply_proper_motion(table, dateobs)
 
-        if Filters.is_tmass(filter_band.name):
-            fluxes = GaiaQuery._tmass_mag_to_photons(
-                table[filter_band.value].value.data,  # type: ignore
-                filter_band,
-            )
-        else:
-            fluxes = table[filter_band.value].value.data  # type: ignore
+        fluxes = GaiaQuery._mag_to_photons(
+            table[filter_band.value].value.data,  # type: ignore
+            filter_band,
+        )
         table.remove_rows(np.isnan(fluxes))
         fluxes = fluxes[~np.isnan(fluxes)]
 
@@ -583,29 +594,46 @@ class GaiaQuery:
             raise exc[0]
         return result[0]
 
+    # Vega zero-points for all supported bands.
+    # See _derive_band_properties for how these were obtained.
+    _BAND_PROPS = {
+        "G": {"dlam_lam": 0.7117, "flux_m0_Jy": 4031.5},
+        "BP": {"dlam_lam": 0.5131, "flux_m0_Jy": 3683.21},
+        "RP": {"dlam_lam": 0.3741, "flux_m0_Jy": 5040.41},
+        "J": {"dlam_lam": 0.1312, "flux_m0_Jy": 1594.0},
+        "H": {"dlam_lam": 0.151, "flux_m0_Jy": 1024.0},
+        "KS": {"dlam_lam": 0.1214, "flux_m0_Jy": 666.8},
+    }
+
     @staticmethod
-    def _tmass_mag_to_photons(mags: np.ndarray, filter_band: Filters) -> np.ndarray:
-        """Convert 2MASS J magnitudes to photon fluxes at mag 0.
+    def _mag_to_photons(mags: np.ndarray, filter_band: Filters) -> np.ndarray:
+        """Convert Vega magnitudes to photon flux in photons/s/m².
 
-        Reference: https://lweb.cfa.harvard.edu/~dfabricant/huchra/ay145/mags.html
-        Returns photons/sec/m^2 for each magnitude.
+        Applies to all supported bands (Gaia G/BP/RP and 2MASS J/H/KS).
+        Formula: Δλ/λ × F₀ × 1.51×10⁷ × 10^(−0.4 × mag),
+        where F₀ is the Vega zero-point flux density in Jy.
+
+        Parameters
+        ----------
+        mags : np.ndarray
+            Vega magnitudes.
+        filter_band : Filters
+            Any supported filter band.
+
+        Returns
+        -------
+        np.ndarray
+            Flux in photons/s/m².
         """
-        # Use a dict for 2MASS filter properties
-        dlam_lam_map = {"J": 0.16, "H": 0.23, "KS": 0.23}
-        flux_m0_map = {"J": 1600, "H": 1080, "KS": 670}
-
         try:
-            dlam_lam = dlam_lam_map[filter_band.name]
-            flux_m0 = flux_m0_map[filter_band.name]
+            props = GaiaQuery._BAND_PROPS[filter_band.name]
         except KeyError:
             raise ValueError(
-                f"tmass_mag_to_photons expects a 2MASS filter (J,H,KS), "
-                f"got {filter_band}."
+                f"_mag_to_photons: unsupported filter {filter_band}. "
+                f"Supported: {list(GaiaQuery._BAND_PROPS)}."
             )
-
-        Jy = 1.51e7  # [photons sec^-1 m^-2 (dlambda/lambda)^-1]
-        photons = dlam_lam * flux_m0 * Jy  # [photons sec^-1 m^-2] at mag 0
-        return photons * 10 ** (-0.4 * mags)
+        Jy = 1.51e7  # [photons s^-1 m^-2 (Δλ/λ)^-1]
+        return props["dlam_lam"] * props["flux_m0_Jy"] * Jy * 10 ** (-0.4 * mags)
 
     # Gaia DR3 reference epoch J2016.0 expressed as a decimal year.
     _GAIA_DR3_EPOCH = float(Time(2016.0, format="jyear").decimalyear)
@@ -625,8 +653,15 @@ class GaiaQuery:
             )
 
         years = float(dateobs.decimalyear) - GaiaQuery._GAIA_DR3_EPOCH
-        table["ra"] += years * table["pmra"] / 1000 / 3600  # type: ignore
-        table["dec"] += years * table["pmdec"] / 1000 / 3600  # type: ignore
+        # Zero-fill missing proper motions so sources without pm data keep their
+        # catalogue position rather than being silently NaN-corrupted.
+        # np.where returns a plain ndarray (no units/mask), so use column
+        # assignment (=) rather than in-place (+=) to avoid Astropy dropping
+        # column metadata when mixing Column and ndarray operands.
+        pmra = np.where(np.isnan(table["pmra"]), 0.0, table["pmra"])
+        pmdec = np.where(np.isnan(table["pmdec"]), 0.0, table["pmdec"])
+        table["ra"] = table["ra"] + years * pmra / 1000 / 3600  # type: ignore
+        table["dec"] = table["dec"] + years * pmdec / 1000 / 3600  # type: ignore
 
         return table
 
@@ -634,7 +669,83 @@ class GaiaQuery:
     def _normalize_bands(
         filter_bands: "Filters | str | Sequence[Filters | str]",
     ) -> list["Filters"]:
-        """Normalize filter_bands argument to a list[Filters]."""
+        """Normalize filter_bands argument to a list[Filters].
+
+        Passing the string ``"all"`` (case-insensitive) expands to every
+        available filter, equivalent to ``Filters.all()``.
+        """
+        if isinstance(filter_bands, str) and filter_bands.upper() == "ALL":
+            return Filters.all()
         if isinstance(filter_bands, Filters | str):
             filter_bands = [filter_bands]
         return [Filters.ensure_enum(b) for b in filter_bands]
+
+    @staticmethod
+    def _derive_band_properties():
+        """
+        Derives physical band properties for Gaia DR3 and 2MASS.
+
+        This method serves as a reference for how the Vega zero-point fluxes and Δλ/λ
+        values were obtained for the supported bands.
+
+        Sources
+        -------
+
+        2MASS: Derived from Isophotal Fluxes
+        Cohen et al. 2003 AJ 126 1090 (Table 2) | Bibcode: 2003AJ....126.1090C
+        https://doi.org/10.1086/376474
+
+        Gaia: Derived from Magnitude Zero Points
+        Riello et al. 2021 A&A 649 A3 (Table 3) | Bibcode: 2021A&A...649A...3R
+        https://doi.org/10.1051/0004-6361/202039587
+
+        Example
+        -------
+        >>> from cabaret.queries import GaiaQuery
+        >>> properties = GaiaQuery._derive_band_properties()
+        >>> properties == GaiaQuery._BAND_PROPS
+        True
+        """
+        AB_ZERO_POINT_JY = 3631.0
+
+        # GAIA DR3 (Riello et al. 2021 A&A 649 A3, Table 3)
+        # Format: {Band: [ZP_VEG, ZP_AB, FWHM_nm, LAM_0_nm]}
+        gaia_table = {
+            "G": [25.6874, 25.8010, 454.82, 639.07],
+            "BP": [25.3385, 25.3540, 265.90, 518.26],
+            "RP": [24.7479, 25.1040, 292.75, 782.51],
+        }
+
+        # 2MASS (Martin Cohen et al. 2003 AJ 126 1090, Table 2)
+        # Format: {Band: [Flux_Jy, Bandwidth_um, Lam_Iso_um]}
+        # Note: KS refers to the 2MASS "Short" K-band, which has a narrower
+        # bandwidth and shorter pivot wavelength than standard Johnson K.
+        tmass_table = {
+            "J": [1594.0, 0.162, 1.235],
+            "H": [1024.0, 0.251, 1.662],
+            "KS": [666.8, 0.262, 2.159],
+        }
+
+        results = {}
+
+        for band, (zp_v, zp_a, fwhm, l0) in gaia_table.items():
+            # dlam_lam = FWHM / Pivot Wavelength
+            dlam_lam = fwhm / l0
+            # Flux density of Vega = 3631 * 10^(0.4 * (ZP_AB - ZP_VEG))
+            flux_jy = AB_ZERO_POINT_JY * (10 ** (0.4 * (zp_a - zp_v)))
+
+            results[band] = {
+                "dlam_lam": round(dlam_lam, 4),
+                "flux_m0_Jy": round(flux_jy, 2),
+            }
+
+        for band, (flux_jy, width, l_iso) in tmass_table.items():
+            # dlam_lam = Width / Isophotal Wavelength
+            dlam_lam = width / l_iso
+
+            results[band] = {
+                "dlam_lam": round(dlam_lam, 4),
+                "flux_m0_Jy": round(flux_jy, 2),
+            }
+
+        return results

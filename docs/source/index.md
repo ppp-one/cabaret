@@ -21,6 +21,7 @@ citation
 :caption: Tutorials
 
 notebooks/configuring_an_observatory.ipynb
+notebooks/multi_band_query.ipynb
 ```
 
 ```{toctree}

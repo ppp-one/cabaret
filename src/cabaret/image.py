@@ -322,6 +322,7 @@ def add_stars(
     fwhm_multiplier: float = 5.0,
 ) -> np.ndarray:
     """Add stars to the image using the Moffat profile and sky background."""
+    sources = sources.drop_nan_fluxes()
     if len(sources) > 0:
         fluxes = (
             sources.fluxes

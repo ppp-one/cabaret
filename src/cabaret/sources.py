@@ -29,7 +29,8 @@ class Sources:
     coords: SkyCoord
     """SkyCoords instance with the RA and DEC coordinates of the sources."""
     fluxes: np.ndarray
-    """An array of shape (n,) containing the fluxes of the sources."""
+    """An array of shape (n,) containing the fluxes of the sources in units of
+    photons/s/m²."""
 
     def __post_init__(self):
         if not isinstance(self.coords, SkyCoord):
@@ -114,6 +115,7 @@ class Sources:
             An array of shape (n,) containing the DEC coordinates of the sources in deg.
         fluxes : np.ndarray
             An array of shape (n,) containing the fluxes of the sources.
+            These should be of units photons/s/m².
         **kwargs
             Additional keyword arguments passed to the Sources constructor.
 
@@ -140,6 +142,21 @@ class Sources:
             "fluxes": fluxes,
         }
         return cls(**(parameters))
+
+    def drop_nan_fluxes(self) -> "Sources":
+        """Return a new Sources instance with any sources that have NaN fluxes removed.
+
+        If no sources have NaN fluxes, returns self.
+
+        Returns
+        -------
+        Sources
+            A Sources instance with NaN flux entries removed.
+        """
+        mask = np.isnan(self.fluxes)
+        if mask.any():
+            return self[~mask]
+        return self
 
     @classmethod
     def get_test_sources(cls) -> "Sources":
