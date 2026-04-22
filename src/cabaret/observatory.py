@@ -181,9 +181,9 @@ class Observatory:
             exposure when simulating star trails. Larger values give smoother
             trails at higher computational cost.
         jitter_sigma : float, optional
-            Standard deviation of pointing jitter applied during rendering, in
-            the units expected by ``generate_image``. Larger values produce
-            broader motion blur from random tracking variations.
+            1-sigma guiding jitter in arcsec applied per trail sample
+            (default: 0). Larger values produce broader motion blur from
+            random tracking variations.
         additional_sources : Sources, optional
             Additional ``Sources`` to render in every image on top of the base
             source set. When supplied, they are appended to the sources obtained
@@ -304,9 +304,9 @@ class Observatory:
             exposure when simulating star trails. Larger values give smoother
             trails at higher computational cost.
         jitter_sigma : float, optional
-            Standard deviation of pointing jitter applied during rendering, in
-            the units expected by ``generate_image``. Larger values produce
-            broader motion blur from random tracking variations.
+            1-sigma guiding jitter in arcsec applied per trail sample
+            (default: 0). Larger values produce broader motion blur from
+            random tracking variations.
         additional_sources : Sources, optional
             Additional ``Sources`` to render in every image on top of the base
             source set. When supplied, they are appended to the sources obtained
@@ -428,9 +428,9 @@ class Observatory:
             exposure when simulating star trails. Larger values give smoother
             trails at higher computational cost.
         jitter_sigma : float, optional
-            Standard deviation of pointing jitter applied during rendering, in
-            the units expected by ``generate_image``. Larger values produce
-            broader motion blur from random tracking variations.
+            1-sigma guiding jitter in arcsec applied per trail sample
+            (default: 0). Larger values produce broader motion blur from
+            random tracking variations.
         additional_sources : Sources, optional
             Additional ``Sources`` to render in every image on top of the base
             source set. When supplied, they are appended to the sources obtained
