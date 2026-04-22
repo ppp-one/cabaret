@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 import numpy.random
+from astropy import units as u
 from astropy.coordinates import SkyCoord
 from astropy.io import fits
 from astropy.wcs import WCS
@@ -126,6 +127,11 @@ class Observatory:
         wcs: WCS | None = None,
         fwhm_multiplier: float = 5.0,
         tap_source: GaiaTAPSource | GaiaSQLiteSource | str | None = None,
+        tracking_ra_rate: float | u.Quantity = 0.0,
+        tracking_dec_rate: float | u.Quantity = 0.0,
+        n_trail_samples: int = 50,
+        jitter_sigma: float = 0.0,
+        additional_sources: Sources | None = None,
     ) -> numpy.ndarray:
         """Generate a simulated image of the sky.
 
@@ -140,7 +146,7 @@ class Observatory:
         dateobs : datetime, optional
             Observation date and time in UTC.
         light : int, optional
-
+            If 1, simulate light exposure; if 0, simulate dark exposure.
         filter_band : Filters or str, optional
             Photometric filter to use for the simulation (default: Filters.G).
         airmass : float, optional
@@ -162,6 +168,27 @@ class Observatory:
         fwhm_multiplier : float, optional
             Multiplier to determine the rendering radius around each star
             (default: 5.0).
+        tracking_ra_rate : float, u.Quantity, optional
+            Telescope tracking rate offset in right ascension, in angular sky
+            coordinate units per second as expected by ``generate_image``.
+            Non-zero values simulate RA drift/trailing during the exposure.
+        tracking_dec_rate : float, u.Quantity, optional
+            Telescope tracking rate offset in declination, in angular sky
+            coordinate units per second as expected by ``generate_image``.
+            Non-zero values simulate Dec drift/trailing during the exposure.
+        n_trail_samples : int, optional
+            Number of samples used to integrate source motion across the
+            exposure when simulating star trails. Larger values give smoother
+            trails at higher computational cost.
+        jitter_sigma : float, optional
+            Standard deviation of pointing jitter applied during rendering, in
+            the units expected by ``generate_image``. Larger values produce
+            broader motion blur from random tracking variations.
+        additional_sources : Sources, optional
+            Additional ``Sources`` to render in every image on top of the base
+            source set. When supplied, they are appended to the sources obtained
+            from Gaia, or to the explicitly provided ``sources`` collection;
+            they do not replace those base sources.
         """
         return generate_image(
             ra=ra,
@@ -183,6 +210,11 @@ class Observatory:
             wcs=wcs,
             fwhm_multiplier=fwhm_multiplier,
             tap_source=tap_source,
+            tracking_ra_rate=tracking_ra_rate,
+            tracking_dec_rate=tracking_dec_rate,
+            n_trail_samples=n_trail_samples,
+            jitter_sigma=jitter_sigma,
+            additional_sources=additional_sources,
         )
 
     def generate_image_stack(
@@ -203,6 +235,11 @@ class Observatory:
         wcs: WCS | None = None,
         fwhm_multiplier: float = 5.0,
         tap_source: GaiaTAPSource | GaiaSQLiteSource | str | None = None,
+        tracking_ra_rate: float | u.Quantity = 0.0,
+        tracking_dec_rate: float | u.Quantity = 0.0,
+        n_trail_samples: int = 50,
+        jitter_sigma: float = 0.0,
+        additional_sources: Sources | None = None,
     ) -> numpy.ndarray:
         """
         Generate a stack of images from different stages in the image simulation
@@ -254,6 +291,27 @@ class Observatory:
         fwhm_multiplier : float, optional
             Multiplier to determine the rendering radius around each star
             (default: 5.0).
+        tracking_ra_rate : float, u.Quantity, optional
+            Telescope tracking rate offset in right ascension, in angular sky
+            coordinate units per second as expected by ``generate_image``.
+            Non-zero values simulate RA drift/trailing during the exposure.
+        tracking_dec_rate : float, u.Quantity, optional
+            Telescope tracking rate offset in declination, in angular sky
+            coordinate units per second as expected by ``generate_image``.
+            Non-zero values simulate Dec drift/trailing during the exposure.
+        n_trail_samples : int, optional
+            Number of samples used to integrate source motion across the
+            exposure when simulating star trails. Larger values give smoother
+            trails at higher computational cost.
+        jitter_sigma : float, optional
+            Standard deviation of pointing jitter applied during rendering, in
+            the units expected by ``generate_image``. Larger values produce
+            broader motion blur from random tracking variations.
+        additional_sources : Sources, optional
+            Additional ``Sources`` to render in every image on top of the base
+            source set. When supplied, they are appended to the sources obtained
+            from Gaia, or to the explicitly provided ``sources`` collection;
+            they do not replace those base sources.
 
         Returns
         -------
@@ -285,6 +343,11 @@ class Observatory:
             wcs=wcs,
             fwhm_multiplier=fwhm_multiplier,
             tap_source=tap_source,
+            tracking_ra_rate=tracking_ra_rate,
+            tracking_dec_rate=tracking_dec_rate,
+            n_trail_samples=n_trail_samples,
+            jitter_sigma=jitter_sigma,
+            additional_sources=additional_sources,
         )
 
     def generate_fits_image(
@@ -305,8 +368,13 @@ class Observatory:
         wcs: WCS | None = None,
         fwhm_multiplier: float = 5.0,
         user_header: dict[str, Any] | fits.Header | None = None,
-        overwrite: bool = True,
         tap_source: GaiaTAPSource | GaiaSQLiteSource | str | None = None,
+        tracking_ra_rate: float | u.Quantity = 0.0,
+        tracking_dec_rate: float | u.Quantity = 0.0,
+        n_trail_samples: int = 50,
+        jitter_sigma: float = 0.0,
+        additional_sources: Sources | None = None,
+        overwrite: bool = True,
     ) -> fits.HDUList:
         """Generate a simulated FITS image of the sky.
 
@@ -347,6 +415,27 @@ class Observatory:
         fwhm_multiplier : float, optional
             Multiplier to determine the rendering radius around each star
             (default: 5.0).
+        tracking_ra_rate : float, u.Quantity, optional
+            Telescope tracking rate offset in right ascension, in angular sky
+            coordinate units per second as expected by ``generate_image``.
+            Non-zero values simulate RA drift/trailing during the exposure.
+        tracking_dec_rate : float, u.Quantity, optional
+            Telescope tracking rate offset in declination, in angular sky
+            coordinate units per second as expected by ``generate_image``.
+            Non-zero values simulate Dec drift/trailing during the exposure.
+        n_trail_samples : int, optional
+            Number of samples used to integrate source motion across the
+            exposure when simulating star trails. Larger values give smoother
+            trails at higher computational cost.
+        jitter_sigma : float, optional
+            Standard deviation of pointing jitter applied during rendering, in
+            the units expected by ``generate_image``. Larger values produce
+            broader motion blur from random tracking variations.
+        additional_sources : Sources, optional
+            Additional ``Sources`` to render in every image on top of the base
+            source set. When supplied, they are appended to the sources obtained
+            from Gaia, or to the explicitly provided ``sources`` collection;
+            they do not replace those base sources.
         overwrite : bool, optional
             Whether to overwrite existing file (default: True).
 
@@ -375,6 +464,11 @@ class Observatory:
             wcs=wcs,
             fwhm_multiplier=fwhm_multiplier,
             tap_source=tap_source,
+            tracking_ra_rate=tracking_ra_rate,
+            tracking_dec_rate=tracking_dec_rate,
+            n_trail_samples=n_trail_samples,
+            jitter_sigma=jitter_sigma,
+            additional_sources=additional_sources,
         )
 
         if wcs is None:

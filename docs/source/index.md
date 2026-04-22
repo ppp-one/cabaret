@@ -23,6 +23,7 @@ citation
 
 notebooks/configuring_an_observatory.ipynb
 notebooks/multi_band_query.ipynb
+notebooks/asteroid_trailing.ipynb
 ```
 
 ```{toctree}

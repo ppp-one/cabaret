@@ -1,8 +1,30 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import numpy as np
+from astropy import units as u
 from astropy.coordinates import Longitude, SkyCoord
 from astropy.wcs import WCS
+
+
+def _normalize_rates(
+    rates: np.ndarray | u.Quantity | None, n: int, name: str
+) -> np.ndarray:
+    """Convert rates to a plain arcsec/s numpy array of shape (n,)."""
+    if rates is None:
+        return np.zeros(n, dtype=np.float64)
+    if isinstance(rates, u.Quantity):
+        rates = rates.to(u.arcsec / u.s).value
+    rates = np.asarray(rates, dtype=np.float64)
+    if rates.shape != (n,):
+        raise ValueError(f"{name} must have shape ({n},).")
+    return rates
+
+
+def _normalize_rate(rate: float | u.Quantity) -> float:
+    """Convert a scalar rate to arcsec/s."""
+    if isinstance(rate, u.Quantity):
+        return float(rate.to(u.arcsec / u.s).value)
+    return float(rate)
 
 
 @dataclass
@@ -31,6 +53,15 @@ class Sources:
     fluxes: np.ndarray
     """An array of shape (n,) containing the fluxes of the sources in units of
     photons/s/m²."""
+    ra_rates: np.ndarray | u.Quantity | None = field(default=None, repr=False)
+    """On-sky RA motion rates dα·cos(δ)/dt, shape (n,). Accepts an astropy
+    Quantity with angular velocity units (e.g. ``u.arcsec/u.hour``) or a plain
+    array assumed to be in arcsec/s. Stored internally as arcsec/s. Positive
+    values move east. This matches the JPL Horizons ``RA_rate`` convention."""
+    dec_rates: np.ndarray | u.Quantity | None = field(default=None, repr=False)
+    """Dec motion rates, shape (n,). Accepts an astropy Quantity with angular
+    velocity units or a plain array assumed to be in arcsec/s. Stored
+    internally as arcsec/s. Positive values move north."""
 
     def __post_init__(self):
         if not isinstance(self.coords, SkyCoord):
@@ -42,6 +73,10 @@ class Sources:
                 raise ValueError("fluxes must be an instance of np.ndarray.")
         if self.coords.size != self.fluxes.size:
             raise ValueError("coords and fluxes must have the same length.")
+
+        n = self.coords.size
+        self.ra_rates = _normalize_rates(self.ra_rates, n, "ra_rates")
+        self.dec_rates = _normalize_rates(self.dec_rates, n, "dec_rates")
 
     @property
     def ra(self) -> Longitude:
@@ -90,12 +125,46 @@ class Sources:
 
     def __getitem__(self, key) -> "Sources":
         new_fluxes = np.asarray(self.fluxes)[key]
+        new_ra_rates = np.asarray(self.ra_rates)[key]
+        new_dec_rates = np.asarray(self.dec_rates)[key]
         if np.isscalar(new_fluxes):
             new_fluxes = np.array([new_fluxes])
+            new_ra_rates = np.array([new_ra_rates])
+            new_dec_rates = np.array([new_dec_rates])
 
         new_coords = self.coords[key]
 
-        return Sources(new_coords, new_fluxes)  # type: ignore
+        return Sources(new_coords, new_fluxes, new_ra_rates, new_dec_rates)  # type: ignore
+
+    def __add__(self, other: "Sources") -> "Sources":
+        return Sources.concat(self, other)
+
+    @classmethod
+    def concat(cls, *sources_list: "Sources") -> "Sources":
+        """Concatenate multiple Sources objects into one.
+
+        Parameters
+        ----------
+        *sources_list : Sources
+            Two or more Sources objects to concatenate.
+
+        Returns
+        -------
+        Sources
+            A new Sources instance with all sources combined.
+        """
+        if not sources_list:
+            raise ValueError("Must provide at least one Sources object to concatenate.")
+        return cls(
+            coords=SkyCoord(
+                ra=np.concatenate([s.coords.ra.deg for s in sources_list]),  # type: ignore
+                dec=np.concatenate([s.coords.dec.deg for s in sources_list]),  # type: ignore
+                unit="deg",
+            ),
+            fluxes=np.concatenate([s.fluxes for s in sources_list]),
+            ra_rates=np.concatenate([s.ra_rates for s in sources_list]),  # type: ignore
+            dec_rates=np.concatenate([s.dec_rates for s in sources_list]),  # type: ignore
+        )
 
     @classmethod
     def from_arrays(
@@ -104,6 +173,8 @@ class Sources:
         dec: np.ndarray | list,
         fluxes: np.ndarray | list,
         units: str = "deg",
+        ra_rates: np.ndarray | list | None = None,
+        dec_rates: np.ndarray | list | None = None,
     ) -> "Sources":
         """Create a Sources instance from separate RA and DEC arrays.
 
@@ -116,8 +187,12 @@ class Sources:
         fluxes : np.ndarray
             An array of shape (n,) containing the fluxes of the sources.
             These should be of units photons/s/m².
-        **kwargs
-            Additional keyword arguments passed to the Sources constructor.
+        units : str, optional
+            Units for ra and dec, by default "deg".
+        ra_rates : np.ndarray or list, optional
+            RA motion rates in arcsec/s, shape (n,). Defaults to zeros.
+        dec_rates : np.ndarray or list, optional
+            Dec motion rates in arcsec/s, shape (n,). Defaults to zeros.
 
         Returns
         -------
@@ -136,12 +211,20 @@ class Sources:
                 raise ValueError("dec must be an instance of np.ndarray.")
         if ra.shape != dec.shape:
             raise ValueError("ra and dec must have the same shape.")
+        if not isinstance(fluxes, np.ndarray):
+            try:
+                fluxes = np.array(fluxes)
+            except Exception:
+                raise ValueError("fluxes must be an instance of np.ndarray.")
+        if not (ra.shape == fluxes.shape):
+            raise ValueError("ra, dec, and fluxes must all have the same shape.")
 
-        parameters = {
-            "coords": SkyCoord(ra=ra, dec=dec, unit=units),
-            "fluxes": fluxes,
-        }
-        return cls(**(parameters))
+        return cls(
+            coords=SkyCoord(ra=ra, dec=dec, unit=units),
+            fluxes=fluxes,
+            ra_rates=ra_rates,  # type: ignore
+            dec_rates=dec_rates,  # type: ignore
+        )
 
     def drop_nan_fluxes(self) -> "Sources":
         """Return a new Sources instance with any sources that have NaN fluxes removed.

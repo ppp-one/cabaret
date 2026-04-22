@@ -17,6 +17,8 @@ def plot_image(
     colorbar_kwargs={},
     transparent=True,
     contrast=0.25,
+    vmin=None,
+    vmax=None,
 ):
     """Plot a 2D image with zscale normalization.
 
@@ -36,13 +38,20 @@ def plot_image(
         Additional kwargs for colorbar.
     transparent : bool, optional
         If True, set figure background to transparent.
+    vmin, vmax : float, optional
+        Color scale limits. If not provided, computed via ZScale.
     """
     if ax is None:
         fig, ax = plt.subplots(figsize=(8, 8))
     else:
         fig = plt.gcf()
-    interval = ZScaleInterval(contrast=contrast)
-    vmin, vmax = interval.get_limits(image)
+    if vmin is None or vmax is None:
+        interval = ZScaleInterval(contrast=contrast)
+        zmin, zmax = interval.get_limits(image)
+        if vmin is None:
+            vmin = zmin
+        if vmax is None:
+            vmax = zmax
     img = ax.imshow(image, vmin=vmin, vmax=vmax, cmap=cmap, rasterized=True)
     if title is not None:
         ax.set_title(title)

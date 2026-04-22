@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from astropy import units as u
 from astropy.coordinates import SkyCoord
 from astropy.wcs import WCS
 
@@ -71,3 +72,102 @@ def test_center_with_wrap():
 
     ra_center, _ = sources.center
     assert np.isclose(ra_center, 0.0)
+
+
+# --- rates ---
+
+
+def test_rates_default_to_zeros(example_sources):
+    assert example_sources.ra_rates.shape == (2,)
+    assert example_sources.dec_rates.shape == (2,)
+    assert np.all(example_sources.ra_rates == 0.0)
+    assert np.all(example_sources.dec_rates == 0.0)
+
+
+def test_rates_stored_correctly():
+    ra_rates = np.array([1.0, -0.5])
+    dec_rates = np.array([0.2, 0.0])
+    sources = Sources(
+        SkyCoord(COORDS, unit="deg"), FLUXES, ra_rates=ra_rates, dec_rates=dec_rates
+    )
+    assert np.allclose(sources.ra_rates, ra_rates)
+    assert np.allclose(sources.dec_rates, dec_rates)
+
+
+def test_rates_wrong_shape_raises():
+    with pytest.raises(ValueError):
+        Sources(SkyCoord(COORDS, unit="deg"), FLUXES, ra_rates=np.array([1.0]))
+    with pytest.raises(ValueError):
+        Sources(SkyCoord(COORDS, unit="deg"), FLUXES, dec_rates=np.array([1.0]))
+
+
+def test_getitem_slices_rates():
+    ra_rates = np.array([1.0, 2.0])
+    dec_rates = np.array([0.1, 0.2])
+    sources = Sources(
+        SkyCoord(COORDS, unit="deg"), FLUXES, ra_rates=ra_rates, dec_rates=dec_rates
+    )
+    sliced = sources[0]
+    assert sliced.ra_rates.shape == (1,)
+    assert np.isclose(sliced.ra_rates[0], 1.0)
+    assert np.isclose(sliced.dec_rates[0], 0.1)
+
+    masked = sources[np.array([False, True])]
+    assert np.isclose(masked.ra_rates[0], 2.0)
+
+
+def test_from_arrays_with_rates():
+    ra_rates = np.array([0.5, -0.3])
+    dec_rates = np.array([0.0, 0.1])
+    sources = Sources.from_arrays(
+        COORDS[:, 0], COORDS[:, 1], FLUXES, ra_rates=ra_rates, dec_rates=dec_rates
+    )
+    assert np.allclose(sources.ra_rates, ra_rates)
+    assert np.allclose(sources.dec_rates, dec_rates)
+
+
+def test_drop_nan_fluxes_preserves_rates():
+    fluxes = np.array([1.0, float("nan"), 3.0])
+    ra_rates = np.array([1.0, 2.0, 3.0])
+    coords = SkyCoord(ra=[10.0, 10.1, 10.2], dec=[41.0, 41.1, 41.2], unit="deg")
+    sources = Sources(coords, fluxes, ra_rates=ra_rates)
+    cleaned = sources.drop_nan_fluxes()
+    assert len(cleaned) == 2
+    assert np.allclose(cleaned.ra_rates, [1.0, 3.0])
+
+
+def test_concat_merges_rates():
+    ra_rates_a = np.array([1.0, 2.0])
+    sources_a = Sources(SkyCoord(COORDS, unit="deg"), FLUXES, ra_rates=ra_rates_a)
+    sources_b = Sources.get_test_sources()  # zero rates
+    merged = Sources.concat(sources_a, sources_b)
+    assert len(merged) == len(sources_a) + len(sources_b)
+    assert np.allclose(merged.ra_rates[:2], ra_rates_a)
+    assert np.all(merged.ra_rates[2:] == 0.0)
+
+
+def test_add_operator_delegates_to_concat(example_sources):
+    combined = example_sources + example_sources
+    assert len(combined) == 2 * len(example_sources)
+    assert np.allclose(combined.fluxes[:2], example_sources.fluxes)
+
+
+def test_rates_quantity_arcsec_per_hour():
+    rates = np.array([3600.0, -3600.0]) * u.arcsec / u.hour
+    sources = Sources(SkyCoord(COORDS, unit="deg"), FLUXES, ra_rates=rates)
+    assert np.allclose(sources.ra_rates, [1.0, -1.0])
+
+
+def test_rates_quantity_arcsec_per_second():
+    rates = np.array([1.0, 0.5]) * u.arcsec / u.s
+    sources = Sources(SkyCoord(COORDS, unit="deg"), FLUXES, ra_rates=rates)
+    assert np.allclose(sources.ra_rates, [1.0, 0.5])
+
+
+def test_rates_quantity_incompatible_unit_raises():
+    with pytest.raises(u.UnitConversionError):
+        Sources(
+            SkyCoord(COORDS, unit="deg"),
+            FLUXES,
+            ra_rates=np.array([1.0, 2.0]) * u.meter,
+        )

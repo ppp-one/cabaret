@@ -12,7 +12,7 @@ from cabaret.camera import Camera
 from cabaret.focuser import Focuser
 from cabaret.queries import Filters, GaiaQuery, GaiaSQLiteSource, GaiaTAPSource
 from cabaret.site import Site
-from cabaret.sources import Sources
+from cabaret.sources import Sources, _normalize_rate
 from cabaret.telescope import Telescope
 
 logger = logging.getLogger("cabaret")
@@ -111,6 +111,51 @@ def scintillation_noise(
     )
 
 
+def _sample_trail(
+    x0: float,
+    y0: float,
+    dx_pixel: float,
+    dy_pixel: float,
+    n_samples: int,
+    jitter_sigma_pixels: float,
+    rng: numpy.random.Generator,
+) -> np.ndarray:
+    """Sample n_samples positions uniformly along a linear drift trail.
+
+    The trail runs from (x0, y0) at the start of the exposure to
+    (x0 + dx_pixel, y0 + dy_pixel) at the end.
+
+    To implement non-linear (ephemeris-based) motion, provide a callable with
+    this same signature as the ``trail_sampler`` argument of
+    ``generate_star_image``.
+
+    Parameters
+    ----------
+    x0, y0 : float
+        Pixel position at the start of the exposure (t=0).
+    dx_pixel, dy_pixel : float
+        Total pixel displacement over the full exposure duration.
+    n_samples : int
+        Number of sample positions along the trail.
+    jitter_sigma_pixels : float
+        1-sigma Gaussian jitter applied independently to each sample (pixels).
+    rng : numpy.random.Generator
+        Random number generator for jitter.
+
+    Returns
+    -------
+    np.ndarray
+        Shape (2, n_samples): row 0 is x positions, row 1 is y positions.
+    """
+    t = np.linspace(0.0, 1.0, n_samples)
+    xs = x0 + t * dx_pixel
+    ys = y0 + t * dy_pixel
+    if jitter_sigma_pixels > 0.0:
+        xs += rng.normal(0.0, jitter_sigma_pixels, n_samples)
+        ys += rng.normal(0.0, jitter_sigma_pixels, n_samples)
+    return np.stack([xs, ys])
+
+
 def generate_star_image(
     pos: np.ndarray,
     fluxes: list[float],
@@ -122,6 +167,10 @@ def generate_star_image(
     exp_time: float,
     airmass: float = 1.5,
     fwhm_multiplier: float = 5.0,
+    drift_pixels: np.ndarray | None = None,
+    n_trail_samples: int = 50,
+    jitter_sigma_pixels: float = 0.0,
+    trail_sampler=None,
 ) -> np.ndarray:
     """
     Render stars onto an image using a fast, windowed approach.
@@ -129,7 +178,7 @@ def generate_star_image(
     Parameters
     ----------
     pos : np.ndarray
-        Pixel positions of stars (shape: 2, n_stars).
+        Pixel positions of stars at the start of the exposure (shape: 2, n_stars).
     fluxes : list
         list of fluxes for each star.
     FWHM : float
@@ -140,29 +189,72 @@ def generate_star_image(
         Random number generator for Poisson noise.
     fwhm_multiplier : float, optional
         Multiplier to determine the rendering radius around each star (default: 5.0).
+    drift_pixels : np.ndarray, optional
+        Total pixel displacement over the exposure for each star (shape: 2, n_stars).
+        Row 0 is x-drift, row 1 is y-drift. None means no drift (point PSF).
+    n_trail_samples : int, optional
+        Maximum number of Moffat samples along the drift trail (default: 50).
+        The actual count is adaptive: ``max(1, ceil(trail_length_px / FWHM * 2))``,
+        capped at this value.
+    jitter_sigma_pixels : float, optional
+        1-sigma guiding jitter added independently to each trail sample (pixels).
+    trail_sampler : callable, optional
+        Function with the same signature as ``_sample_trail`` for non-linear motion.
+        Defaults to ``_sample_trail`` (linear interpolation).
 
     Returns
     -------
     np.ndarray
         Image with rendered stars.
     """
+    # Validate inputs
+    if not isinstance(n_trail_samples, int) or n_trail_samples < 1:
+        raise ValueError(
+            f"n_trail_samples must be an integer >= 1, got "
+            f"{n_trail_samples} ({type(n_trail_samples).__name__})"
+        )
+
+    if jitter_sigma_pixels < 0:
+        raise ValueError(f"jitter_sigma_pixels must be >= 0, got {jitter_sigma_pixels}")
+
+    n_stars = len(fluxes)
+
+    if drift_pixels is None:
+        _drift = np.zeros((2, n_stars), dtype=np.float64)
+    else:
+        _drift = np.asarray(drift_pixels, dtype=np.float64)
+        if _drift.ndim != 2 or _drift.shape != (2, n_stars):
+            raise ValueError(
+                "drift_pixels must have shape (2, n_stars) "
+                f"where n_stars={n_stars}; got shape {_drift.shape}"
+            )
+    has_drift = (_drift[0] != 0.0) | (_drift[1] != 0.0)
+    _sampler = trail_sampler if trail_sampler is not None else _sample_trail
+
     x = np.linspace(0, frame_size[0] - 1, frame_size[0])
     y = np.linspace(0, frame_size[1] - 1, frame_size[1])
     xx, yy = np.meshgrid(x, y)
 
     render_radius = FWHM * fwhm_multiplier  # render n * FWHM around the star
 
+    W, H = frame_size
     image = np.zeros(frame_size).T
     for i, flux in enumerate(fluxes):
         x0 = pos[0][i]
         y0 = pos[1][i]
-        if x0 < 0 or x0 >= frame_size[0] or y0 < 0 or y0 >= frame_size[1]:
-            # print(f"Star {i} is outside the frame.")
+        dx = _drift[0, i]
+        dy = _drift[1, i]
+        x_end = x0 + dx
+        y_end = y0 + dy
+
+        # Skip if the entire trail bounding box is outside the frame
+        if (
+            max(x0, x_end) < 0
+            or min(x0, x_end) >= W
+            or max(y0, y_end) < 0
+            or min(y0, y_end) >= H
+        ):
             continue
-        x_min, x_max = int(x0 - render_radius), int(x0 + render_radius)
-        y_min, y_max = int(y0 - render_radius), int(y0 + render_radius)
-        x_min, x_max = max(0, x_min), min(x_max, frame_size[0] - 1)
-        y_min, y_max = max(0, y_min), min(y_max, frame_size[1] - 1)
 
         scint_noise = scintillation_noise(
             r=telescope_aperture / 2,
@@ -178,15 +270,47 @@ def generate_star_image(
         if star_flux < 0:
             star_flux = 0
 
-        star = star_flux * moffat_profile(
-            xx[y_min : y_max + 1, x_min : x_max + 1],
-            yy[y_min : y_max + 1, x_min : x_max + 1],
-            x0,
-            y0,
-            FWHM,
-        )
+        if has_drift[i]:
+            trail_length = np.hypot(dx, dy)
+            n_samples = max(
+                1, min(n_trail_samples, int(np.ceil(trail_length / FWHM * 2)))
+            )
 
-        image[y_min : y_max + 1, x_min : x_max + 1] += star
+            sample_pos = _sampler(x0, y0, dx, dy, n_samples, jitter_sigma_pixels, rng)
+            sample_flux = star_flux / sample_pos.shape[1]
+            for j in range(n_samples):
+                sx, sy = sample_pos[0, j], sample_pos[1, j]
+                sx_min = max(0, int(sx - render_radius))
+                sx_max = min(int(sx + render_radius), W - 1)
+                sy_min = max(0, int(sy - render_radius))
+                sy_max = min(int(sy + render_radius), H - 1)
+                if sx_max < 0 or sx_min >= W or sy_max < 0 or sy_min >= H:
+                    continue
+                image[sy_min : sy_max + 1, sx_min : sx_max + 1] += (
+                    sample_flux
+                    * moffat_profile(
+                        xx[sy_min : sy_max + 1, sx_min : sx_max + 1],
+                        yy[sy_min : sy_max + 1, sx_min : sx_max + 1],
+                        sx,
+                        sy,
+                        FWHM,
+                    )
+                )
+        else:
+            x_min = max(0, int(x0 - render_radius))
+            x_max = min(int(x0 + render_radius), W - 1)
+            y_min = max(0, int(y0 - render_radius))
+            y_max = min(int(y0 + render_radius), H - 1)
+
+            star = star_flux * moffat_profile(
+                xx[y_min : y_max + 1, x_min : x_max + 1],
+                yy[y_min : y_max + 1, x_min : x_max + 1],
+                x0,
+                y0,
+                FWHM,
+            )
+
+            image[y_min : y_max + 1, x_min : x_max + 1] += star
 
     return image
 
@@ -201,6 +325,7 @@ def get_sources(
     sources: Sources | None = None,
     tap_source: GaiaTAPSource | GaiaSQLiteSource | str | None = None,
     bounds: tuple[float, float, float, float] | None = None,
+    additional_sources: Sources | None = None,
 ) -> Sources:
     """Get sources from Gaia or use provided sources."""
     if not isinstance(sources, Sources):
@@ -216,6 +341,8 @@ def get_sources(
             tap_source=tap_source,
         )
         logger.info(f"Found {len(sources)} sources (user set limit of {n_star_limit}).")
+    if additional_sources is not None:
+        sources = sources + additional_sources
     return sources
 
 
@@ -322,8 +449,29 @@ def add_stars(
     dateobs: datetime | None,
     airmass: float | None,
     fwhm_multiplier: float = 5.0,
+    tracking_ra_rate: float | u.Quantity = 0.0,
+    tracking_dec_rate: float | u.Quantity = 0.0,
+    n_trail_samples: int = 50,
+    jitter_sigma: float = 0.0,
 ) -> np.ndarray:
-    """Add stars to the image using the Moffat profile and sky background."""
+    """Add stars to the image using the Moffat profile and sky background.
+
+    Parameters
+    ----------
+    tracking_ra_rate : float or astropy Quantity, optional
+        Telescope RA tracking rate offset from sidereal in on-sky arcsec/s,
+        i.e. dα·cos(δ)/dt (default: 0). Accepts any astropy angular velocity
+        Quantity (e.g. ``1 * u.arcsec / u.s``).
+    tracking_dec_rate : float or astropy Quantity, optional
+        Telescope Dec tracking rate offset from sidereal in arcsec/s (default: 0).
+        Accepts any astropy angular velocity Quantity.
+    n_trail_samples : int, optional
+        Number of PSF samples along the drift trail for moving sources (default: 50).
+    jitter_sigma : float, optional
+        1-sigma guiding jitter in arcsec applied per trail sample (default: 0).
+    """
+    tracking_ra_rate = _normalize_rate(tracking_ra_rate)
+    tracking_dec_rate = _normalize_rate(tracking_dec_rate)
     sources = sources.drop_nan_fluxes()
     if len(sources) > 0:
         fluxes = (
@@ -338,10 +486,29 @@ def add_stars(
 
         if wcs is None:
             wcs = camera.get_wcs(SkyCoord(ra=ra, dec=dec, unit="deg"))
-        gaias_pixel = sources.to_pixel(wcs)
-        on_camera_mask = camera.on_camera_mask(gaias_pixel)
+
+        start_pixel = sources.to_pixel(wcs)
+
+        # rates are on-sky arcsec/s (dα·cosδ/dt), so convert to RA degrees via cosδ
+        rel_ra_arcsec = (sources.ra_rates - tracking_ra_rate) * exp_time
+        rel_dec_arcsec = (sources.dec_rates - tracking_dec_rate) * exp_time
+        cos_dec = np.cos(np.deg2rad(sources.coords.dec.deg))
+        end_coords = SkyCoord(
+            ra=sources.coords.ra.deg + rel_ra_arcsec / (3600.0 * cos_dec),
+            dec=sources.coords.dec.deg + rel_dec_arcsec / 3600.0,
+            unit="deg",
+        )
+        end_pixel = np.array(end_coords.to_pixel(wcs))
+        drift_pixels = end_pixel - start_pixel
+
+        on_camera_mask = (
+            (np.maximum(start_pixel[0], end_pixel[0]) >= 0)
+            & (np.minimum(start_pixel[0], end_pixel[0]) < camera.width)
+            & (np.maximum(start_pixel[1], end_pixel[1]) >= 0)
+            & (np.minimum(start_pixel[1], end_pixel[1]) < camera.height)
+        )
         logger.debug(
-            f"Number of stars on camera: {on_camera_mask.sum()}"
+            f"Number of stars with trails intersecting camera: {on_camera_mask.sum()}"
             f" out of {len(sources)} total stars "
             f"({on_camera_mask.sum() / len(sources) * 100})%."
         )
@@ -369,7 +536,7 @@ def add_stars(
             airmass = 1.5  # default value
 
         stars = generate_star_image(
-            gaias_pixel[:, on_camera_mask],
+            start_pixel[:, on_camera_mask],
             fluxes[on_camera_mask],
             focuser.seeing_multiplier * site.seeing / camera.plate_scale,
             (camera.width, camera.height),
@@ -379,6 +546,9 @@ def add_stars(
             exp_time=exp_time,
             airmass=airmass,
             fwhm_multiplier=fwhm_multiplier,
+            drift_pixels=drift_pixels[:, on_camera_mask],
+            n_trail_samples=n_trail_samples,
+            jitter_sigma_pixels=jitter_sigma / camera.plate_scale,
         ).astype(np.float64)
 
         sky_background = (
@@ -415,6 +585,11 @@ def add_stars_and_sky(
     wcs: WCS | None,
     fwhm_multiplier: float = 5.0,
     tap_source: GaiaTAPSource | GaiaSQLiteSource | str | None = None,
+    tracking_ra_rate: float | u.Quantity = 0.0,
+    tracking_dec_rate: float | u.Quantity = 0.0,
+    n_trail_samples: int = 50,
+    jitter_sigma: float = 0.0,
+    additional_sources: Sources | None = None,
 ) -> np.ndarray:
     """Add stars and sky background to the base image."""
     if light == 1:
@@ -438,6 +613,7 @@ def add_stars_and_sky(
             timeout=timeout,
             sources=sources,
             tap_source=tap_source,
+            additional_sources=additional_sources,
         )
         image = base
         image = add_sun_sky_background(
@@ -458,6 +634,10 @@ def add_stars_and_sky(
             dateobs=dateobs,
             airmass=airmass,
             fwhm_multiplier=fwhm_multiplier,
+            tracking_ra_rate=tracking_ra_rate,
+            tracking_dec_rate=tracking_dec_rate,
+            n_trail_samples=n_trail_samples,
+            jitter_sigma=jitter_sigma,
         )
     else:
         image = base
@@ -484,6 +664,11 @@ def generate_image(
     wcs: WCS | None = None,
     fwhm_multiplier: float = 5.0,
     tap_source: GaiaTAPSource | GaiaSQLiteSource | str | None = None,
+    tracking_ra_rate: float | u.Quantity = 0.0,
+    tracking_dec_rate: float | u.Quantity = 0.0,
+    n_trail_samples: int = 50,
+    jitter_sigma: float = 0.0,
+    additional_sources: Sources | None = None,
 ) -> np.ndarray:
     """
     Generate a simulated astronomical image.
@@ -561,6 +746,11 @@ def generate_image(
             wcs=wcs,
             fwhm_multiplier=fwhm_multiplier,
             tap_source=tap_source,
+            tracking_ra_rate=tracking_ra_rate,
+            tracking_dec_rate=tracking_dec_rate,
+            n_trail_samples=n_trail_samples,
+            jitter_sigma=jitter_sigma,
+            additional_sources=additional_sources,
         )
     else:
         image = base
@@ -595,6 +785,11 @@ def generate_image_stack(
     wcs: WCS | None = None,
     fwhm_multiplier: float = 5.0,
     tap_source: GaiaTAPSource | GaiaSQLiteSource | str | None = None,
+    tracking_ra_rate: float | u.Quantity = 0.0,
+    tracking_dec_rate: float | u.Quantity = 0.0,
+    n_trail_samples: int = 50,
+    jitter_sigma: float = 0.0,
+    additional_sources: Sources | None = None,
 ) -> np.ndarray:
     """
     Generate a stack of images from different stages in the image simulation pipeline.
@@ -678,6 +873,11 @@ def generate_image_stack(
             wcs=wcs,
             fwhm_multiplier=fwhm_multiplier,
             tap_source=tap_source,
+            tracking_ra_rate=tracking_ra_rate,
+            tracking_dec_rate=tracking_dec_rate,
+            n_trail_samples=n_trail_samples,
+            jitter_sigma=jitter_sigma,
+            additional_sources=additional_sources,
         )
     else:
         image = base
