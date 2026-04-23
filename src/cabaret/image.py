@@ -1,5 +1,6 @@
 import logging
 import math
+from collections.abc import Callable
 from datetime import UTC, datetime
 
 import numpy as np
@@ -13,10 +14,17 @@ from cabaret.camera import Camera
 from cabaret.focuser import Focuser
 from cabaret.queries import Filters, GaiaQuery, GaiaSQLiteSource, GaiaTAPSource
 from cabaret.site import Site
-from cabaret.sources import Sources, _normalize_rate
+from cabaret.sources import Sources
 from cabaret.telescope import Telescope
 
 logger = logging.getLogger("cabaret")
+
+
+def _normalize_rate(rate: float | u.Quantity) -> float:
+    """Convert a scalar angular rate to arcsec/s."""
+    if isinstance(rate, u.Quantity):
+        return float(rate.to(u.arcsec / u.s).value)
+    return float(rate)
 
 
 def moffat_profile(
@@ -171,7 +179,10 @@ def generate_star_image(
     drift_pixels: np.ndarray | None = None,
     n_trail_samples: int = 50,
     jitter_sigma_pixels: float = 0.0,
-    trail_sampler=None,
+    trail_sampler: Callable[
+        [float, float, float, float, int, float, np.random.Generator], np.ndarray
+    ]
+    | None = None,
 ) -> np.ndarray:
     """
     Render stars onto an image using a fast, windowed approach.
@@ -208,7 +219,6 @@ def generate_star_image(
     np.ndarray
         Image with rendered stars.
     """
-    # Validate inputs
     if not isinstance(n_trail_samples, int) or n_trail_samples < 1:
         raise ValueError(
             f"n_trail_samples must be an integer >= 1, got "
@@ -238,7 +248,7 @@ def generate_star_image(
 
     render_radius = FWHM * fwhm_multiplier  # render n * FWHM around the star
 
-    W, H = frame_size
+    frame_width, frame_height = frame_size
     image = np.zeros(frame_size).T
     for i, flux in enumerate(fluxes):
         x0 = pos[0][i]
@@ -251,9 +261,9 @@ def generate_star_image(
         # Skip if the entire trail bounding box is outside the frame
         if (
             max(x0, x_end) < 0
-            or min(x0, x_end) >= W
+            or min(x0, x_end) >= frame_width
             or max(y0, y_end) < 0
-            or min(y0, y_end) >= H
+            or min(y0, y_end) >= frame_height
         ):
             continue
 
@@ -282,10 +292,15 @@ def generate_star_image(
             for j in range(n_samples):
                 sx, sy = sample_pos[0, j], sample_pos[1, j]
                 sx_min = max(0, int(sx - render_radius))
-                sx_max = min(math.floor(sx + render_radius), W - 1)
+                sx_max = min(math.floor(sx + render_radius), frame_width - 1)
                 sy_min = max(0, int(sy - render_radius))
-                sy_max = min(math.floor(sy + render_radius), H - 1)
-                if sx_max < 0 or sx_min >= W or sy_max < 0 or sy_min >= H:
+                sy_max = min(math.floor(sy + render_radius), frame_height - 1)
+                if (
+                    sx_max < 0
+                    or sx_min >= frame_width
+                    or sy_max < 0
+                    or sy_min >= frame_height
+                ):
                     continue
                 image[sy_min : sy_max + 1, sx_min : sx_max + 1] += (
                     sample_flux
@@ -299,9 +314,9 @@ def generate_star_image(
                 )
         else:
             x_min = max(0, int(x0 - render_radius))
-            x_max = min(math.floor(x0 + render_radius), W - 1)
+            x_max = min(math.floor(x0 + render_radius), frame_width - 1)
             y_min = max(0, int(y0 - render_radius))
-            y_max = min(math.floor(y0 + render_radius), H - 1)
+            y_max = min(math.floor(y0 + render_radius), frame_height - 1)
 
             star = star_flux * moffat_profile(
                 xx[y_min : y_max + 1, x_min : x_max + 1],

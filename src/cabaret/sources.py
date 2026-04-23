@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 
 import numpy as np
 from astropy import units as u
-from astropy.coordinates import Longitude, SkyCoord, concatenate
+from astropy.coordinates import Longitude, SkyCoord
 from astropy.wcs import WCS
 
 
@@ -20,14 +20,7 @@ def _normalize_rates(
     return rates
 
 
-def _normalize_rate(rate: float | u.Quantity) -> float:
-    """Convert a scalar rate to arcsec/s."""
-    if isinstance(rate, u.Quantity):
-        return float(rate.to(u.arcsec / u.s).value)
-    return float(rate)
-
-
-@dataclass
+@dataclass(init=False)
 class Sources:
     """A collection of sources with their sky coordinates and fluxes.
 
@@ -53,30 +46,38 @@ class Sources:
     fluxes: np.ndarray
     """An array of shape (n,) containing the fluxes of the sources in units of
     photons/s/m²."""
-    ra_rates: np.ndarray | u.Quantity | None = field(default=None, repr=False)
-    """On-sky RA motion rates dα·cos(δ)/dt, shape (n,). Accepts an astropy
-    Quantity with angular velocity units (e.g. ``u.arcsec/u.hour``) or a plain
-    array assumed to be in arcsec/s. Stored internally as arcsec/s. Positive
+    ra_rates: np.ndarray = field(init=False, repr=False)
+    """On-sky RA motion rates dα·cos(δ)/dt, shape (n,) in arcsec/s. Accepts an
+    astropy Quantity with angular velocity units (e.g. ``u.arcsec/u.hour``) or a
+    plain array assumed to be in arcsec/s. Stored internally as arcsec/s. Positive
     values move east. This matches the JPL Horizons ``RA_rate`` convention."""
-    dec_rates: np.ndarray | u.Quantity | None = field(default=None, repr=False)
-    """Dec motion rates, shape (n,). Accepts an astropy Quantity with angular
-    velocity units or a plain array assumed to be in arcsec/s. Stored
+    dec_rates: np.ndarray = field(init=False, repr=False)
+    """Dec motion rates, shape (n,) in arcsec/s. Accepts an astropy Quantity with
+    angular velocity units or a plain array assumed to be in arcsec/s. Stored
     internally as arcsec/s. Positive values move north."""
 
-    def __post_init__(self):
-        if not isinstance(self.coords, SkyCoord):
+    def __init__(
+        self,
+        coords: SkyCoord,
+        fluxes: np.ndarray,
+        ra_rates: np.ndarray | u.Quantity | None = None,
+        dec_rates: np.ndarray | u.Quantity | None = None,
+    ) -> None:
+        if not isinstance(coords, SkyCoord):
             raise ValueError("coords must be an instance of SkyCoord.")
-        if not isinstance(self.fluxes, np.ndarray):
+        if not isinstance(fluxes, np.ndarray):
             try:
-                self.fluxes = np.array(self.fluxes)
+                fluxes = np.array(fluxes)
             except Exception:
                 raise ValueError("fluxes must be an instance of np.ndarray.")
-        if self.coords.size != self.fluxes.size:
+        if coords.size != fluxes.size:
             raise ValueError("coords and fluxes must have the same length.")
 
-        n = self.coords.size
-        self.ra_rates = _normalize_rates(self.ra_rates, n, "ra_rates")
-        self.dec_rates = _normalize_rates(self.dec_rates, n, "dec_rates")
+        self.coords = coords
+        self.fluxes = fluxes
+        n = coords.size
+        self.ra_rates = _normalize_rates(ra_rates, n, "ra_rates")
+        self.dec_rates = _normalize_rates(dec_rates, n, "dec_rates")
 
     @property
     def ra(self) -> Longitude:
@@ -134,7 +135,7 @@ class Sources:
 
         new_coords = self.coords[key]
 
-        return Sources(new_coords, new_fluxes, new_ra_rates, new_dec_rates)  # type: ignore
+        return Sources(new_coords, new_fluxes, new_ra_rates, new_dec_rates)
 
     def __add__(self, other: "Sources") -> "Sources":
         return Sources.concat(self, other)
@@ -146,7 +147,7 @@ class Sources:
         Parameters
         ----------
         *sources_list : Sources
-            Two or more Sources objects to concatenate.
+            One or more Sources objects to concatenate.
 
         Returns
         -------
@@ -156,10 +157,10 @@ class Sources:
         if not sources_list:
             raise ValueError("Must provide at least one Sources object to concatenate.")
         return cls(
-            coords=concatenate([s.coords for s in sources_list]),
+            coords=np.concatenate([s.coords for s in sources_list]),  # type: ignore[arg-type]
             fluxes=np.concatenate([s.fluxes for s in sources_list]),
-            ra_rates=np.concatenate([s.ra_rates for s in sources_list]),  # type: ignore
-            dec_rates=np.concatenate([s.dec_rates for s in sources_list]),  # type: ignore
+            ra_rates=np.concatenate([s.ra_rates for s in sources_list]),
+            dec_rates=np.concatenate([s.dec_rates for s in sources_list]),
         )
 
     @classmethod
@@ -218,8 +219,8 @@ class Sources:
         return cls(
             coords=SkyCoord(ra=ra, dec=dec, unit=units),
             fluxes=fluxes,
-            ra_rates=ra_rates,  # type: ignore
-            dec_rates=dec_rates,  # type: ignore
+            ra_rates=ra_rates,
+            dec_rates=dec_rates,
         )
 
     def drop_nan_fluxes(self) -> "Sources":
