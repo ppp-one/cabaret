@@ -43,29 +43,6 @@ def test_sample_trail_jitter_changes_output():
 FRAME = (200, 200)
 
 
-def _noiseless_image(pos, fluxes, drift_pixels=None, n_trail_samples=50):
-    """Render stars with Poisson noise suppressed."""
-    rng = np.random.default_rng(0)
-
-    def _fixed_rng_poisson(flux):
-        return flux  # deterministic: no noise
-
-    # Monkey-patch not practical; use very large flux so Poisson ≈ mean
-    return generate_star_image(
-        pos=pos,
-        fluxes=fluxes,
-        FWHM=3.0,
-        frame_size=FRAME,
-        rng=rng,
-        telescope_aperture=1.0,
-        site_elevation=2400.0,
-        exp_time=1.0,
-        airmass=1.0,
-        drift_pixels=drift_pixels,
-        n_trail_samples=n_trail_samples,
-    )
-
-
 def test_zero_drift_regression():
     """Zero-drift path produces same result as calling without drift_pixels."""
     pos = np.array([[100.0], [100.0]])

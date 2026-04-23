@@ -1,4 +1,5 @@
 import logging
+import math
 from datetime import UTC, datetime
 
 import numpy as np
@@ -281,9 +282,9 @@ def generate_star_image(
             for j in range(n_samples):
                 sx, sy = sample_pos[0, j], sample_pos[1, j]
                 sx_min = max(0, int(sx - render_radius))
-                sx_max = min(int(sx + render_radius), W - 1)
+                sx_max = min(math.floor(sx + render_radius), W - 1)
                 sy_min = max(0, int(sy - render_radius))
-                sy_max = min(int(sy + render_radius), H - 1)
+                sy_max = min(math.floor(sy + render_radius), H - 1)
                 if sx_max < 0 or sx_min >= W or sy_max < 0 or sy_min >= H:
                     continue
                 image[sy_min : sy_max + 1, sx_min : sx_max + 1] += (
@@ -298,9 +299,9 @@ def generate_star_image(
                 )
         else:
             x_min = max(0, int(x0 - render_radius))
-            x_max = min(int(x0 + render_radius), W - 1)
+            x_max = min(math.floor(x0 + render_radius), W - 1)
             y_min = max(0, int(y0 - render_radius))
-            y_max = min(int(y0 + render_radius), H - 1)
+            y_max = min(math.floor(y0 + render_radius), H - 1)
 
             star = star_flux * moffat_profile(
                 xx[y_min : y_max + 1, x_min : x_max + 1],
@@ -489,14 +490,12 @@ def add_stars(
 
         start_pixel = sources.to_pixel(wcs)
 
-        # rates are on-sky arcsec/s (dα·cosδ/dt), so convert to RA degrees via cosδ
+        # rates are on-sky arcsec/s (dα·cosδ/dt); spherical_offsets_by handles cosδ
         rel_ra_arcsec = (sources.ra_rates - tracking_ra_rate) * exp_time
         rel_dec_arcsec = (sources.dec_rates - tracking_dec_rate) * exp_time
-        cos_dec = np.cos(np.deg2rad(sources.coords.dec.deg))
-        end_coords = SkyCoord(
-            ra=sources.coords.ra.deg + rel_ra_arcsec / (3600.0 * cos_dec),
-            dec=sources.coords.dec.deg + rel_dec_arcsec / 3600.0,
-            unit="deg",
+        end_coords = sources.coords.spherical_offsets_by(
+            rel_ra_arcsec * u.arcsec,
+            rel_dec_arcsec * u.arcsec,
         )
         end_pixel = np.array(end_coords.to_pixel(wcs))
         drift_pixels = end_pixel - start_pixel

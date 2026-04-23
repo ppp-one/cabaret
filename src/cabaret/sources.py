@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 
 import numpy as np
 from astropy import units as u
-from astropy.coordinates import Longitude, SkyCoord
+from astropy.coordinates import Longitude, SkyCoord, concatenate
 from astropy.wcs import WCS
 
 
@@ -156,11 +156,7 @@ class Sources:
         if not sources_list:
             raise ValueError("Must provide at least one Sources object to concatenate.")
         return cls(
-            coords=SkyCoord(
-                ra=np.concatenate([s.coords.ra.deg for s in sources_list]),  # type: ignore
-                dec=np.concatenate([s.coords.dec.deg for s in sources_list]),  # type: ignore
-                unit="deg",
-            ),
+            coords=concatenate([s.coords for s in sources_list]),
             fluxes=np.concatenate([s.fluxes for s in sources_list]),
             ra_rates=np.concatenate([s.ra_rates for s in sources_list]),  # type: ignore
             dec_rates=np.concatenate([s.dec_rates for s in sources_list]),  # type: ignore
