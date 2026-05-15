@@ -580,7 +580,6 @@ def add_stars(
 
 
 def add_stars_and_sky(
-    base: np.ndarray,
     ra: float | None,
     dec: float | None,
     exp_time: float,
@@ -605,7 +604,7 @@ def add_stars_and_sky(
     jitter_sigma: float = 0.0,
     additional_sources: Sources | None = None,
 ) -> np.ndarray:
-    """Add stars and sky background to the base image."""
+    """Create stars and sky background."""
     if light == 1:
         if ra is None and dec is None and not isinstance(sources, Sources):
             raise ValueError("Either ra/dec or sources must be provided for light.")
@@ -629,7 +628,7 @@ def add_stars_and_sky(
             tap_source=tap_source,
             additional_sources=additional_sources,
         )
-        image = base
+        image = np.zeros(camera.shape).astype(np.float64)
         image = add_sun_sky_background(
             image, site, telescope, camera, exp_time, dateobs, logger
         )
@@ -654,7 +653,7 @@ def add_stars_and_sky(
             jitter_sigma=jitter_sigma,
         )
     else:
-        image = base
+        image = np.zeros(camera.shape).astype(np.float64)
     return image
 
 
@@ -741,7 +740,6 @@ def generate_image(
 
     if light == 1:
         image = add_stars_and_sky(
-            base=base,
             ra=ra,
             dec=dec,
             exp_time=exp_time,
@@ -767,9 +765,11 @@ def generate_image(
             additional_sources=additional_sources,
         )
     else:
-        image = base
+        image = np.zeros(camera.shape).astype(np.float64)
 
     image = camera.apply_pixel_defects(image, exp_time)
+
+    image += base
 
     image = camera.bin_image(image)
 
@@ -868,7 +868,6 @@ def generate_image_stack(
 
     if light == 1:
         image = add_stars_and_sky(
-            base=np.zeros_like(base),
             ra=ra,
             dec=dec,
             exp_time=exp_time,
@@ -894,9 +893,11 @@ def generate_image_stack(
             additional_sources=additional_sources,
         )
     else:
-        image = base
+        image = np.zeros(camera.shape).astype(np.float64)
 
     adu_image = camera.apply_pixel_defects(image.copy(), exp_time)
+
+    adu_image += base
 
     adu_image = camera.to_adu_image(adu_image)
 
