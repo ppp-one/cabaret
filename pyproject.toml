@@ -31,7 +31,12 @@ authors = [
   {name = "Lionel Garcia"},
   {name = "David Degen"}
 ]
-dependencies = ["numpy", "astropy", "astroquery"]
+dependencies = [
+  "numpy",
+  "astropy",
+  "astroquery",
+  "urllib3>=2.7.0"
+]
 license = {text = "MIT License"}
 name = "cabaret"
 readme = "README.md"
