@@ -183,25 +183,48 @@ class Camera:
 
         return base
 
-    def apply_pixel_defects(self, image: np.ndarray, exp_time: float) -> np.ndarray:
-        """Apply pixel defects to the image.
+    def apply_pre_base_defects(self, image: np.ndarray, exp_time: float) -> np.ndarray:
+        """Apply defects that must precede the base image (e.g. readout smear).
 
         Parameters
         ----------
         image : np.ndarray
-            The image to which the pixel defects will be applied.
+            The light image before bias, dark, and read noise are added.
         exp_time : float
             Exposure time in seconds.
 
         Returns
         -------
         np.ndarray
-            The image with pixel defects applied.
+            The image with pre-base defects applied.
         """
         for defect in self.pixel_defects.values():
-            image = defect.introduce_pixel_defect(
-                image=image, camera=self, exp_time=exp_time
-            )
+            if defect.apply_before_base:
+                image = defect.introduce_pixel_defect(
+                    image=image, camera=self, exp_time=exp_time
+                )
+        return image
+
+    def apply_post_base_defects(self, image: np.ndarray, exp_time: float) -> np.ndarray:
+        """Apply defects that follow the base image (e.g. constant hot/cold pixels).
+
+        Parameters
+        ----------
+        image : np.ndarray
+            The image after bias, dark, and read noise have been added.
+        exp_time : float
+            Exposure time in seconds.
+
+        Returns
+        -------
+        np.ndarray
+            The image with post-base defects applied.
+        """
+        for defect in self.pixel_defects.values():
+            if not defect.apply_before_base:
+                image = defect.introduce_pixel_defect(
+                    image=image, camera=self, exp_time=exp_time
+                )
         return image
 
     def to_adu_image(self, image: np.ndarray) -> np.ndarray:
@@ -376,6 +399,10 @@ class PixelDefect(ABC):
 
     seed: int = 0
     """Random seed for reproducibility."""
+
+    apply_before_base: bool = False
+    """If True, this defect is applied before the base image (bias, dark, read noise)
+    is added. If False (default), it is applied after."""
 
     _rng: numpy.random.Generator | None = None
     """Random number generator instance."""
@@ -732,6 +759,12 @@ class ReadoutSmearPixelDefect(PixelDefect):
     seed : int
         Random seed for reproducibility.
 
+    Notes
+    -----
+    This defect has ``apply_before_base = True`` because readout smear is a function
+    of the light signal only and must be applied before bias, dark current, and read
+    noise are added.
+
     Examples
     --------
     >>> from cabaret import Observatory, Sources
@@ -754,6 +787,9 @@ class ReadoutSmearPixelDefect(PixelDefect):
     >>> plt.subplots_adjust(wspace=0.1)
     >>> plt.show()
     """
+
+    apply_before_base: bool = True
+    """Readout smear depends on the light signal and must precede the base image."""
 
     readout_time: float = 0.1
     """Time taken to read out the entire frame (seconds)."""

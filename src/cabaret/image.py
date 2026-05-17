@@ -767,9 +767,11 @@ def generate_image(
     else:
         image = np.zeros(camera.shape).astype(np.float64)
 
-    image = camera.apply_pixel_defects(image, exp_time)
+    image = camera.apply_pre_base_defects(image, exp_time)
 
     image += base
+
+    image = camera.apply_post_base_defects(image, exp_time)
 
     image = camera.bin_image(image)
 
@@ -895,9 +897,11 @@ def generate_image_stack(
     else:
         image = np.zeros(camera.shape).astype(np.float64)
 
-    adu_image = camera.apply_pixel_defects(image.copy(), exp_time)
+    adu_image = camera.apply_pre_base_defects(image.copy(), exp_time)
 
     adu_image += base
+
+    adu_image = camera.apply_post_base_defects(adu_image, exp_time)
 
     adu_image = camera.to_adu_image(adu_image)
 
