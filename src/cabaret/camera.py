@@ -809,7 +809,9 @@ class ReadoutSmearPixelDefect(PixelDefect):
         )
 
         # A fraction of each pixels values to those read out after it
-        smear = smear_fraction_per_pixel_readout * (np.cumsum(image, axis=self.dim) - image)
+        smear = smear_fraction_per_pixel_readout * (
+            np.cumsum(image, axis=self.dim) - image
+        )
 
         image = np.clip(image + smear, 0, camera.max_adu)
         return image
