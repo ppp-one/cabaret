@@ -308,6 +308,7 @@ class Camera:
             "noise": RandomNoisePixelDefect,
             "quantum_efficiency_map": QuantumEfficiencyMapPixelDefect,
             "readout_smear": ReadoutSmearPixelDefect,
+            "light_distribution": LightDistributionPixelDefect,
         }
         defect_type = type
 
@@ -714,6 +715,9 @@ class QuantumEfficiencyMapPixelDefect(PixelDefect):
     quantum_efficiency_map: np.ndarray | None = None
     """Quantum efficiency map (2D array)."""
 
+    apply_before_base: bool = True
+    """Quantum efficiency variations are a function of the light signal"""
+
     def __post_init__(self):
         if self.quantum_efficiency_map is not None:
             self.quantum_efficiency_map = np.array(self.quantum_efficiency_map)
@@ -739,6 +743,79 @@ class QuantumEfficiencyMapPixelDefect(PixelDefect):
 
         image = image * self.quantum_efficiency_map / camera.average_quantum_efficiency
         image = np.clip(image, 0, camera.max_adu)
+        return image
+
+
+@dataclass
+class LightDistributionPixelDefect(PixelDefect):
+    """A pixel defect that multiplies each pixel's light signal by a user-supplied map.
+
+    Use this to simulate spatially varying illumination effects such as vignetting,
+    flat-field non-uniformity, or any multiplicative light distribution pattern.
+    The map is applied before bias, dark current, and read noise are added.
+
+    Parameters
+    ----------
+    distribution_map : np.ndarray
+        2D array of the same shape as the camera sensor.  Each element is a
+        multiplicative factor applied to the corresponding pixel's light value.
+        Values should be non-negative; values greater than 1 amplify the signal
+        and values less than 1 attenuate it.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from cabaret import Observatory, Sources
+    >>> rng = np.random.default_rng(0)
+    >>> distribution_map = np.clip(rng.normal(1.0, 0.1, (1024, 1024)), 0, None)
+    >>> pixel_defects = {
+    ...     "vignette": {
+    ...         "type": "light_distribution",
+    ...         "distribution_map": distribution_map,
+    ...     }
+    ... }
+    >>> observatory = Observatory(camera={"pixel_defects": pixel_defects})
+    >>> sources = Sources.get_test_sources()
+    >>> ra, dec = sources.center
+    >>> _, clean_image, image = observatory.generate_image_stack(
+    ...     exp_time=3, ra=ra, dec=dec, sources=sources, convert_all_to_adu=True
+    ... )
+
+    To plot the images, you can use the `plot_image` function from `cabaret.plot`:
+
+    >>> from cabaret.plot import plot_image
+    >>> import matplotlib.pyplot as plt
+    >>> fig, axes = plt.subplots(1, 2, figsize=(7, 5), sharex=True, sharey=True)
+    >>> _ = plot_image(clean_image, ax=axes[0], title="Image without defects")
+    >>> _ = plot_image(image, ax=axes[1], title="Image with light distribution defect")
+    >>> plt.subplots_adjust(wspace=0.1)
+    >>> plt.show()
+    """
+
+    distribution_map: np.ndarray | None = None
+    """2D multiplicative map applied to the light signal."""
+
+    apply_before_base: bool = True
+    """Light distribution acts on the incoming signal; applied before the base image."""
+
+    def __post_init__(self):
+        if self.distribution_map is not None:
+            self.distribution_map = np.asarray(self.distribution_map, dtype=np.float64)
+
+    def introduce_pixel_defect(
+        self, image: np.ndarray, camera: Camera, **kwargs
+    ) -> np.ndarray:
+        if self.distribution_map is None:
+            raise ValueError(
+                f"{self.name}: distribution_map must be provided before applying "
+                "this defect."
+            )
+        if self.distribution_map.shape != camera.shape:
+            raise ValueError(
+                f"{self.name}: distribution_map shape {self.distribution_map.shape} "
+                f"does not match camera shape {camera.shape}."
+            )
+        image = image * self.distribution_map
         return image
 
 
