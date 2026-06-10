@@ -87,7 +87,7 @@ def scintillation_noise(
     t : float
         Exposure time in seconds.
     N_star : float
-        Number of stars.
+        Star flux (photons per second).
     h : float
         Altitude of the observatory in meters. Default is 2440 for Paranal Observatory.
     C : float
@@ -270,7 +270,7 @@ def generate_star_image(
         scint_noise = scintillation_noise(
             r=telescope_aperture / 2,
             t=exp_time,
-            N_star=flux,
+            N_star=flux / exp_time,
             h=site_elevation,
             C=1.56,
             airmass=airmass,
