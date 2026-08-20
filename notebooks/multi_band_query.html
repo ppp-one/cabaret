@@ -1,0 +1,872 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Multi-band Queries &#8212; cabaret</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/multi_band_query';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Asteroid Tracking Simulation" href="asteroid_trailing.html" />
+    <link rel="prev" title="Configuring an Observatory" href="configuring_an_observatory.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.5.5" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">cabaret</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Get started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../motivation.html">Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../local_catalog.html">Local catalog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../citation.html">Citation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="configuring_an_observatory.html">Configuring an Observatory</a></li>
+
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Multi-band Queries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asteroid_trailing.html">Asteroid Tracking Simulation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cabaret.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../generated/cabaret.Observatory.html">Observatory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/cabaret.Camera.html">Camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/cabaret.Focuser.html">Focuser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/cabaret.Telescope.html">Telescope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/cabaret.Site.html">Site</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/cabaret.Filters.html">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/cabaret.GaiaQuery.html">GaiaQuery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/cabaret.GaiaSQLiteSource.html">GaiaSQLiteSource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/cabaret.GaiaTAPSource.html">GaiaTAPSource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/cabaret.Sources.html">Sources</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../cabaret.camera.html">Pixel defects</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../generated/cabaret.camera.ConstantPixelDefect.html">ConstantPixelDefect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/cabaret.camera.ColumnPixelDefect.html">ColumnPixelDefect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/cabaret.camera.RandomNoisePixelDefect.html">RandomNoisePixelDefect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/cabaret.camera.QuantumEfficiencyMapPixelDefect.html">QuantumEfficiencyMapPixelDefect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/cabaret.camera.ReadoutSmearPixelDefect.html">ReadoutSmearPixelDefect</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/ppp-one/cabaret" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/ppp-one/cabaret/issues/new?title=Issue%20on%20page%20%2Fnotebooks/multi_band_query.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Multi-band Queries</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#catalog-completeness-selection-bias">Catalog completeness &amp; selection bias</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-one-simulated-image-per-band">Generate one simulated image per band</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-wavelength-synthesis-rgb">Multi-wavelength synthesis (RGB)</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="multi-band-queries">
+<h1>Multi-band Queries<a class="headerlink" href="#multi-band-queries" title="Link to this heading">#</a></h1>
+<p><strong>cabaret</strong> can fetch several photometric bands in a single TAP query using
+<code class="docutils literal notranslate"><span class="pre">GaiaQuery.get_flux_table()</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy.coordinates</span><span class="w"> </span><span class="kn">import</span> <span class="n">SkyCoord</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">cabaret</span>
+
+<span class="c1"># center = SkyCoord(ra=10.68458, dec=41.26917, unit=&quot;deg&quot;)  # M31 field</span>
+<span class="n">center</span> <span class="o">=</span> <span class="n">SkyCoord</span><span class="p">(</span><span class="n">ra</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span> <span class="n">dec</span><span class="o">=</span><span class="mf">28.0</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;deg&quot;</span><span class="p">)</span>  <span class="c1"># Galactic anti-center</span>
+
+<span class="n">table</span> <span class="o">=</span> <span class="n">cabaret</span><span class="o">.</span><span class="n">GaiaQuery</span><span class="o">.</span><span class="n">get_flux_table</span><span class="p">(</span>
+    <span class="n">center</span><span class="p">,</span>
+    <span class="n">radius</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span>
+    <span class="n">filter_bands</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+    <span class="n">keep_mag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># keep magnitude column</span>
+    <span class="n">allow_nulls</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">colnames</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">table</span><span class="p">)</span><span class="si">}</span><span class="s2"> sources retrieved&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">HTTPError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">8</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> 
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="c1"># center = SkyCoord(ra=10.68458, dec=41.26917, unit=&quot;deg&quot;)  # M31 field</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="n">center</span> <span class="o">=</span> <span class="n">SkyCoord</span><span class="p">(</span><span class="n">ra</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span> <span class="n">dec</span><span class="o">=</span><span class="mf">28.0</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;deg&quot;</span><span class="p">)</span>  <span class="c1"># Galactic anti-center</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span> 
+<span class="ne">----&gt; </span><span class="mi">8</span> <span class="n">table</span> <span class="o">=</span> <span class="n">cabaret</span><span class="o">.</span><span class="n">GaiaQuery</span><span class="o">.</span><span class="n">get_flux_table</span><span class="p">(</span>
+<span class="g g-Whitespace">      </span><span class="mi">9</span>     <span class="n">center</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">10</span>     <span class="n">radius</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">11</span>     <span class="n">filter_bands</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+
+<span class="nn">File ~/work/cabaret/cabaret/src/cabaret/queries.py:437,</span> in <span class="ni">GaiaQuery.get_flux_table</span><span class="nt">(center, radius, bounds, filter_bands, dateobs, limit, timeout, tap_source, allow_nulls, keep_mag)</span>
+<span class="g g-Whitespace">    </span><span class="mi">372</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;Query and return a Table with all columns expressed as physical fluxes.</span>
+<span class="g g-Whitespace">    </span><span class="mi">373</span><span class="sd"> </span>
+<span class="g g-Whitespace">    </span><span class="mi">374</span><span class="sd"> Identical to :meth:`query` but additionally:</span>
+<span class="sd">   (...)    433 ... )  # doctest: +SKIP</span>
+<span class="g g-Whitespace">    </span><span class="mi">434</span><span class="sd"> &quot;&quot;&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">435</span> <span class="n">bands</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_normalize_bands</span><span class="p">(</span><span class="n">filter_bands</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">437</span> <span class="n">table</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">438</span>     <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">439</span>     <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">440</span>     <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">441</span>     <span class="n">filter_bands</span><span class="o">=</span><span class="n">bands</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">442</span>     <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">443</span>     <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">444</span>     <span class="n">tap_source</span><span class="o">=</span><span class="n">tap_source</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">445</span>     <span class="n">allow_nulls</span><span class="o">=</span><span class="n">allow_nulls</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">446</span> <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">448</span> <span class="k">if</span> <span class="n">dateobs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">449</span>     <span class="n">table</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_apply_proper_motion</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">dateobs</span><span class="p">)</span>
+
+<span class="nn">File ~/work/cabaret/cabaret/src/cabaret/queries.py:335,</span> in <span class="ni">GaiaQuery.query</span><span class="nt">(center, radius, bounds, filter_bands, limit, timeout, tap_source, allow_nulls, filter_band)</span>
+<span class="g g-Whitespace">    </span><span class="mi">332</span> <span class="n">backend</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_resolve_query_source</span><span class="p">(</span><span class="n">tap_source</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">334</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">GaiaTAPSource</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">335</span>     <span class="n">table</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_query_tap</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">336</span>         <span class="n">tap_source</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">337</span>         <span class="n">bands</span><span class="o">=</span><span class="n">bands</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">338</span>         <span class="n">center</span><span class="o">=</span><span class="n">center_coords</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">339</span>         <span class="n">radius_deg</span><span class="o">=</span><span class="n">radius_deg</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">340</span>         <span class="n">bounds</span><span class="o">=</span><span class="n">bounds_tuple</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">341</span>         <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">342</span>         <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">343</span>         <span class="n">allow_nulls</span><span class="o">=</span><span class="n">allow_nulls</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">344</span>     <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">345</span> <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">346</span>     <span class="n">table</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_query_sqlite</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">347</span>         <span class="n">sqlite_source</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">348</span>         <span class="n">requested_bands</span><span class="o">=</span><span class="n">bands</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>    <span class="mi">355</span>         <span class="n">allow_nulls</span><span class="o">=</span><span class="n">allow_nulls</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">356</span>     <span class="p">)</span>
+
+<span class="nn">File ~/work/cabaret/cabaret/src/cabaret/queries.py:740,</span> in <span class="ni">GaiaQuery._query_tap</span><span class="nt">(tap_source, bands, center, radius_deg, bounds, limit, timeout, allow_nulls)</span>
+<span class="g g-Whitespace">    </span><span class="mi">730</span> <span class="n">where_clause</span> <span class="o">=</span> <span class="s2">&quot; AND &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">where</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">732</span> <span class="n">adql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">733</span><span class="s2"> SELECT TOP </span><span class="si">{</span><span class="n">limit</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">select_clause</span><span class="si">}</span>
+<span class="g g-Whitespace">    </span><span class="mi">734</span><span class="s2"> FROM </span><span class="si">{</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">]</span><span class="si">}</span>
+<span class="s2">   (...)    737 ORDER BY </span><span class="si">{</span><span class="n">order_by</span><span class="si">}</span>
+<span class="g g-Whitespace">    </span><span class="mi">738</span><span class="s2"> &quot;&quot;&quot;</span>
+<span class="ne">--&gt; </span><span class="mi">740</span> <span class="k">return</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_launch_job_with_timeout</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">741</span>     <span class="n">adql</span><span class="p">,</span> <span class="n">tap_source</span><span class="o">=</span><span class="n">tap_source</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span>
+<span class="g g-Whitespace">    </span><span class="mi">742</span> <span class="p">)</span>
+
+<span class="nn">File ~/work/cabaret/cabaret/src/cabaret/queries.py:1140,</span> in <span class="ni">GaiaQuery._launch_job_with_timeout</span><span class="nt">(query, tap_source, timeout, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1137</span>     <span class="n">job</span> <span class="o">=</span> <span class="n">tap</span><span class="o">.</span><span class="n">launch_job</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1138</span>     <span class="k">return</span> <span class="n">Table</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">get_results</span><span class="p">())</span>  <span class="c1"># type: ignore[arg-type]</span>
+<span class="ne">-&gt; </span><span class="mi">1140</span> <span class="k">return</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_run_callable_with_timeout</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1141</span>     <span class="n">func</span><span class="o">=</span><span class="n">_run</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1142</span>     <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1143</span>     <span class="n">timeout_message</span><span class="o">=</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1144</span>         <span class="s2">&quot;Gaia query timed out. &quot;</span>
+<span class="g g-Whitespace">   </span><span class="mi">1145</span>         <span class="s2">&quot;You may want to increase the timeout or reduce the query size. &quot;</span>
+<span class="g g-Whitespace">   </span><span class="mi">1146</span>         <span class="sa">f</span><span class="s2">&quot;Query was: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="g g-Whitespace">   </span><span class="mi">1147</span>     <span class="p">),</span>
+<span class="g g-Whitespace">   </span><span class="mi">1148</span> <span class="p">)</span>
+
+<span class="nn">File ~/work/cabaret/cabaret/src/cabaret/queries.py:1098,</span> in <span class="ni">GaiaQuery._run_callable_with_timeout</span><span class="nt">(func, timeout, timeout_message, on_timeout)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1096</span>     <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="n">timeout_message</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1097</span> <span class="k">if</span> <span class="n">exc</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1098</span>     <span class="k">raise</span> <span class="n">exc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="g g-Whitespace">   </span><span class="mi">1099</span> <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="nn">File ~/work/cabaret/cabaret/src/cabaret/queries.py:1086,</span> in <span class="ni">GaiaQuery._run_callable_with_timeout.&lt;locals&gt;._run_safe</span><span class="nt">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1084</span> <span class="k">def</span><span class="w"> </span><span class="nf">_run_safe</span><span class="p">():</span>
+<span class="g g-Whitespace">   </span><span class="mi">1085</span>     <span class="k">try</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1086</span>         <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">func</span><span class="p">())</span>
+<span class="g g-Whitespace">   </span><span class="mi">1087</span>     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1088</span>         <span class="n">exc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+<span class="nn">File ~/work/cabaret/cabaret/src/cabaret/queries.py:1137,</span> in <span class="ni">GaiaQuery._launch_job_with_timeout.&lt;locals&gt;._run</span><span class="nt">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1135</span> <span class="k">def</span><span class="w"> </span><span class="nf">_run</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Table</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1136</span>     <span class="n">tap</span> <span class="o">=</span> <span class="n">TapPlus</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">tap_source</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="ne">-&gt; </span><span class="mi">1137</span>     <span class="n">job</span> <span class="o">=</span> <span class="n">tap</span><span class="o">.</span><span class="n">launch_job</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1138</span>     <span class="k">return</span> <span class="n">Table</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">get_results</span><span class="p">())</span>
+
+<span class="nn">File ~/work/cabaret/cabaret/.venv/lib/python3.12/site-packages/astroquery/utils/tap/core.py:354,</span> in <span class="ni">Tap.launch_job</span><span class="nt">(self, query, name, output_file, output_format, verbose, dump_to_file, upload_resource, upload_table_name, maxrec, format_with_results_compressed)</span>
+<span class="g g-Whitespace">    </span><span class="mi">352</span>             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saving error to: </span><span class="si">{</span><span class="n">suitableOutputFile</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">353</span>         <span class="bp">self</span><span class="o">.</span><span class="n">__connHandler</span><span class="o">.</span><span class="n">dump_to_file</span><span class="p">(</span><span class="n">suitableOutputFile</span><span class="p">,</span> <span class="n">responseStr</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">354</span>     <span class="k">raise</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">HTTPError</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">355</span>         <span class="n">taputils</span><span class="o">.</span><span class="n">parse_http_response_error</span><span class="p">(</span><span class="n">responseStr</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">))</span>
+<span class="g g-Whitespace">    </span><span class="mi">356</span> <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">357</span>     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+
+<span class="ne">HTTPError</span>: Error 500: Can not execute the following SQL: 
+<span class="n">SELECT</span> <span class="n">g</span><span class="o">.</span><span class="n">source_id</span> <span class="n">AS</span> <span class="s2">&quot;gaia_id&quot;</span> <span class="p">,</span> <span class="nb">round</span><span class="p">((</span><span class="n">g</span><span class="o">.</span><span class="n">ra</span><span class="p">)::</span><span class="n">numeric</span><span class="p">,</span><span class="mi">11</span><span class="p">)</span> <span class="n">AS</span> <span class="s2">&quot;ra&quot;</span> <span class="p">,</span> <span class="nb">round</span><span class="p">((</span><span class="n">g</span><span class="o">.</span><span class="n">dec</span><span class="p">)::</span><span class="n">numeric</span><span class="p">,</span><span class="mi">11</span><span class="p">)</span> <span class="n">AS</span> <span class="s2">&quot;dec&quot;</span> <span class="p">,</span> <span class="nb">round</span><span class="p">((</span><span class="n">g</span><span class="o">.</span><span class="n">pmra</span><span class="p">)::</span><span class="n">numeric</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="n">AS</span> <span class="s2">&quot;pmra&quot;</span> <span class="p">,</span> <span class="nb">round</span><span class="p">((</span><span class="n">g</span><span class="o">.</span><span class="n">pmdec</span><span class="p">)::</span><span class="n">numeric</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="n">AS</span> <span class="s2">&quot;pmdec&quot;</span> <span class="p">,</span> <span class="nb">round</span><span class="p">((</span><span class="n">g</span><span class="o">.</span><span class="n">phot_g_mean_mag</span><span class="p">)::</span><span class="n">numeric</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span> <span class="n">AS</span> <span class="s2">&quot;phot_g_mean_mag&quot;</span> <span class="p">,</span> <span class="nb">round</span><span class="p">((</span><span class="n">g</span><span class="o">.</span><span class="n">phot_bp_mean_mag</span><span class="p">)::</span><span class="n">numeric</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span> <span class="n">AS</span> <span class="s2">&quot;phot_bp_mean_mag&quot;</span> <span class="p">,</span> <span class="nb">round</span><span class="p">((</span><span class="n">g</span><span class="o">.</span><span class="n">phot_rp_mean_mag</span><span class="p">)::</span><span class="n">numeric</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span> <span class="n">AS</span> <span class="s2">&quot;phot_rp_mean_mag&quot;</span> <span class="p">,</span> <span class="nb">round</span><span class="p">((</span><span class="n">t</span><span class="o">.</span><span class="n">Jmag</span><span class="p">)::</span><span class="n">numeric</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="n">AS</span> <span class="s2">&quot;j_m&quot;</span> <span class="p">,</span> <span class="nb">round</span><span class="p">((</span><span class="n">t</span><span class="o">.</span><span class="n">Hmag</span><span class="p">)::</span><span class="n">numeric</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="n">AS</span> <span class="s2">&quot;h_m&quot;</span> <span class="p">,</span> <span class="nb">round</span><span class="p">((</span><span class="n">t</span><span class="o">.</span><span class="n">Kmag</span><span class="p">)::</span><span class="n">numeric</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="n">AS</span> <span class="s2">&quot;ks_m&quot;</span>
+<span class="n">FROM</span> <span class="n">large_tables</span><span class="o">.</span><span class="n">gaiadr3</span> <span class="n">AS</span> <span class="s2">&quot;g&quot;</span> <span class="n">INNER</span> <span class="n">JOIN</span> <span class="n">large_tables</span><span class="o">.</span><span class="n">c2mass</span> <span class="n">AS</span> <span class="s2">&quot;t&quot;</span> <span class="n">ON</span> <span class="n">g</span><span class="o">.</span><span class="n">twomass_original_ext_source_id</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">_MASS</span>
+<span class="n">WHERE</span> <span class="s1">&#39;1&#39;</span> <span class="o">=</span> <span class="n">h3c_radial_query</span><span class="p">(</span><span class="s2">&quot;g&quot;</span><span class="o">.</span><span class="n">ra</span><span class="p">,</span><span class="s2">&quot;g&quot;</span><span class="o">.</span><span class="n">dec</span><span class="p">,</span><span class="mf">90.0</span><span class="p">,</span><span class="mf">28.0</span><span class="p">,</span><span class="mf">0.15</span><span class="p">)</span>
+<span class="n">ORDER</span> <span class="n">BY</span> <span class="n">phot_g_mean_mag</span> <span class="n">ASC</span>
+<span class="n">Limit</span> <span class="mi">100000</span>
+<span class="o">.</span> <span class="n">Because</span><span class="p">:</span> <span class="n">This</span> <span class="n">connection</span> <span class="n">has</span> <span class="n">been</span> <span class="n">closed</span><span class="o">.</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>By setting <code class="docutils literal notranslate"><span class="pre">filter_bands=&quot;all&quot;</span></code>, we have performed an automated cross-match between the Gaia DR3 (optical) and 2MASS (near-infrared) catalogs. The resulting table contains 16 columns of astrometric and photometric data, including:</p>
+<ul class="simple">
+<li><p>Gaia Bands: <code class="docutils literal notranslate"><span class="pre">g_flux</span></code>, <code class="docutils literal notranslate"><span class="pre">bp_flux</span></code>, and <code class="docutils literal notranslate"><span class="pre">rp_flux</span></code> (covering roughly 330 to 1050 nm).</p></li>
+<li><p>2MASS Bands: <code class="docutils literal notranslate"><span class="pre">j_flux</span></code>, <code class="docutils literal notranslate"><span class="pre">h_flux</span></code>, and <code class="docutils literal notranslate"><span class="pre">ks_flux</span></code> (covering 1.2 to 2.2 μm).</p></li>
+</ul>
+<section id="catalog-completeness-selection-bias">
+<h2>Catalog completeness &amp; selection bias<a class="headerlink" href="#catalog-completeness-selection-bias" title="Link to this heading">#</a></h2>
+<p>By requiring that every source in this sample has a valid measurement in at least one Gaia and one 2MASS band, we have introduced a <strong>color selection bias</strong>.</p>
+<p>2MASS was a ground-based survey significantly less sensitive than the space-based Gaia mission. To be detected in 2MASS, a star must be either very nearby, intrinsically very bright, or very red. Therefore, we have effectively filtered out faint blue stars (like White Dwarfs) and distant blue giants. Our sample is dominated by M-dwarfs and Red Giants, which emit the vast majority of their light at longer wavelengths.</p>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astroquery.svo_fps</span><span class="w"> </span><span class="kn">import</span> <span class="n">SvoFps</span>
+
+<span class="n">filters</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Gaia BP&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;GAIA/GAIA3.Gbp&quot;</span><span class="p">,</span> <span class="s2">&quot;#5E3C99&quot;</span><span class="p">,</span> <span class="s2">&quot;--&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;Gaia G&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;GAIA/GAIA3.G&quot;</span><span class="p">,</span> <span class="s2">&quot;#008837&quot;</span><span class="p">,</span> <span class="s2">&quot;--&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;Gaia RP&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;GAIA/GAIA3.Grp&quot;</span><span class="p">,</span> <span class="s2">&quot;#D7191C&quot;</span><span class="p">,</span> <span class="s2">&quot;--&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;2MASS J&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;2MASS/2MASS.J&quot;</span><span class="p">,</span> <span class="s2">&quot;#FDAE61&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;2MASS H&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;2MASS/2MASS.H&quot;</span><span class="p">,</span> <span class="s2">&quot;#A6611A&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;2MASS Ks&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;2MASS/2MASS.Ks&quot;</span><span class="p">,</span> <span class="s2">&quot;#404040&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">),</span>
+<span class="p">}</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="p">(</span><span class="n">filter_id</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span> <span class="ow">in</span> <span class="n">filters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">SvoFps</span><span class="o">.</span><span class="n">get_transmission_data</span><span class="p">(</span><span class="n">filter_id</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;Wavelength&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;Transmission&quot;</span><span class="p">],</span>
+        <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+        <span class="n">linestyle</span><span class="o">=</span><span class="n">style</span><span class="p">,</span>
+        <span class="n">lw</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Wavelength (nm)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Transmission&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">2400</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">complete_table</span> <span class="o">=</span> <span class="n">cabaret</span><span class="o">.</span><span class="n">GaiaQuery</span><span class="o">.</span><span class="n">get_flux_table</span><span class="p">(</span>
+    <span class="n">center</span><span class="p">,</span>
+    <span class="n">radius</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span>
+    <span class="n">filter_bands</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="s2">&quot;BP&quot;</span><span class="p">,</span> <span class="s2">&quot;RP&quot;</span><span class="p">],</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+    <span class="n">allow_nulls</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">keep_mag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">has_nan</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">recfunctions</span><span class="o">.</span><span class="n">structured_to_unstructured</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="n">complete_table</span><span class="p">[</span>
+                    <span class="s2">&quot;phot_g_mean_mag&quot;</span><span class="p">,</span> <span class="s2">&quot;phot_bp_mean_mag&quot;</span><span class="p">,</span> <span class="s2">&quot;phot_rp_mean_mag&quot;</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">),</span>
+    <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;There are </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">complete_table</span><span class="p">)</span><span class="si">}</span><span class="s2"> sources for this field in the Gaia catalog, &quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;of which </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">complete_table</span><span class="p">[</span><span class="o">~</span><span class="n">has_nan</span><span class="p">])</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">complete_table</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">% have &quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;measurements in all three GAIA bands.&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="n">gaia_cols</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;RP&quot;</span><span class="p">:</span> <span class="s2">&quot;phot_rp_mean_mag&quot;</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">:</span> <span class="s2">&quot;phot_g_mean_mag&quot;</span><span class="p">,</span> <span class="s2">&quot;BP&quot;</span><span class="p">:</span> <span class="s2">&quot;phot_bp_mean_mag&quot;</span><span class="p">}</span>
+
+<span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;RP&quot;</span><span class="p">:</span> <span class="s2">&quot;#fdb462&quot;</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">:</span> <span class="s2">&quot;#fb8072&quot;</span><span class="p">,</span> <span class="s2">&quot;BP&quot;</span><span class="p">:</span> <span class="s2">&quot;#bc80bd&quot;</span><span class="p">}</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+
+<span class="c1"># Plot 1: Overall Frequency (Population Density)</span>
+<span class="k">for</span> <span class="n">band</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">gaia_cols</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="c1"># We plot the &#39;complete_table&#39; to show the true population before filtering</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span>
+        <span class="n">complete_table</span><span class="p">[</span><span class="n">col</span><span class="p">],</span>
+        <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span>
+        <span class="n">histtype</span><span class="o">=</span><span class="s2">&quot;step&quot;</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">band</span><span class="p">],</span>
+        <span class="n">label</span><span class="o">=</span><span class="n">band</span><span class="p">,</span>
+        <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Population Density (All Gaia Sources)&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Gaia Magnitude&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Number of Sources&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>  <span class="c1"># Vital to see the faint tail</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># Plot 2: Crossmatch Efficiency (The Selection Filter)</span>
+<span class="k">for</span> <span class="n">band</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">gaia_cols</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">total_counts</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">complete_table</span><span class="p">[</span><span class="n">col</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+    <span class="n">matched_counts</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="n">col</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+    <span class="n">fraction</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span>
+            <span class="n">matched_counts</span><span class="p">,</span>
+            <span class="n">total_counts</span><span class="p">,</span>
+            <span class="n">out</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">matched_counts</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span>
+            <span class="n">where</span><span class="o">=</span><span class="n">total_counts</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="o">*</span> <span class="mi">100</span>
+    <span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">stairs</span><span class="p">(</span><span class="n">fraction</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">band</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;2MASS crossmatch completeness (%)&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Gaia Magnitude&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Success Rate (%)&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">110</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<ul class="simple">
+<li><p>Population Density (Left): This shows the raw number of detections per band. Notice that RP (orange) detects significantly more faint stars than BP (purple). In this field, many stars are simply too red or too faint to be detected by the Blue Spectrometer at all.</p></li>
+<li><p>Crossmatch Efficiency (Right): This measures how many Gaia detections have a 2MASS counterpart.</p>
+<ul>
+<li><p>The BP band appears to have the highest completeness because it is the most “exclusive”—it only detects stars bright enough that they are almost guaranteed to be in 2MASS.</p></li>
+<li><p>The G and RP bands show lower completeness at the faint end because they are sensitive enough to find a “hidden” population of stars that are below the detection threshold of 2MASS.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="generate-one-simulated-image-per-band">
+<h2>Generate one simulated image per band<a class="headerlink" href="#generate-one-simulated-image-per-band" title="Link to this heading">#</a></h2>
+<p>We build a <code class="docutils literal notranslate"><span class="pre">Sources</span></code> object for each band from the shared table, then
+simulate an exposure. Passing them as an argument bypasses the Gaia query inside <code class="docutils literal notranslate"><span class="pre">generate_image</span></code>, so all three images are based on exactly the same star list.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">observatory</span> <span class="o">=</span> <span class="n">cabaret</span><span class="o">.</span><span class="n">Observatory</span><span class="p">(</span><span class="n">camera</span><span class="o">=</span><span class="n">cabaret</span><span class="o">.</span><span class="n">Camera</span><span class="o">.</span><span class="n">create_ideal_camera</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sorted from shortest wavelength to longest wavelength</span>
+<span class="n">sources_names</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="sa">f</span><span class="s2">&quot;Gaia </span><span class="si">{</span><span class="n">band</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">band</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">_flux&quot;</span> <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;BP&quot;</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="s2">&quot;RP&quot;</span><span class="p">]</span>
+<span class="p">}</span> <span class="o">|</span> <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;2MASS </span><span class="si">{</span><span class="n">band</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">band</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">_flux&quot;</span> <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;J&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;KS&quot;</span><span class="p">]}</span>
+
+<span class="n">sources_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">key</span><span class="p">:</span> <span class="n">cabaret</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
+        <span class="n">ra</span><span class="o">=</span><span class="n">table</span><span class="p">[</span><span class="s2">&quot;ra&quot;</span><span class="p">],</span>
+        <span class="n">dec</span><span class="o">=</span><span class="n">table</span><span class="p">[</span><span class="s2">&quot;dec&quot;</span><span class="p">],</span>
+        <span class="n">fluxes</span><span class="o">=</span><span class="n">table</span><span class="p">[</span><span class="n">col</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">sources_names</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="n">common</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ra</span><span class="o">=</span><span class="n">center</span><span class="o">.</span><span class="n">ra</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="n">dec</span><span class="o">=</span><span class="n">center</span><span class="o">.</span><span class="n">dec</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="n">exp_time</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="n">images</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sources_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">observatory</span><span class="o">.</span><span class="n">generate_image</span><span class="p">(</span><span class="o">**</span><span class="n">common</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="n">src</span><span class="p">)</span>
+    <span class="n">images</span><span class="p">[</span><span class="n">title</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">1e7</span><span class="p">),</span> <span class="mi">50</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+    <span class="p">[</span><span class="s2">&quot;Gaia BP&quot;</span><span class="p">,</span> <span class="s2">&quot;Gaia G&quot;</span><span class="p">,</span> <span class="s2">&quot;Gaia RP&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;#bc80bd&quot;</span><span class="p">,</span> <span class="s2">&quot;#fb8072&quot;</span><span class="p">,</span> <span class="s2">&quot;#fdb462&quot;</span><span class="p">]</span>
+<span class="p">):</span>
+    <span class="k">if</span> <span class="s2">&quot;2MASS&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+        <span class="k">continue</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span>
+        <span class="n">sources_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">fluxes</span><span class="p">,</span>
+        <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span>
+        <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+        <span class="n">histtype</span><span class="o">=</span><span class="s2">&quot;step&quot;</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+        <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Flux (photons/s/m²)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Number of sources&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The resulting flux distribution follows a clear spectral logic: <span class="math notranslate nohighlight">\(\mathrm{BP &lt; G &lt; RP}\)</span>.</p>
+<ul class="simple">
+<li><p>Red Population Bias: By requiring 2MASS counterparts, we have selected a sample dominated by cooler stars (Red Giants and M-dwarfs). These stars naturally peak in the RP band.</p></li>
+<li><p>The G-Band “Dilution”: While the G-band filter is broad, its sensitivity extends into blue wavelengths where our red-biased sample has little to no emission. This makes the G-band total count lower than the RP band, which is more perfectly aligned with the stars’ output.</p></li>
+<li><p>Survivor Bias: The BP band shows the lowest flux simply because it is the most distant from the peak emission of our target stars.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">cabaret.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_image</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sources_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="c1"># plot_image handles the &quot;look&quot; of the data automatically</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">plot_image</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="n">title</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">add_colorbar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">]:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>By comparing these panels, we see that some stars appear significantly brighter in some bands than others. This is a direct visual confirmation of the spectral differences in our sample.</p>
+</section>
+<section id="multi-wavelength-synthesis-rgb">
+<h2>Multi-wavelength synthesis (RGB)<a class="headerlink" href="#multi-wavelength-synthesis-rgb" title="Link to this heading">#</a></h2>
+<p>To visualize the full spectral range of our data, we can combine three independent bands into a single false-color composite. We map these bands to the RGB channels in chromatic order—assigning the shortest wavelength to blue and the longest to red:</p>
+<p>We map the three bands to colour channels in wavelength order:</p>
+<ul class="simple">
+<li><p>G (optical) → Blue</p></li>
+<li><p>H (near-IR) → Green</p></li>
+<li><p>KS (near-IR) → Red</p></li>
+</ul>
+<p>In this scheme, blue objects generally represent hotter stars, while deep red objects highlight the coolest M-dwarfs or stars obscured by interstellar dust.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">ManualInterval</span><span class="p">,</span> <span class="n">make_rgb</span>
+
+<span class="n">maximum</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">images</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="mf">99.5</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">val</span> <span class="o">&gt;</span> <span class="n">maximum</span><span class="p">:</span>
+        <span class="n">maximum</span> <span class="o">=</span> <span class="n">val</span>
+<span class="n">rgb</span> <span class="o">=</span> <span class="n">make_rgb</span><span class="p">(</span>
+    <span class="n">image_r</span><span class="o">=</span><span class="n">images</span><span class="p">[</span><span class="s2">&quot;KS&quot;</span><span class="p">],</span>  <span class="c1"># ~2150 nm, near-IR</span>
+    <span class="n">image_g</span><span class="o">=</span><span class="n">images</span><span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">],</span>  <span class="c1"># ~1650 nm, near-IR</span>
+    <span class="n">image_b</span><span class="o">=</span><span class="n">images</span><span class="p">[</span><span class="s2">&quot;G&quot;</span><span class="p">],</span>  <span class="c1"># ~673 nm, optical</span>
+    <span class="n">interval</span><span class="o">=</span><span class="n">ManualInterval</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">maximum</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Pixels&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Pixels&quot;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="configuring_an_observatory.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Configuring an Observatory</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="asteroid_trailing.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Asteroid Tracking Simulation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#catalog-completeness-selection-bias">Catalog completeness &amp; selection bias</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-one-simulated-image-per-band">Generate one simulated image per band</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-wavelength-synthesis-rgb">Multi-wavelength synthesis (RGB)</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Peter Pihlmann, Lionel Garcia, David Degen
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, Peter Pedersen, Lionel Garcia, David Degen.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

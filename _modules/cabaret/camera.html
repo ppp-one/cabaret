@@ -1,0 +1,1354 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cabaret.camera &#8212; cabaret</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cabaret/camera';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.5.5" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">cabaret</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Get started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../motivation.html">Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../local_catalog.html">Local catalog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../citation.html">Citation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/configuring_an_observatory.html">Configuring an Observatory</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/multi_band_query.html">Multi-band Queries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/asteroid_trailing.html">Asteroid Tracking Simulation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../cabaret.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/cabaret.Observatory.html">Observatory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/cabaret.Camera.html">Camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/cabaret.Focuser.html">Focuser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/cabaret.Telescope.html">Telescope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/cabaret.Site.html">Site</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/cabaret.Filters.html">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/cabaret.GaiaQuery.html">GaiaQuery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/cabaret.GaiaSQLiteSource.html">GaiaSQLiteSource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/cabaret.GaiaTAPSource.html">GaiaTAPSource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/cabaret.Sources.html">Sources</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../cabaret.camera.html">Pixel defects</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../generated/cabaret.camera.ConstantPixelDefect.html">ConstantPixelDefect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../generated/cabaret.camera.ColumnPixelDefect.html">ColumnPixelDefect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../generated/cabaret.camera.RandomNoisePixelDefect.html">RandomNoisePixelDefect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../generated/cabaret.camera.QuantumEfficiencyMapPixelDefect.html">QuantumEfficiencyMapPixelDefect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../generated/cabaret.camera.ReadoutSmearPixelDefect.html">ReadoutSmearPixelDefect</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/ppp-one/cabaret" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/ppp-one/cabaret/issues/new?title=Issue%20on%20page%20%2F_modules/cabaret/camera.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cabaret.camera</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy.coordinates</span><span class="w"> </span><span class="kn">import</span> <span class="n">Angle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy.wcs</span><span class="w"> </span><span class="kn">import</span> <span class="n">WCS</span>
+
+
+<div class="viewcode-block" id="Camera">
+<a class="viewcode-back" href="../../generated/cabaret.Camera.html#cabaret.Camera">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Camera</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Camera configuration and properties.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Create a camera with multiple pixel defects:</span>
+
+<span class="sd">    &gt;&gt;&gt; from cabaret import Camera, Observatory, Sources</span>
+<span class="sd">    &gt;&gt;&gt; pixel_defects = {</span>
+<span class="sd">    ...     &quot;cold&quot;: {&quot;type&quot;: &quot;constant&quot;, &quot;value&quot;: 0, &quot;rate&quot;: 0.01, &quot;seed&quot;: 1},</span>
+<span class="sd">    ...     &quot;noise&quot;: {&quot;type&quot;: &quot;noise&quot;, &quot;rate&quot;: 0.02, &quot;noise_level&quot;: 100, &quot;seed&quot;: 2},</span>
+<span class="sd">    ...     &quot;qe&quot;: {&quot;type&quot;: &quot;quantum_efficiency_map&quot;, &quot;seed&quot;: 3},</span>
+<span class="sd">    ...     &quot;smear&quot;: {&quot;type&quot;: &quot;readout_smear&quot;, &quot;readout_time&quot;: 1},</span>
+<span class="sd">    ... }</span>
+<span class="sd">    &gt;&gt;&gt; camera = Camera(width=1024, height=1024, pixel_defects=pixel_defects)</span>
+<span class="sd">    &gt;&gt;&gt; observatory = Observatory(camera=camera)</span>
+<span class="sd">    &gt;&gt;&gt; sources = Sources.get_test_sources()</span>
+<span class="sd">    &gt;&gt;&gt; ra, dec = sources.center</span>
+
+<span class="sd">    Now generate an image with and without pixel defects:</span>
+
+<span class="sd">    &gt;&gt;&gt; _, clean_image, image = observatory.generate_image_stack(</span>
+<span class="sd">    ...     ra=ra, dec=dec, exp_time=10, seed=42, sources=sources,</span>
+<span class="sd">    ...     convert_all_to_adu=True</span>
+<span class="sd">    ... )</span>
+
+<span class="sd">    To plot the images, you can use the `plot_image` function from `cabaret.plot`:</span>
+
+<span class="sd">    &gt;&gt;&gt; from cabaret.plot import plot_image</span>
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; fig, axes = plt.subplots(1, 2, figsize=(7, 5), sharex=True, sharey=True)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plot_image(clean_image, ax=axes[0], title=&quot;Image without defects&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plot_image(image, ax=axes[1], title=&quot;Image with multiple defects&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.subplots_adjust(wspace=0.1)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Name of the camera.&quot;&quot;&quot;</span>
+
+    <span class="n">width</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Number of pixels in the x-direction (width).&quot;&quot;&quot;</span>
+
+    <span class="n">height</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Number of pixels in the y-direction (height).&quot;&quot;&quot;</span>
+
+    <span class="n">bin_x</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Binning factor in x.&quot;&quot;&quot;</span>
+
+    <span class="n">bin_y</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Binning factor in y.&quot;&quot;&quot;</span>
+
+    <span class="n">pitch</span><span class="p">:</span> <span class="nb">float</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pixel pitch in microns.&quot;&quot;&quot;</span>
+
+    <span class="n">plate_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Arcseconds per pixel (if None, calculated from pitch and telescope).&quot;&quot;&quot;</span>
+
+    <span class="n">max_adu</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Maximum ADU value.&quot;&quot;&quot;</span>
+
+    <span class="n">well_depth</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Full well capacity in electrons.&quot;&quot;&quot;</span>
+
+    <span class="n">bias</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Bias level in ADU.&quot;&quot;&quot;</span>
+
+    <span class="n">gain</span><span class="p">:</span> <span class="nb">float</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gain in electrons per ADU.&quot;&quot;&quot;</span>
+
+    <span class="n">read_noise</span><span class="p">:</span> <span class="nb">float</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read noise in electrons.&quot;&quot;&quot;</span>
+
+    <span class="n">dark_current</span><span class="p">:</span> <span class="nb">float</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dark current in electrons per second.&quot;&quot;&quot;</span>
+
+    <span class="n">average_quantum_efficiency</span><span class="p">:</span> <span class="nb">float</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Average quantum efficiency (fraction).&quot;&quot;&quot;</span>
+
+    <span class="n">rotation</span><span class="p">:</span> <span class="nb">float</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Rotation angle of the camera in degrees.&quot;&quot;&quot;</span>
+
+    <span class="n">pixel_defects</span><span class="p">:</span> <span class="nb">dict</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dictionary of pixel defect configurations.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Camera.__init__">
+<a class="viewcode-back" href="../../generated/cabaret.Camera.__init__.html#cabaret.Camera.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gaia-camera-simulated&quot;</span><span class="p">,</span>
+        <span class="n">width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1024</span><span class="p">,</span>
+        <span class="n">height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1024</span><span class="p">,</span>
+        <span class="n">bin_x</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">bin_y</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">pitch</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">13.5</span><span class="p">,</span>
+        <span class="n">plate_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_adu</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">16</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">well_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">16</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">bias</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
+        <span class="n">gain</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">read_noise</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">6.2</span><span class="p">,</span>
+        <span class="n">dark_current</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
+        <span class="n">average_quantum_efficiency</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span>
+        <span class="n">rotation</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">pixel_defects</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bin_x</span> <span class="o">=</span> <span class="n">bin_x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bin_y</span> <span class="o">=</span> <span class="n">bin_y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pitch</span> <span class="o">=</span> <span class="n">pitch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plate_scale</span> <span class="o">=</span> <span class="n">plate_scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_adu</span> <span class="o">=</span> <span class="n">max_adu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">well_depth</span> <span class="o">=</span> <span class="n">well_depth</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="n">bias</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gain</span> <span class="o">=</span> <span class="n">gain</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_noise</span> <span class="o">=</span> <span class="n">read_noise</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dark_current</span> <span class="o">=</span> <span class="n">dark_current</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">average_quantum_efficiency</span> <span class="o">=</span> <span class="n">average_quantum_efficiency</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rotation</span> <span class="o">=</span> <span class="n">rotation</span>
+
+        <span class="k">if</span> <span class="n">pixel_defects</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pixel_defects</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">key</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_create_pixel_defect</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">value</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="n">value</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">pixel_defects</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pixel_defects</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tuple of (height, width) of the camera in pixels.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Total number of pixels in the camera.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span>
+
+<div class="viewcode-block" id="Camera.make_base_image">
+<a class="viewcode-back" href="../../generated/cabaret.Camera.make_base_image.html#cabaret.Camera.make_base_image">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_base_image</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">exp_time</span><span class="p">,</span> <span class="n">rng</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the detector base image (bias, dark, read noise).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        exp_time : float</span>
+<span class="sd">            Exposure time in seconds.</span>
+<span class="sd">        rng : np.random.Generator, optional</span>
+<span class="sd">            Random number generator for reproducibility. If None, a new generator</span>
+<span class="sd">            will be created.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.ndarray</span>
+<span class="sd">            The base image with bias, dark current, and read noise added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">rng</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span>
+
+        <span class="n">ones</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+        <span class="n">base</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">ones</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+        <span class="n">base</span> <span class="o">+=</span> <span class="n">rng</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">ones</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dark_current</span> <span class="o">*</span> <span class="n">exp_time</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+        <span class="n">base</span> <span class="o">+=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_noise</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">base</span></div>
+
+
+<div class="viewcode-block" id="Camera.apply_pre_base_defects">
+<a class="viewcode-back" href="../../generated/cabaret.Camera.apply_pre_base_defects.html#cabaret.Camera.apply_pre_base_defects">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_pre_base_defects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">exp_time</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply defects that must precede the base image (e.g. readout smear).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        image : np.ndarray</span>
+<span class="sd">            The light image before bias, dark, and read noise are added.</span>
+<span class="sd">        exp_time : float</span>
+<span class="sd">            Exposure time in seconds.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.ndarray</span>
+<span class="sd">            The image with pre-base defects applied.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">defect</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixel_defects</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">defect</span><span class="o">.</span><span class="n">apply_before_base</span><span class="p">:</span>
+                <span class="n">image</span> <span class="o">=</span> <span class="n">defect</span><span class="o">.</span><span class="n">introduce_pixel_defect</span><span class="p">(</span>
+                    <span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="p">,</span> <span class="n">camera</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp_time</span><span class="o">=</span><span class="n">exp_time</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">image</span></div>
+
+
+<div class="viewcode-block" id="Camera.apply_post_base_defects">
+<a class="viewcode-back" href="../../generated/cabaret.Camera.apply_post_base_defects.html#cabaret.Camera.apply_post_base_defects">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_post_base_defects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">exp_time</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply defects that follow the base image (e.g. constant hot/cold pixels).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        image : np.ndarray</span>
+<span class="sd">            The image after bias, dark, and read noise have been added.</span>
+<span class="sd">        exp_time : float</span>
+<span class="sd">            Exposure time in seconds.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.ndarray</span>
+<span class="sd">            The image with post-base defects applied.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">defect</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixel_defects</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">defect</span><span class="o">.</span><span class="n">apply_before_base</span><span class="p">:</span>
+                <span class="n">image</span> <span class="o">=</span> <span class="n">defect</span><span class="o">.</span><span class="n">introduce_pixel_defect</span><span class="p">(</span>
+                    <span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="p">,</span> <span class="n">camera</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp_time</span><span class="o">=</span><span class="n">exp_time</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">image</span></div>
+
+
+<div class="viewcode-block" id="Camera.to_adu_image">
+<a class="viewcode-back" href="../../generated/cabaret.Camera.to_adu_image.html#cabaret.Camera.to_adu_image">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_adu_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to ADU, add bias, clip, and cast to uint16.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        image : np.ndarray</span>
+<span class="sd">            The image to be finalized.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.ndarray</span>
+<span class="sd">            The finalized image as a uint16 numpy array.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">well_depth</span><span class="p">)</span>
+
+        <span class="n">image</span> <span class="o">=</span> <span class="n">image</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">gain</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span>
+
+        <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_adu</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">image</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Camera.bin_image">
+<a class="viewcode-back" href="../../generated/cabaret.Camera.bin_image.html#cabaret.Camera.bin_image">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bin_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Bin the image according to the camera&#39;s binning factors.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        image : np.ndarray</span>
+<span class="sd">            The image to be binned.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.ndarray</span>
+<span class="sd">            The binned image.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_x</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_y</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">image</span>
+
+        <span class="n">binned_height</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_y</span>
+        <span class="n">binned_width</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_x</span>
+
+        <span class="n">binned_image</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">image</span><span class="p">[:</span> <span class="n">binned_height</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_y</span><span class="p">,</span> <span class="p">:</span> <span class="n">binned_width</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_x</span><span class="p">]</span>
+            <span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">binned_height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_y</span><span class="p">,</span> <span class="n">binned_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_x</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">binned_image</span></div>
+
+
+<div class="viewcode-block" id="Camera.set_plate_scale_from_focal_length">
+<a class="viewcode-back" href="../../generated/cabaret.Camera.set_plate_scale_from_focal_length.html#cabaret.Camera.set_plate_scale_from_focal_length">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_plate_scale_from_focal_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">focal_length</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the plate scale based on the focal length of the telescope.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        focal_length : float</span>
+<span class="sd">            Focal length of the telescope in m.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plate_scale</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mi">2</span>
+            <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">pitch</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">focal_length</span><span class="p">))</span>
+            <span class="o">*</span> <span class="p">(</span><span class="mi">180</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+            <span class="o">*</span> <span class="mi">3600</span>
+        <span class="p">)</span>  <span class="c1"># &quot;/pixel</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_pixel_defect</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="s2">&quot;column&quot;</span><span class="p">,</span> <span class="s2">&quot;noise&quot;</span><span class="p">,</span> <span class="s2">&quot;fixed_pattern&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PixelDefect&quot;</span><span class="p">:</span>
+        <span class="n">defect_classes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;constant&quot;</span><span class="p">:</span> <span class="n">ConstantPixelDefect</span><span class="p">,</span>
+            <span class="s2">&quot;column&quot;</span><span class="p">:</span> <span class="n">ColumnPixelDefect</span><span class="p">,</span>
+            <span class="s2">&quot;noise&quot;</span><span class="p">:</span> <span class="n">RandomNoisePixelDefect</span><span class="p">,</span>
+            <span class="s2">&quot;quantum_efficiency_map&quot;</span><span class="p">:</span> <span class="n">QuantumEfficiencyMapPixelDefect</span><span class="p">,</span>
+            <span class="s2">&quot;readout_smear&quot;</span><span class="p">:</span> <span class="n">ReadoutSmearPixelDefect</span><span class="p">,</span>
+            <span class="s2">&quot;light_distribution&quot;</span><span class="p">:</span> <span class="n">LightDistributionPixelDefect</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">defect_type</span> <span class="o">=</span> <span class="nb">type</span>
+
+        <span class="k">if</span> <span class="n">defect_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">defect_classes</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown pixel defect type for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">defect_classes</span><span class="p">[</span><span class="n">defect_type</span><span class="p">](</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Camera.create_ideal_camera">
+<a class="viewcode-back" href="../../generated/cabaret.Camera.create_ideal_camera.html#cabaret.Camera.create_ideal_camera">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_ideal_camera</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Camera&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a defect-free camera.&quot;&quot;&quot;</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;read_noise&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;dark_current&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;average_quantum_efficiency&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+            <span class="s2">&quot;bias&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;gain&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="p">(</span><span class="n">parameters</span> <span class="o">|</span> <span class="n">kwargs</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Camera.get_wcs">
+<a class="viewcode-back" href="../../generated/cabaret.Camera.get_wcs.html#cabaret.Camera.get_wcs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_wcs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a WCS object for the camera centered at the given sky coordinate.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plate_scale</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;plate_scale must be set to compute WCS.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Convert plate scale to degrees per pixel</span>
+        <span class="n">scale_deg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plate_scale</span> <span class="o">/</span> <span class="mi">3600</span>  <span class="c1"># arcsec to deg</span>
+
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rotation</span><span class="p">)</span>
+        <span class="n">cos_theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+        <span class="n">sin_theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+
+        <span class="c1"># CD matrix with rotation</span>
+        <span class="n">cd11</span> <span class="o">=</span> <span class="o">-</span><span class="n">scale_deg</span> <span class="o">*</span> <span class="n">cos_theta</span>
+        <span class="n">cd12</span> <span class="o">=</span> <span class="n">scale_deg</span> <span class="o">*</span> <span class="n">sin_theta</span>
+        <span class="n">cd21</span> <span class="o">=</span> <span class="o">-</span><span class="n">scale_deg</span> <span class="o">*</span> <span class="n">sin_theta</span>
+        <span class="n">cd22</span> <span class="o">=</span> <span class="o">-</span><span class="n">scale_deg</span> <span class="o">*</span> <span class="n">cos_theta</span>
+
+        <span class="n">wcs</span> <span class="o">=</span> <span class="n">WCS</span><span class="p">(</span><span class="n">naxis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">wcs</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">cd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">cd11</span><span class="p">,</span> <span class="n">cd12</span><span class="p">],</span> <span class="p">[</span><span class="n">cd21</span><span class="p">,</span> <span class="n">cd22</span><span class="p">]])</span>
+        <span class="n">wcs</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">cunit</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;deg&quot;</span><span class="p">,</span> <span class="s2">&quot;deg&quot;</span><span class="p">]</span>
+        <span class="n">wcs</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">crpix</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)]</span>
+        <span class="n">wcs</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">crval</span> <span class="o">=</span> <span class="p">[</span><span class="n">center</span><span class="o">.</span><span class="n">ra</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="n">center</span><span class="o">.</span><span class="n">dec</span><span class="o">.</span><span class="n">deg</span><span class="p">]</span>
+        <span class="n">wcs</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">ctype</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;RA---TAN&quot;</span><span class="p">,</span> <span class="s2">&quot;DEC--TAN&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">wcs</span></div>
+
+
+<div class="viewcode-block" id="Camera.get_fov_radius">
+<a class="viewcode-back" href="../../generated/cabaret.Camera.get_fov_radius.html#cabaret.Camera.get_fov_radius">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_fov_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Angle</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Half-diagonal field radius in degrees.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plate_scale</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;plate_scale must be set to compute FOV.&quot;</span><span class="p">)</span>
+        <span class="n">fov_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">plate_scale</span> <span class="o">/</span> <span class="mf">3600.0</span>
+        <span class="n">fov_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">plate_scale</span> <span class="o">/</span> <span class="mf">3600.0</span>
+        <span class="k">return</span> <span class="n">Angle</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">fov_x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">fov_y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;deg&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_blank_image</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a blank image filled with zeros for testing.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Camera.on_camera_mask">
+<a class="viewcode-back" href="../../generated/cabaret.Camera.on_camera_mask.html#cabaret.Camera.on_camera_mask">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_camera_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pixel_coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clip the given pixel coordinates to the camera&#39;s bounds.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pixel_coords : np.ndarray</span>
+<span class="sd">            An array of shape (2, n) containing the pixel coordinates to be clipped.</span>
+<span class="sd">            First row is x-coordinates, second row is y-coordinates.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.ndarray</span>
+<span class="sd">            A boolean array indicating which coordinates are within the camera&#39;s bounds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">in_camera</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">pixel_coords</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="o">&amp;</span> <span class="p">(</span><span class="n">pixel_coords</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)</span>
+            <span class="o">&amp;</span> <span class="p">(</span><span class="n">pixel_coords</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="o">&amp;</span> <span class="p">(</span><span class="n">pixel_coords</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">in_camera</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PixelDefect</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;defect&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Name of the defect.&quot;&quot;&quot;</span>
+
+    <span class="n">rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fraction of pixels affected by the defect.&quot;&quot;&quot;</span>
+
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Random seed for reproducibility.&quot;&quot;&quot;</span>
+
+    <span class="n">apply_before_base</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;If True, this defect is applied before the base image (bias, dark, read noise)</span>
+<span class="sd">    is added. If False (default), it is applied after.&quot;&quot;&quot;</span>
+
+    <span class="n">_rng</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Random number generator instance.&quot;&quot;&quot;</span>
+
+    <span class="n">_pixels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Array of pixel coordinates affected by the defect.&quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pixels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pixel coordinates affected by the defect.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pixels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> pixels are not defined.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pixels</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rng</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Random number generator instance.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rng</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rng</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rng</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">introduce_pixel_defect</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">camera</span><span class="p">:</span> <span class="n">Camera</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Introduce the defect into the image.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        image : np.ndarray</span>
+<span class="sd">            The image to which the defect will be introduced.</span>
+<span class="sd">        camera : Camera</span>
+<span class="sd">            The camera to which the defect applies.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_pixels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pixels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">camera</span><span class="p">:</span> <span class="n">Camera</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the pixels for the defect.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pixels : np.ndarray</span>
+<span class="sd">            The pixel coordinates of the defect.</span>
+<span class="sd">        camera : Camera</span>
+<span class="sd">            The camera to which the defect applies.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_pixel_bounds</span><span class="p">(</span><span class="n">pixels</span><span class="p">,</span> <span class="n">camera</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">camera</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pixels</span> <span class="o">=</span> <span class="n">pixels</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">number_of_defect_pixels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera</span><span class="p">:</span> <span class="n">Camera</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the number of pixels affected by the defect.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rate</span> <span class="o">*</span> <span class="n">camera</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="n">camera</span><span class="o">.</span><span class="n">height</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_select_random_pixels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera</span><span class="p">:</span> <span class="n">Camera</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">camera</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">camera</span><span class="o">.</span><span class="n">width</span><span class="p">],</span>
+            <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_defect_pixels</span><span class="p">(</span><span class="n">camera</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_overwrite_pixel_values</span><span class="p">(</span>
+        <span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">pixels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">pixel_values</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pixel_values</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pixel_values</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">pixels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Pixel values must match the number of pixels.&quot;</span><span class="p">)</span>
+
+        <span class="n">image</span><span class="p">[</span><span class="n">pixels</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">pixels</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">pixel_values</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_pixel_bounds</span><span class="p">(</span><span class="n">pixels</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">pixels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> pixels are not defined.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pixels</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">pixels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pixels</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pixels</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">pixels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> pixels must be a numpy array of (x, y) tuples.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Got shape </span><span class="si">{</span><span class="n">pixels</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> instead.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">pixels</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">height</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">pixels</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">width</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> pixels are outside the frame.&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ConstantPixelDefect">
+<a class="viewcode-back" href="../../generated/cabaret.camera.ConstantPixelDefect.html#cabaret.ConstantPixelDefect">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConstantPixelDefect</span><span class="p">(</span><span class="n">PixelDefect</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A pixel defect that sets selected pixels to a constant value.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from cabaret import Observatory, Sources</span>
+<span class="sd">    &gt;&gt;&gt; pixel_defects = {</span>
+<span class="sd">    ...     &quot;hot&quot;: {&quot;type&quot;: &quot;constant&quot;, &quot;value&quot;: 5000, &quot;rate&quot;: 0.01, &quot;seed&quot;: 0},</span>
+<span class="sd">    ...     &quot;cold&quot;: {&quot;type&quot;: &quot;constant&quot;, &quot;value&quot;: 0, &quot;rate&quot;: 0.01, &quot;seed&quot;: 1}</span>
+<span class="sd">    ... }</span>
+<span class="sd">    &gt;&gt;&gt; observatory = Observatory(camera={&quot;pixel_defects&quot;: pixel_defects})</span>
+<span class="sd">    &gt;&gt;&gt; sources = Sources.get_test_sources()</span>
+<span class="sd">    &gt;&gt;&gt; ra, dec = sources.center</span>
+<span class="sd">    &gt;&gt;&gt; _, clean_image, image = observatory.generate_image_stack(</span>
+<span class="sd">    ...     exp_time=3, ra=ra, dec=dec, sources=sources, convert_all_to_adu=True</span>
+<span class="sd">    ... )</span>
+
+<span class="sd">    To plot the images, you can use the `plot_image` function from `cabaret.plot`:</span>
+
+<span class="sd">    &gt;&gt;&gt; from cabaret.plot import plot_image</span>
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; fig, axes = plt.subplots(1, 2, figsize=(7, 5), sharex=True, sharey=True)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plot_image(clean_image, ax=axes[0], title=&quot;Image without defects&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plot_image(image, ax=axes[1], title=&quot;Image with constant defects&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.subplots_adjust(wspace=0.1)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Constant value to assign to defect pixels.&quot;&quot;&quot;</span>
+
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Random seed for reproducibility.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ConstantPixelDefect.introduce_pixel_defect">
+<a class="viewcode-back" href="../../generated/cabaret.camera.ConstantPixelDefect.introduce_pixel_defect.html#cabaret.ConstantPixelDefect.introduce_pixel_defect">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">introduce_pixel_defect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">camera</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pixels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_pixels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_select_random_pixels</span><span class="p">(</span><span class="n">camera</span><span class="p">),</span> <span class="n">camera</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_overwrite_pixel_values</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">image</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ColumnPixelDefect">
+<a class="viewcode-back" href="../../generated/cabaret.camera.ColumnPixelDefect.html#cabaret.ColumnPixelDefect">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ColumnPixelDefect</span><span class="p">(</span><span class="n">PixelDefect</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A pixel defect that simulates column noise by selecting entire rows or</span>
+<span class="sd">    columns of pixels to be defective.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from cabaret import Observatory, Sources</span>
+<span class="sd">    &gt;&gt;&gt; pixel_defects = {</span>
+<span class="sd">    ...     &quot;column&quot;: {&quot;type&quot;: &quot;column&quot;, &quot;value&quot;: 20, &quot;rate&quot;: 0.01, &quot;dim&quot;: 1}</span>
+<span class="sd">    ... }</span>
+<span class="sd">    &gt;&gt;&gt; observatory = Observatory(camera={&quot;pixel_defects&quot;: pixel_defects})</span>
+<span class="sd">    &gt;&gt;&gt; sources = Sources.get_test_sources()</span>
+<span class="sd">    &gt;&gt;&gt; ra, dec = sources.center</span>
+<span class="sd">    &gt;&gt;&gt; _, clean_image, image = observatory.generate_image_stack(</span>
+<span class="sd">    ...     exp_time=3, ra=ra, dec=dec, sources=sources, convert_all_to_adu=True</span>
+<span class="sd">    ... )</span>
+
+
+<span class="sd">    To plot the images, you can use the `plot_image` function from `cabaret.plot`:</span>
+
+<span class="sd">    &gt;&gt;&gt; from cabaret.plot import plot_image</span>
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; fig, axes = plt.subplots(1, 2, figsize=(7, 5), sharex=True, sharey=True)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plot_image(clean_image, ax=axes[0], title=&quot;Image without defects&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plot_image(image, ax=axes[1], title=&quot;Image with column defects&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.subplots_adjust(wspace=0.1)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Constant value to assign to defect pixels.&quot;&quot;&quot;</span>
+
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Random seed for reproducibility.&quot;&quot;&quot;</span>
+
+    <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dimension along which to apply the defect.&quot;&quot;&quot;</span>
+
+    <span class="n">_lines</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">lines</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Defective lines (rows or columns).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lines</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> lines are not defined.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lines</span>
+
+<div class="viewcode-block" id="ColumnPixelDefect.introduce_pixel_defect">
+<a class="viewcode-back" href="../../generated/cabaret.camera.ColumnPixelDefect.introduce_pixel_defect.html#cabaret.ColumnPixelDefect.introduce_pixel_defect">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">introduce_pixel_defect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">camera</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lines</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_lines</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_select_random_lines</span><span class="p">(</span><span class="n">camera</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">),</span> <span class="n">camera</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_overwrite_pixel_values</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">image</span></div>
+
+
+<div class="viewcode-block" id="ColumnPixelDefect.set_lines">
+<a class="viewcode-back" href="../../generated/cabaret.camera.ColumnPixelDefect.set_lines.html#cabaret.ColumnPixelDefect.set_lines">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">list</span><span class="p">,</span> <span class="n">camera</span><span class="p">:</span> <span class="n">Camera</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the lines for the defect.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lines</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+        <span class="c1"># Set pixels based on the selected lines</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Rows (horizontal lines)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lines</span> <span class="o">&lt;</span> <span class="n">camera</span><span class="o">.</span><span class="n">height</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Selected lines are outside the frame.&quot;</span><span class="p">)</span>
+            <span class="n">Y</span><span class="p">,</span> <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lines</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">camera</span><span class="o">.</span><span class="n">width</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Columns (vertical lines)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lines</span> <span class="o">&lt;</span> <span class="n">camera</span><span class="o">.</span><span class="n">width</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Selected lines are outside the frame.&quot;</span><span class="p">)</span>
+            <span class="n">Y</span><span class="p">,</span> <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">camera</span><span class="o">.</span><span class="n">height</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lines</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_pixels</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">Y</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">X</span><span class="o">.</span><span class="n">ravel</span><span class="p">())),</span> <span class="n">camera</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_select_random_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera</span><span class="p">:</span> <span class="n">Camera</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="n">line_length</span> <span class="o">=</span> <span class="n">camera</span><span class="o">.</span><span class="n">height</span> <span class="k">if</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">camera</span><span class="o">.</span><span class="n">width</span>
+        <span class="n">line_divisor</span> <span class="o">=</span> <span class="n">camera</span><span class="o">.</span><span class="n">width</span> <span class="k">if</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">camera</span><span class="o">.</span><span class="n">height</span>
+        <span class="n">number_of_lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_defect_pixels</span><span class="p">(</span><span class="n">camera</span><span class="p">)</span> <span class="o">//</span> <span class="n">line_divisor</span>
+        <span class="n">selected_lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="n">line_length</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">number_of_lines</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">selected_lines</span></div>
+
+
+
+<div class="viewcode-block" id="RandomNoisePixelDefect">
+<a class="viewcode-back" href="../../generated/cabaret.camera.RandomNoisePixelDefect.html#cabaret.RandomNoisePixelDefect">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RandomNoisePixelDefect</span><span class="p">(</span><span class="n">PixelDefect</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A pixel defect that introduces random noise to selected pixels.</span>
+
+<span class="sd">    This is different from read noise, which is applied to all pixels and represents</span>
+<span class="sd">    the electronic noise of the sensor. RandomNoisePixelDefect simulates pixels that</span>
+<span class="sd">    are abnormally noisy (e.g., &quot;noisy&quot; or &quot;unstable&quot; pixels), and the noise is</span>
+<span class="sd">    added only to those selected pixels.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from cabaret import Observatory, Sources</span>
+<span class="sd">    &gt;&gt;&gt; pixel_defects = {&quot;noise&quot;: {&quot;type&quot;: &quot;noise&quot;, &quot;rate&quot;: 0.1, &quot;noise_level&quot;: 5e3}}</span>
+<span class="sd">    &gt;&gt;&gt; observatory = Observatory(camera={&quot;pixel_defects&quot;: pixel_defects})</span>
+<span class="sd">    &gt;&gt;&gt; sources = Sources.get_test_sources()</span>
+<span class="sd">    &gt;&gt;&gt; ra, dec = sources.center</span>
+<span class="sd">    &gt;&gt;&gt; _, clean_image, image = observatory.generate_image_stack(</span>
+<span class="sd">    ...     exp_time=3, ra=ra, dec=dec, sources=sources, convert_all_to_adu=True</span>
+<span class="sd">    ... )</span>
+
+
+<span class="sd">    To plot the images, you can use the `plot_image` function from `cabaret.plot`:</span>
+
+<span class="sd">    &gt;&gt;&gt; from cabaret.plot import plot_image</span>
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; fig, axes = plt.subplots(1, 2, figsize=(7, 5), sharex=True, sharey=True)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plot_image(clean_image, ax=axes[0], title=&quot;Image without defects&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plot_image(image, ax=axes[1], title=&quot;Image with random noise defects&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.subplots_adjust(wspace=0.1)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">noise_level</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span>  <span class="c1"># Standard deviation for Gaussian noise</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Standard deviation or scale for the noise.&quot;&quot;&quot;</span>
+
+    <span class="n">distribution</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;normal&quot;</span><span class="p">,</span> <span class="s2">&quot;poisson&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Distribution type for the noise (&#39;normal&#39; or &#39;poisson&#39;).&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RandomNoisePixelDefect.generate_noise">
+<a class="viewcode-back" href="../../generated/cabaret.camera.RandomNoisePixelDefect.generate_noise.html#cabaret.RandomNoisePixelDefect.generate_noise">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate noise for the defect pixels.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution</span> <span class="o">==</span> <span class="s2">&quot;poisson&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise_level</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution</span> <span class="o">==</span> <span class="s2">&quot;normal&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise_level</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown noise distribution.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RandomNoisePixelDefect.introduce_pixel_defect">
+<a class="viewcode-back" href="../../generated/cabaret.camera.RandomNoisePixelDefect.introduce_pixel_defect.html#cabaret.RandomNoisePixelDefect.introduce_pixel_defect">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">introduce_pixel_defect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">camera</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rng</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pixels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_pixels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_select_random_pixels</span><span class="p">(</span><span class="n">camera</span><span class="p">),</span> <span class="n">camera</span><span class="p">)</span>
+
+        <span class="n">noise</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_noise</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># Add noise only to the selected defect pixels</span>
+        <span class="n">image</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">+=</span> <span class="n">noise</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">camera</span><span class="o">.</span><span class="n">max_adu</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">image</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="QuantumEfficiencyMapPixelDefect">
+<a class="viewcode-back" href="../../generated/cabaret.camera.QuantumEfficiencyMapPixelDefect.html#cabaret.QuantumEfficiencyMapPixelDefect">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">QuantumEfficiencyMapPixelDefect</span><span class="p">(</span><span class="n">PixelDefect</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A pixel defect that simulates variations in quantum efficiency across the sensor.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from cabaret import Observatory, Sources</span>
+<span class="sd">    &gt;&gt;&gt; pixel_defects = {</span>
+<span class="sd">    ...     &quot;qe&quot;: {&quot;type&quot;: &quot;quantum_efficiency_map&quot;, &quot;quantum_efficiency_std&quot;: 0.5}</span>
+<span class="sd">    ... }</span>
+<span class="sd">    &gt;&gt;&gt; observatory = Observatory(camera={&quot;pixel_defects&quot;: pixel_defects})</span>
+<span class="sd">    &gt;&gt;&gt; sources = Sources.get_test_sources()</span>
+<span class="sd">    &gt;&gt;&gt; ra, dec = sources.center</span>
+<span class="sd">    &gt;&gt;&gt; _, clean_image, image = observatory.generate_image_stack(</span>
+<span class="sd">    ...     exp_time=3, ra=ra, dec=dec, sources=sources, convert_all_to_adu=True</span>
+<span class="sd">    ... )</span>
+
+<span class="sd">    To plot the images, you can use the `plot_image` function from `cabaret.plot`:</span>
+
+<span class="sd">    &gt;&gt;&gt; from cabaret.plot import plot_image</span>
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; fig, axes = plt.subplots(1, 3, figsize=(10, 5), sharex=True, sharey=True)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plot_image(clean_image, ax=axes[0], title=&quot;Image without defects&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plot_image(image, ax=axes[1], title=&quot;Image with QE defects&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plot_image(</span>
+<span class="sd">    ...     observatory.camera.pixel_defects[&quot;qe&quot;].quantum_efficiency_map,</span>
+<span class="sd">    ...     ax=axes[2], title=&quot;Quantum Efficiency Map&quot;</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; plt.subplots_adjust(wspace=0.3, hspace=0.3)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">quantum_efficiency_std</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Standard deviation of the quantum efficiency variations.&quot;&quot;&quot;</span>
+
+    <span class="n">quantum_efficiency_map</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Quantum efficiency map (2D array).&quot;&quot;&quot;</span>
+
+    <span class="n">apply_before_base</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Quantum efficiency variations are a function of the light signal&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantum_efficiency_map</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">quantum_efficiency_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quantum_efficiency_map</span><span class="p">)</span>
+
+<div class="viewcode-block" id="QuantumEfficiencyMapPixelDefect.generate_quantum_efficiency_map">
+<a class="viewcode-back" href="../../generated/cabaret.camera.QuantumEfficiencyMapPixelDefect.generate_quantum_efficiency_map.html#cabaret.QuantumEfficiencyMapPixelDefect.generate_quantum_efficiency_map">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_quantum_efficiency_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera</span><span class="p">:</span> <span class="n">Camera</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quantum_efficiency_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span>
+                <span class="n">loc</span><span class="o">=</span><span class="n">camera</span><span class="o">.</span><span class="n">average_quantum_efficiency</span><span class="p">,</span>
+                <span class="n">scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quantum_efficiency_std</span><span class="p">,</span>
+                <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">camera</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">camera</span><span class="o">.</span><span class="n">width</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="mi">0</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="QuantumEfficiencyMapPixelDefect.introduce_pixel_defect">
+<a class="viewcode-back" href="../../generated/cabaret.camera.QuantumEfficiencyMapPixelDefect.introduce_pixel_defect.html#cabaret.QuantumEfficiencyMapPixelDefect.introduce_pixel_defect">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">introduce_pixel_defect</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">camera</span><span class="p">:</span> <span class="n">Camera</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rng</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantum_efficiency_map</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generate_quantum_efficiency_map</span><span class="p">(</span><span class="n">camera</span><span class="p">)</span>
+
+        <span class="n">image</span> <span class="o">=</span> <span class="n">image</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantum_efficiency_map</span> <span class="o">/</span> <span class="n">camera</span><span class="o">.</span><span class="n">average_quantum_efficiency</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">camera</span><span class="o">.</span><span class="n">max_adu</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">image</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LightDistributionPixelDefect</span><span class="p">(</span><span class="n">PixelDefect</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A pixel defect that multiplies each pixel&#39;s light signal by a user-supplied map.</span>
+
+<span class="sd">    Use this to simulate spatially varying illumination effects such as vignetting,</span>
+<span class="sd">    flat-field non-uniformity, or any multiplicative light distribution pattern.</span>
+<span class="sd">    The map is applied before bias, dark current, and read noise are added.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    distribution_map : np.ndarray</span>
+<span class="sd">        2D array of the same shape as the camera sensor.  Each element is a</span>
+<span class="sd">        multiplicative factor applied to the corresponding pixel&#39;s light value.</span>
+<span class="sd">        Values should be non-negative; values greater than 1 amplify the signal</span>
+<span class="sd">        and values less than 1 attenuate it.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; from cabaret import Observatory, Sources</span>
+<span class="sd">    &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">    &gt;&gt;&gt; distribution_map = np.clip(rng.normal(1.0, 0.1, (1024, 1024)), 0, None)</span>
+<span class="sd">    &gt;&gt;&gt; pixel_defects = {</span>
+<span class="sd">    ...     &quot;vignette&quot;: {</span>
+<span class="sd">    ...         &quot;type&quot;: &quot;light_distribution&quot;,</span>
+<span class="sd">    ...         &quot;distribution_map&quot;: distribution_map,</span>
+<span class="sd">    ...     }</span>
+<span class="sd">    ... }</span>
+<span class="sd">    &gt;&gt;&gt; observatory = Observatory(camera={&quot;pixel_defects&quot;: pixel_defects})</span>
+<span class="sd">    &gt;&gt;&gt; sources = Sources.get_test_sources()</span>
+<span class="sd">    &gt;&gt;&gt; ra, dec = sources.center</span>
+<span class="sd">    &gt;&gt;&gt; _, clean_image, image = observatory.generate_image_stack(</span>
+<span class="sd">    ...     exp_time=3, ra=ra, dec=dec, sources=sources, convert_all_to_adu=True</span>
+<span class="sd">    ... )</span>
+
+<span class="sd">    To plot the images, you can use the `plot_image` function from `cabaret.plot`:</span>
+
+<span class="sd">    &gt;&gt;&gt; from cabaret.plot import plot_image</span>
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; fig, axes = plt.subplots(1, 2, figsize=(7, 5), sharex=True, sharey=True)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plot_image(clean_image, ax=axes[0], title=&quot;Image without defects&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plot_image(image, ax=axes[1], title=&quot;Image with light distribution defect&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.subplots_adjust(wspace=0.1)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">distribution_map</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;2D multiplicative map applied to the light signal.&quot;&quot;&quot;</span>
+
+    <span class="n">apply_before_base</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Light distribution acts on the incoming signal; applied before the base image.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution_map</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">distribution_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">distribution_map</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">introduce_pixel_defect</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">camera</span><span class="p">:</span> <span class="n">Camera</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution_map</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: distribution_map must be provided before applying &quot;</span>
+                <span class="s2">&quot;this defect.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution_map</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">camera</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: distribution_map shape </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">distribution_map</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;does not match camera shape </span><span class="si">{</span><span class="n">camera</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">image</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution_map</span>
+        <span class="k">return</span> <span class="n">image</span>
+
+
+<div class="viewcode-block" id="ReadoutSmearPixelDefect">
+<a class="viewcode-back" href="../../generated/cabaret.camera.ReadoutSmearPixelDefect.html#cabaret.ReadoutSmearPixelDefect">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ReadoutSmearPixelDefect</span><span class="p">(</span><span class="n">PixelDefect</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simulates readout smear (frame transfer smear) caused by continued exposure during</span>
+<span class="sd">    readout.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    smear_fraction : float</span>
+<span class="sd">        Fraction of the exposure time spent during readout (smear strength).</span>
+<span class="sd">    dim : int</span>
+<span class="sd">        Direction of readout: 0 for vertical (default), 1 for horizontal.</span>
+<span class="sd">    readout_time : float</span>
+<span class="sd">        Time taken to read out the entire frame (seconds).</span>
+<span class="sd">    seed : int</span>
+<span class="sd">        Random seed for reproducibility.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This defect has ``apply_before_base = True`` because readout smear is a function</span>
+<span class="sd">    of the light signal only and must be applied before bias, dark current, and read</span>
+<span class="sd">    noise are added.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from cabaret import Observatory, Sources</span>
+<span class="sd">    &gt;&gt;&gt; pixel_defects = {&quot;smear&quot;: {&quot;type&quot;: &quot;readout_smear&quot;, &quot;readout_time&quot;: 1}}</span>
+<span class="sd">    &gt;&gt;&gt; observatory = Observatory(camera={&quot;pixel_defects&quot;: pixel_defects})</span>
+<span class="sd">    &gt;&gt;&gt; sources = Sources.get_test_sources()</span>
+<span class="sd">    &gt;&gt;&gt; ra, dec = sources.center</span>
+<span class="sd">    &gt;&gt;&gt; _, clean_image, image = observatory.generate_image_stack(</span>
+<span class="sd">    ...     exp_time=5, ra=ra, dec=dec, sources=sources, convert_all_to_adu=True</span>
+<span class="sd">    ... )</span>
+
+
+<span class="sd">    To plot the images, you can use the `plot_image` function from `cabaret.plot`:</span>
+
+<span class="sd">    &gt;&gt;&gt; from cabaret.plot import plot_image</span>
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; fig, axes = plt.subplots(1, 2, figsize=(7, 5), sharex=True, sharey=True)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plot_image(clean_image, ax=axes[0], title=&quot;Image without defects&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plot_image(image, ax=axes[1], title=&quot;Image with readout smear&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.subplots_adjust(wspace=0.1)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">apply_before_base</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Readout smear depends on the light signal and must precede the base image.&quot;&quot;&quot;</span>
+
+    <span class="n">readout_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Time taken to read out the entire frame (seconds).&quot;&quot;&quot;</span>
+
+    <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Direction of readout: 0 for vertical, 1 for horizontal.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;dim must be 0 (vertical) or 1 (horizontal)&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ReadoutSmearPixelDefect.introduce_pixel_defect">
+<a class="viewcode-back" href="../../generated/cabaret.camera.ReadoutSmearPixelDefect.introduce_pixel_defect.html#cabaret.ReadoutSmearPixelDefect.introduce_pixel_defect">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">introduce_pixel_defect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">camera</span><span class="p">,</span> <span class="n">exp_time</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Fraction of the exposure time that each pixel is exposed</span>
+        <span class="c1"># during the readout of a single row/column, assuming uniform readout speed</span>
+        <span class="n">smear_fraction_per_pixel_readout</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">readout_time</span> <span class="o">/</span> <span class="n">exp_time</span> <span class="o">/</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="c1"># A fraction of each pixels values to those read out after it</span>
+        <span class="n">smear</span> <span class="o">=</span> <span class="n">smear_fraction_per_pixel_readout</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span> <span class="o">-</span> <span class="n">image</span>
+        <span class="p">)</span>
+
+        <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">image</span> <span class="o">+</span> <span class="n">smear</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">camera</span><span class="o">.</span><span class="n">max_adu</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">image</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Peter Pihlmann, Lionel Garcia, David Degen
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, Peter Pedersen, Lionel Garcia, David Degen.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

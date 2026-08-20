@@ -1,0 +1,152 @@
+Traceback (most recent call last):
+  File "/home/runner/work/cabaret/cabaret/.venv/lib/python3.12/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/home/runner/work/cabaret/cabaret/.venv/lib/python3.12/site-packages/nbclient/client.py", line 1323, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/cabaret/cabaret/.venv/lib/python3.12/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/runner/work/cabaret/cabaret/.venv/lib/python3.12/site-packages/nbclient/client.py", line 709, in async_execute
+    await self.async_execute_cell(
+  File "/home/runner/work/cabaret/cabaret/.venv/lib/python3.12/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/home/runner/work/cabaret/cabaret/.venv/lib/python3.12/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+from astropy.coordinates import SkyCoord
+
+import cabaret
+
+# center = SkyCoord(ra=10.68458, dec=41.26917, unit="deg")  # M31 field
+center = SkyCoord(ra=90.0, dec=28.0, unit="deg")  # Galactic anti-center
+
+table = cabaret.GaiaQuery.get_flux_table(
+    center,
+    radius=0.15,
+    filter_bands="all",
+    timeout=60,
+    keep_mag=True,  # keep magnitude column
+    allow_nulls=True,
+)
+
+print(table.colnames)
+print(f"{len(table)} sources retrieved")
+------------------
+
+
+[31m---------------------------------------------------------------------------[39m
+[31mHTTPError[39m                                 Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[1][39m[32m, line 8[39m
+[32m      4[39m 
+[32m      5[39m [38;5;66;03m# center = SkyCoord(ra=10.68458, dec=41.26917, unit="deg")  # M31 field[39;00m
+[32m      6[39m center = SkyCoord(ra=[32m90.0[39m, dec=[32m28.0[39m, unit=[33m"deg"[39m)  [38;5;66;03m# Galactic anti-center[39;00m
+[32m      7[39m 
+[32m----> [39m[32m8[39m table = cabaret.GaiaQuery.get_flux_table(
+[32m      9[39m     center,
+[32m     10[39m     radius=[32m0.15[39m,
+[32m     11[39m     filter_bands=[33m"all"[39m,
+
+[36mFile [39m[32m~/work/cabaret/cabaret/src/cabaret/queries.py:437[39m, in [36mGaiaQuery.get_flux_table[39m[34m(center, radius, bounds, filter_bands, dateobs, limit, timeout, tap_source, allow_nulls, keep_mag)[39m
+[32m    372[39m [38;5;250m[39m[33;03m"""Query and return a Table with all columns expressed as physical fluxes.[39;00m
+[32m    373[39m 
+[32m    374[39m [33;03mIdentical to :meth:`query` but additionally:[39;00m
+[32m   (...)[39m[32m    433[39m [33;03m... )  # doctest: +SKIP[39;00m
+[32m    434[39m [33;03m"""[39;00m
+[32m    435[39m bands = GaiaQuery._normalize_bands(filter_bands)
+[32m--> [39m[32m437[39m table = [30;43mGaiaQuery[39;49m[30;43m.[39;49m[30;43mquery[39;49m[30;43m([39;49m
+[32m    438[39m [30;43m    [39;49m[30;43mcenter[39;49m[30;43m=[39;49m[30;43mcenter[39;49m[30;43m,[39;49m
+[32m    439[39m [30;43m    [39;49m[30;43mradius[39;49m[30;43m=[39;49m[30;43mradius[39;49m[30;43m,[39;49m
+[32m    440[39m [30;43m    [39;49m[30;43mbounds[39;49m[30;43m=[39;49m[30;43mbounds[39;49m[30;43m,[39;49m
+[32m    441[39m [30;43m    [39;49m[30;43mfilter_bands[39;49m[30;43m=[39;49m[30;43mbands[39;49m[30;43m,[39;49m
+[32m    442[39m [30;43m    [39;49m[30;43mlimit[39;49m[30;43m=[39;49m[30;43mlimit[39;49m[30;43m,[39;49m
+[32m    443[39m [30;43m    [39;49m[30;43mtimeout[39;49m[30;43m=[39;49m[30;43mtimeout[39;49m[30;43m,[39;49m
+[32m    444[39m [30;43m    [39;49m[30;43mtap_source[39;49m[30;43m=[39;49m[30;43mtap_source[39;49m[30;43m,[39;49m
+[32m    445[39m [30;43m    [39;49m[30;43mallow_nulls[39;49m[30;43m=[39;49m[30;43mallow_nulls[39;49m[30;43m,[39;49m
+[32m    446[39m [30;43m[39;49m[30;43m)[39;49m
+[32m    448[39m [38;5;28;01mif[39;00m dateobs [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m:
+[32m    449[39m     table = GaiaQuery._apply_proper_motion(table, dateobs)
+
+[36mFile [39m[32m~/work/cabaret/cabaret/src/cabaret/queries.py:335[39m, in [36mGaiaQuery.query[39m[34m(center, radius, bounds, filter_bands, limit, timeout, tap_source, allow_nulls, filter_band)[39m
+[32m    332[39m backend = GaiaQuery._resolve_query_source(tap_source)
+[32m    334[39m [38;5;28;01mif[39;00m [38;5;28misinstance[39m(backend, GaiaTAPSource):
+[32m--> [39m[32m335[39m     table = [30;43mGaiaQuery[39;49m[30;43m.[39;49m[30;43m_query_tap[39;49m[30;43m([39;49m
+[32m    336[39m [30;43m        [39;49m[30;43mtap_source[39;49m[30;43m=[39;49m[30;43mbackend[39;49m[30;43m,[39;49m
+[32m    337[39m [30;43m        [39;49m[30;43mbands[39;49m[30;43m=[39;49m[30;43mbands[39;49m[30;43m,[39;49m
+[32m    338[39m [30;43m        [39;49m[30;43mcenter[39;49m[30;43m=[39;49m[30;43mcenter_coords[39;49m[30;43m,[39;49m
+[32m    339[39m [30;43m        [39;49m[30;43mradius_deg[39;49m[30;43m=[39;49m[30;43mradius_deg[39;49m[30;43m,[39;49m
+[32m    340[39m [30;43m        [39;49m[30;43mbounds[39;49m[30;43m=[39;49m[30;43mbounds_tuple[39;49m[30;43m,[39;49m
+[32m    341[39m [30;43m        [39;49m[30;43mlimit[39;49m[30;43m=[39;49m[30;43mlimit[39;49m[30;43m,[39;49m
+[32m    342[39m [30;43m        [39;49m[30;43mtimeout[39;49m[30;43m=[39;49m[30;43mtimeout[39;49m[30;43m,[39;49m
+[32m    343[39m [30;43m        [39;49m[30;43mallow_nulls[39;49m[30;43m=[39;49m[30;43mallow_nulls[39;49m[30;43m,[39;49m
+[32m    344[39m [30;43m    [39;49m[30;43m)[39;49m
+[32m    345[39m [38;5;28;01melse[39;00m:
+[32m    346[39m     table = GaiaQuery._query_sqlite(
+[32m    347[39m         sqlite_source=backend,
+[32m    348[39m         requested_bands=bands,
+[32m   (...)[39m[32m    355[39m         allow_nulls=allow_nulls,
+[32m    356[39m     )
+
+[36mFile [39m[32m~/work/cabaret/cabaret/src/cabaret/queries.py:740[39m, in [36mGaiaQuery._query_tap[39m[34m(tap_source, bands, center, radius_deg, bounds, limit, timeout, allow_nulls)[39m
+[32m    730[39m where_clause = [33m"[39m[33m AND [39m[33m"[39m.join(where)
+[32m    732[39m adql = [33mf[39m[33m"""[39m
+[32m    733[39m [33mSELECT TOP [39m[38;5;132;01m{[39;00mlimit[38;5;132;01m}[39;00m[33m [39m[38;5;132;01m{[39;00mselect_clause[38;5;132;01m}[39;00m
+[32m    734[39m [33mFROM [39m[38;5;132;01m{[39;00mcfg[[33m"[39m[33mfrom[39m[33m"[39m][38;5;132;01m}[39;00m
+[32m   (...)[39m[32m    737[39m [33mORDER BY [39m[38;5;132;01m{[39;00morder_by[38;5;132;01m}[39;00m
+[32m    738[39m [33m[39m[33m"""[39m
+[32m--> [39m[32m740[39m [38;5;28;01mreturn[39;00m [30;43mGaiaQuery[39;49m[30;43m.[39;49m[30;43m_launch_job_with_timeout[39;49m[30;43m([39;49m
+[32m    741[39m [30;43m    [39;49m[30;43madql[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mtap_source[39;49m[30;43m=[39;49m[30;43mtap_source[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mtimeout[39;49m[30;43m=[39;49m[30;43mtimeout[39;49m
+[32m    742[39m [30;43m[39;49m[30;43m)[39;49m
+
+[36mFile [39m[32m~/work/cabaret/cabaret/src/cabaret/queries.py:1140[39m, in [36mGaiaQuery._launch_job_with_timeout[39m[34m(query, tap_source, timeout, **kwargs)[39m
+[32m   1137[39m     job = tap.launch_job(query, **kwargs)
+[32m   1138[39m     [38;5;28;01mreturn[39;00m Table(job.get_results())  [38;5;66;03m# type: ignore[arg-type][39;00m
+[32m-> [39m[32m1140[39m [38;5;28;01mreturn[39;00m [30;43mGaiaQuery[39;49m[30;43m.[39;49m[30;43m_run_callable_with_timeout[39;49m[30;43m([39;49m
+[32m   1141[39m [30;43m    [39;49m[30;43mfunc[39;49m[30;43m=[39;49m[30;43m_run[39;49m[30;43m,[39;49m
+[32m   1142[39m [30;43m    [39;49m[30;43mtimeout[39;49m[30;43m=[39;49m[30;43mtimeout[39;49m[30;43m,[39;49m
+[32m   1143[39m [30;43m    [39;49m[30;43mtimeout_message[39;49m[30;43m=[39;49m[30;43m([39;49m
+[32m   1144[39m [30;43m        [39;49m[30;43m"[39;49m[30;43mGaia query timed out. [39;49m[30;43m"[39;49m
+[32m   1145[39m [30;43m        [39;49m[30;43m"[39;49m[30;43mYou may want to increase the timeout or reduce the query size. [39;49m[30;43m"[39;49m
+[32m   1146[39m [30;43m        [39;49m[30;43mf[39;49m[30;43m"[39;49m[30;43mQuery was: [39;49m[30;43;01m{[39;49;00m[30;43mquery[39;49m[30;43;01m}[39;49;00m[30;43m"[39;49m
+[32m   1147[39m [30;43m    [39;49m[30;43m)[39;49m[30;43m,[39;49m
+[32m   1148[39m [30;43m[39;49m[30;43m)[39;49m
+
+[36mFile [39m[32m~/work/cabaret/cabaret/src/cabaret/queries.py:1098[39m, in [36mGaiaQuery._run_callable_with_timeout[39m[34m(func, timeout, timeout_message, on_timeout)[39m
+[32m   1096[39m     [38;5;28;01mraise[39;00m [38;5;167;01mTimeoutError[39;00m(timeout_message)
+[32m   1097[39m [38;5;28;01mif[39;00m exc:
+[32m-> [39m[32m1098[39m     [38;5;28;01mraise[39;00m exc[[32m0[39m]
+[32m   1099[39m [38;5;28;01mreturn[39;00m result[[32m0[39m]
+
+[36mFile [39m[32m~/work/cabaret/cabaret/src/cabaret/queries.py:1086[39m, in [36mGaiaQuery._run_callable_with_timeout.<locals>._run_safe[39m[34m()[39m
+[32m   1084[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34m_run_safe[39m():
+[32m   1085[39m     [38;5;28;01mtry[39;00m:
+[32m-> [39m[32m1086[39m         result.append([30;43mfunc[39;49m[30;43m([39;49m[30;43m)[39;49m)
+[32m   1087[39m     [38;5;28;01mexcept[39;00m [38;5;167;01mException[39;00m [38;5;28;01mas[39;00m e:
+[32m   1088[39m         exc.append(e)
+
+[36mFile [39m[32m~/work/cabaret/cabaret/src/cabaret/queries.py:1137[39m, in [36mGaiaQuery._launch_job_with_timeout.<locals>._run[39m[34m()[39m
+[32m   1135[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34m_run[39m() -> Table:
+[32m   1136[39m     tap = TapPlus(url=tap_source.value)
+[32m-> [39m[32m1137[39m     job = [30;43mtap[39;49m[30;43m.[39;49m[30;43mlaunch_job[39;49m[30;43m([39;49m[30;43mquery[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mkwargs[39;49m[30;43m)[39;49m
+[32m   1138[39m     [38;5;28;01mreturn[39;00m Table(job.get_results())
+
+[36mFile [39m[32m~/work/cabaret/cabaret/.venv/lib/python3.12/site-packages/astroquery/utils/tap/core.py:354[39m, in [36mTap.launch_job[39m[34m(self, query, name, output_file, output_format, verbose, dump_to_file, upload_resource, upload_table_name, maxrec, format_with_results_compressed)[39m
+[32m    352[39m             [38;5;28mprint[39m([33mf[39m[33m"[39m[33mSaving error to: [39m[38;5;132;01m{[39;00msuitableOutputFile[38;5;132;01m}[39;00m[33m"[39m)
+[32m    353[39m         [38;5;28mself[39m.__connHandler.dump_to_file(suitableOutputFile, responseStr)
+[32m--> [39m[32m354[39m     [38;5;28;01mraise[39;00m requests.exceptions.HTTPError(
+[32m    355[39m         taputils.parse_http_response_error(responseStr, response.status))
+[32m    356[39m [38;5;28;01melse[39;00m:
+[32m    357[39m     [38;5;28;01mif[39;00m verbose:
+
+[31mHTTPError[39m: Error 500: Can not execute the following SQL: 
+SELECT g.source_id AS "gaia_id" , round((g.ra)::numeric,11) AS "ra" , round((g.dec)::numeric,11) AS "dec" , round((g.pmra)::numeric,3) AS "pmra" , round((g.pmdec)::numeric,3) AS "pmdec" , round((g.phot_g_mean_mag)::numeric,6) AS "phot_g_mean_mag" , round((g.phot_bp_mean_mag)::numeric,6) AS "phot_bp_mean_mag" , round((g.phot_rp_mean_mag)::numeric,6) AS "phot_rp_mean_mag" , round((t.Jmag)::numeric,3) AS "j_m" , round((t.Hmag)::numeric,3) AS "h_m" , round((t.Kmag)::numeric,3) AS "ks_m"
+FROM large_tables.gaiadr3 AS "g" INNER JOIN large_tables.c2mass AS "t" ON g.twomass_original_ext_source_id = t._MASS
+WHERE '1' = h3c_radial_query("g".ra,"g".dec,90.0,28.0,0.15)
+ORDER BY phot_g_mean_mag ASC
+Limit 100000
+. Because: This connection has been closed.
+

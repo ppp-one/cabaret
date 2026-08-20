@@ -1,0 +1,1736 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cabaret.queries &#8212; cabaret</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cabaret/queries';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.5.5" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">cabaret</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Get started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../motivation.html">Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../local_catalog.html">Local catalog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../citation.html">Citation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/configuring_an_observatory.html">Configuring an Observatory</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/multi_band_query.html">Multi-band Queries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/asteroid_trailing.html">Asteroid Tracking Simulation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../cabaret.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/cabaret.Observatory.html">Observatory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/cabaret.Camera.html">Camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/cabaret.Focuser.html">Focuser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/cabaret.Telescope.html">Telescope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/cabaret.Site.html">Site</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/cabaret.Filters.html">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/cabaret.GaiaQuery.html">GaiaQuery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/cabaret.GaiaSQLiteSource.html">GaiaSQLiteSource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/cabaret.GaiaTAPSource.html">GaiaTAPSource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/cabaret.Sources.html">Sources</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../cabaret.camera.html">Pixel defects</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../generated/cabaret.camera.ConstantPixelDefect.html">ConstantPixelDefect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../generated/cabaret.camera.ColumnPixelDefect.html">ColumnPixelDefect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../generated/cabaret.camera.RandomNoisePixelDefect.html">RandomNoisePixelDefect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../generated/cabaret.camera.QuantumEfficiencyMapPixelDefect.html">QuantumEfficiencyMapPixelDefect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../generated/cabaret.camera.ReadoutSmearPixelDefect.html">ReadoutSmearPixelDefect</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/ppp-one/cabaret" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/ppp-one/cabaret/issues/new?title=Issue%20on%20page%20%2F_modules/cabaret/queries.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cabaret.queries</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sqlite3</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">closing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeVar</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy.coordinates</span><span class="w"> </span><span class="kn">import</span> <span class="n">Angle</span><span class="p">,</span> <span class="n">SkyCoord</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy.table</span><span class="w"> </span><span class="kn">import</span> <span class="n">Table</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">Time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">cabaret.sources</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sources</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;Filters&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GaiaSQLiteSource&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GaiaTAPSource&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GaiaQuery&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">_T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_T&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="GaiaSQLiteSource">
+<a class="viewcode-back" href="../../generated/cabaret.GaiaSQLiteSource.html#cabaret.GaiaSQLiteSource">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GaiaSQLiteSource</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for querying a local SQLite catalog.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    database : str</span>
+<span class="sd">        Path to the SQLite database file.</span>
+<span class="sd">    table : str, optional</span>
+<span class="sd">        Catalog table name. Default is ``gaia_sources``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">database</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">table</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gaia_sources&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="Filters">
+<a class="viewcode-back" href="../../generated/cabaret.Filters.html#cabaret.Filters">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Filters</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Allowed Gaia and 2MASS flux filter_band strings.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from cabaret.queries import Filters</span>
+<span class="sd">    &gt;&gt;&gt; Filters.G</span>
+<span class="sd">    &lt;Filters.G: &#39;phot_g_mean_mag&#39;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; Filters.from_string(&#39;RP&#39;)</span>
+<span class="sd">    &lt;Filters.RP: &#39;phot_rp_mean_mag&#39;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; Filters.is_tmass(&#39;J&#39;)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; Filters.options()</span>
+<span class="sd">    (&#39;G&#39;, &#39;BP&#39;, &#39;RP&#39;, &#39;J&#39;, &#39;H&#39;, &#39;KS&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">G</span> <span class="o">=</span> <span class="s2">&quot;phot_g_mean_mag&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gaia G band magnitude [Gaia Vega system]&quot;&quot;&quot;</span>
+    <span class="n">BP</span> <span class="o">=</span> <span class="s2">&quot;phot_bp_mean_mag&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gaia BP band magnitude [Gaia Vega system]&quot;&quot;&quot;</span>
+    <span class="n">RP</span> <span class="o">=</span> <span class="s2">&quot;phot_rp_mean_mag&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gaia RP band magnitude [Gaia Vega system]&quot;&quot;&quot;</span>
+    <span class="n">J</span> <span class="o">=</span> <span class="s2">&quot;j_m&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;2MASS J-band magnitude [2MASS Vega system]&quot;&quot;&quot;</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="s2">&quot;h_m&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;2MASS H-band magnitude [2MASS Vega system]&quot;&quot;&quot;</span>
+    <span class="n">KS</span> <span class="o">=</span> <span class="s2">&quot;ks_m&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;2MASS KS-band magnitude [2MASS Vega system]&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Filters.options">
+<a class="viewcode-back" href="../../generated/cabaret.Filters.options.html#cabaret.Filters.options">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">options</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all valid filter_band options.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__members__</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="Filters.from_string">
+<a class="viewcode-back" href="../../generated/cabaret.Filters.from_string.html#cabaret.Filters.from_string">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Filters&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the Filters enum member for a given string.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">[</span><span class="n">value</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid filter_band string: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Valid options are: </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">options</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Filters.is_tmass">
+<a class="viewcode-back" href="../../generated/cabaret.Filters.is_tmass.html#cabaret.Filters.is_tmass">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_tmass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Filters | str&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the filter_band string is a 2MASS filter_band.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Value must be a Filters enum or string, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;J&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;KS&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Filters.ensure_enum">
+<a class="viewcode-back" href="../../generated/cabaret.Filters.ensure_enum.html#cabaret.Filters.ensure_enum">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ensure_enum</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Filters | str&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Filters&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a string or Filters to Filters enum.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Value must be a Filters enum or string, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Filters.all">
+<a class="viewcode-back" href="../../generated/cabaret.Filters.all.html#cabaret.Filters.all">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Filters&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all filter bands in definition order.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Filters.is_valid">
+<a class="viewcode-back" href="../../generated/cabaret.Filters.is_valid.html#cabaret.Filters.is_valid">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_valid</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the filter_band string is valid.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__members__</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="GaiaTAPSource">
+<a class="viewcode-back" href="../../generated/cabaret.GaiaTAPSource.html#cabaret.GaiaTAPSource">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GaiaTAPSource</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;TAP service endpoints for Gaia DR3 data.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from cabaret.queries import GaiaTAPSource</span>
+<span class="sd">    &gt;&gt;&gt; GaiaTAPSource.VIZIER</span>
+<span class="sd">    &lt;GaiaTAPSource.VIZIER: &#39;https://tapvizier.cds.unistra.fr/TAPVizieR/tap&#39;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; GaiaTAPSource.ensure_enum(&quot;GAIA&quot;)</span>
+<span class="sd">    &lt;GaiaTAPSource.GAIA: &#39;https://gea.esac.esa.int/tap-server/tap&#39;&gt;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">GAIA</span> <span class="o">=</span> <span class="s2">&quot;https://gea.esac.esa.int/tap-server/tap&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;ESA Gaia Archive TAP service.&quot;&quot;&quot;</span>
+    <span class="n">VIZIER</span> <span class="o">=</span> <span class="s2">&quot;https://tapvizier.cds.unistra.fr/TAPVizieR/tap&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;CDS VizieR TAP service (hosts a copy of Gaia DR3).&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GaiaTAPSource.ensure_enum">
+<a class="viewcode-back" href="../../generated/cabaret.GaiaTAPSource.ensure_enum.html#cabaret.GaiaTAPSource.ensure_enum">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ensure_enum</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;GaiaTAPSource | str&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GaiaTAPSource&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a string or GaiaTAPSource to GaiaTAPSource enum.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">cls</span><span class="p">[</span><span class="n">value</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Invalid TAP source </span><span class="si">{</span><span class="n">value</span><span class="si">!r}</span><span class="s2">. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Valid options are: </span><span class="si">{</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">cls</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Value must be a GaiaTAPSource enum or string, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+</div>
+
+
+
+<span class="c1"># Per-source ADQL building blocks. All sources expose the same normalised</span>
+<span class="c1"># column names via AS aliases so the rest of the code needs no changes.</span>
+<span class="n">_TAP_CONFIG</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">GaiaTAPSource</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">GaiaTAPSource</span><span class="o">.</span><span class="n">GAIA</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="s2">&quot;gaiadr3.gaia_source AS gaia&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;gaia_id&quot;</span><span class="p">:</span> <span class="s2">&quot;gaia.source_id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ra&quot;</span><span class="p">:</span> <span class="s2">&quot;gaia.ra&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;dec&quot;</span><span class="p">:</span> <span class="s2">&quot;gaia.dec&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pmra&quot;</span><span class="p">:</span> <span class="s2">&quot;gaia.pmra&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pmdec&quot;</span><span class="p">:</span> <span class="s2">&quot;gaia.pmdec&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;g_mag&quot;</span><span class="p">:</span> <span class="s2">&quot;phot_g_mean_mag&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;bp_mag&quot;</span><span class="p">:</span> <span class="s2">&quot;phot_bp_mean_mag&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;rp_mag&quot;</span><span class="p">:</span> <span class="s2">&quot;phot_rp_mean_mag&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;tmass_joins&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;INNER JOIN gaiadr3.tmass_psc_xsc_best_neighbour AS tmass_match&quot;</span>
+            <span class="s2">&quot; ON tmass_match.source_id = gaia.source_id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;INNER JOIN external.tmass_psc AS tmass&quot;</span>
+            <span class="s2">&quot; ON tmass.designation = tmass_match.original_ext_source_id&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;j_col&quot;</span><span class="p">:</span> <span class="s2">&quot;tmass.j_m&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;h_col&quot;</span><span class="p">:</span> <span class="s2">&quot;tmass.h_m&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ks_col&quot;</span><span class="p">:</span> <span class="s2">&quot;tmass.ks_m&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">GaiaTAPSource</span><span class="o">.</span><span class="n">VIZIER</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="s1">&#39;&quot;I/355/gaiadr3&quot; AS g&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;gaia_id&quot;</span><span class="p">:</span> <span class="s1">&#39;g.&quot;Source&quot;&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;ra&quot;</span><span class="p">:</span> <span class="s2">&quot;g.RA_ICRS&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;dec&quot;</span><span class="p">:</span> <span class="s2">&quot;g.DE_ICRS&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pmra&quot;</span><span class="p">:</span> <span class="s2">&quot;g.pmRA&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pmdec&quot;</span><span class="p">:</span> <span class="s2">&quot;g.pmDE&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;g_mag&quot;</span><span class="p">:</span> <span class="s2">&quot;g.Gmag&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;bp_mag&quot;</span><span class="p">:</span> <span class="s2">&quot;g.BPmag&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;rp_mag&quot;</span><span class="p">:</span> <span class="s2">&quot;g.RPmag&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;tmass_joins&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s1">&#39;INNER JOIN &quot;II/246/out&quot; AS t ON g.&quot;2MASS&quot; = t.&quot;2MASS&quot;&#39;</span><span class="p">,</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;j_col&quot;</span><span class="p">:</span> <span class="s2">&quot;t.Jmag&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;h_col&quot;</span><span class="p">:</span> <span class="s2">&quot;t.Hmag&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ks_col&quot;</span><span class="p">:</span> <span class="s2">&quot;t.Kmag&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+<span class="c1"># Map Filters enum names to the per-source 2MASS column key in _TAP_CONFIG.</span>
+<span class="n">_TMASS_COL_KEY</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;J&quot;</span><span class="p">:</span> <span class="s2">&quot;j_col&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">:</span> <span class="s2">&quot;h_col&quot;</span><span class="p">,</span> <span class="s2">&quot;KS&quot;</span><span class="p">:</span> <span class="s2">&quot;ks_col&quot;</span><span class="p">}</span>
+
+<span class="c1"># Sentinel used for backends that cannot provide a Gaia source id (SQLite).</span>
+<span class="n">_NO_GAIA_ID</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+
+<div class="viewcode-block" id="GaiaQuery">
+<a class="viewcode-back" href="../../generated/cabaret.GaiaQuery.html#cabaret.GaiaQuery">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GaiaQuery</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to query Gaia DR3 data and retrieve sources.</span>
+
+<span class="sd">    The class provides methods to query a configurable TAP service and return</span>
+<span class="sd">    either the raw Astropy Table, a flux-normalised multi-band Table, or a</span>
+<span class="sd">    Sources instance with RA-DEC coordinates and fluxes.</span>
+
+<span class="sd">    The query backend is selected via ``GaiaQuery.DEFAULT_TAP_SOURCE`` (class</span>
+<span class="sd">    level) or the per-call ``tap_source`` argument.  Accepts a</span>
+<span class="sd">    ``GaiaTAPSource`` for an online TAP service, a ``GaiaSQLiteSource`` for an</span>
+<span class="sd">    offline SQLite database, a TAP endpoint URL, a ``sqlite:///...`` URI, or a</span>
+<span class="sd">    direct path to a ``.db``/``.sqlite``/``.sqlite3`` file.  The default is</span>
+<span class="sd">    ``GaiaTAPSource.VIZIER`` (CDS VizieR), which hosts a copy of Gaia DR3.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from cabaret.queries import GaiaQuery</span>
+<span class="sd">    &gt;&gt;&gt; from astropy.coordinates import SkyCoord</span>
+<span class="sd">    &gt;&gt;&gt; center = SkyCoord(ra=10.68458, dec=41.269, unit=&quot;deg&quot;)</span>
+
+<span class="sd">    The Astropy Table from Gaia can be obtained with:</span>
+
+<span class="sd">    &gt;&gt;&gt; table = GaiaQuery.query(center, radius=0.05, limit=10, timeout=30)</span>
+
+<span class="sd">    Whereas a Sources instance carrying coordinates and fluxes can be queried for with:</span>
+
+<span class="sd">    &gt;&gt;&gt; sources = GaiaQuery.get_sources(center, radius=0.05, limit=10, timeout=30)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">DEFAULT_TAP_SOURCE</span><span class="p">:</span> <span class="n">GaiaTAPSource</span> <span class="o">|</span> <span class="n">GaiaSQLiteSource</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">GaiaTAPSource</span><span class="o">.</span><span class="n">VIZIER</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Default TAP service used when ``tap_source=None`` is passed to query methods.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GaiaQuery.query">
+<a class="viewcode-back" href="../../generated/cabaret.GaiaQuery.query.html#cabaret.GaiaQuery.query">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span>
+        <span class="n">center</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="n">SkyCoord</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Angle</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bounds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">filter_bands</span><span class="p">:</span> <span class="n">Filters</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Filters</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Filters</span><span class="o">.</span><span class="n">G</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100000</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tap_source</span><span class="p">:</span> <span class="n">GaiaTAPSource</span> <span class="o">|</span> <span class="n">GaiaSQLiteSource</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">allow_nulls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">filter_band</span><span class="p">:</span> <span class="n">Filters</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Table</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Query a Gaia DR3 TAP service within a given radius around the center.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        center : tuple or astropy.coordinates.SkyCoord</span>
+<span class="sd">            The sky coordinates of the center of the FOV.</span>
+<span class="sd">            If a tuple is given, it should contain the RA and DEC in degrees.</span>
+<span class="sd">        radius : float or astropy.units.Quantity</span>
+<span class="sd">            The radius of the FOV in degrees. If a Quantity is given, it must be</span>
+<span class="sd">            convertible to degrees.</span>
+<span class="sd">        bounds : tuple or None</span>
+<span class="sd">            Field-of-view bounds specified as ``(ra_min, ra_max, dec_min, dec_max)``</span>
+<span class="sd">            in degrees. RA values are interpreted modulo 360 (degrees) and may</span>
+<span class="sd">            be given so that ``ra_min &lt;= ra_max`` for a contiguous RA interval,</span>
+<span class="sd">            or ``ra_min &gt; ra_max`` to indicate an interval that wraps across</span>
+<span class="sd">            RA=0 (for example ``(350.0, 10.0, -5.0, 5.0)``). Declination bounds</span>
+<span class="sd">            must satisfy ``-90 &lt;= dec_min &lt;= dec_max &lt;= 90``.</span>
+<span class="sd">        filter_bands : Filters, str, or sequence thereof, optional</span>
+<span class="sd">            One or more filter bands to include as magnitude columns. Accepts a single</span>
+<span class="sd">            ``Filters`` member or its name as a string, or a list of either.</span>
+<span class="sd">            Pass ``&quot;all&quot;`` to request every available band (``Filters.all()``).</span>
+<span class="sd">            Default is ``Filters.G``. When multiple bands are requested, the</span>
+<span class="sd">            ``ORDER BY`` is determined by the first band (brightest-first,</span>
+<span class="sd">            ASC for all magnitude columns).</span>
+<span class="sd">            If any 2MASS band is included the 2MASS cross-match join is added.</span>
+<span class="sd">        limit : int, optional</span>
+<span class="sd">            The maximum number of sources to retrieve from the Gaia archive.</span>
+<span class="sd">            By default, it is set to 100000.</span>
+<span class="sd">        timeout : float, optional</span>
+<span class="sd">            The maximum time to wait for the Gaia query to complete, in seconds.</span>
+<span class="sd">            If None, there is no timeout. By default, it is set to None.</span>
+<span class="sd">        tap_source : GaiaTAPSource, GaiaSQLiteSource, str, or None, optional</span>
+<span class="sd">            Query backend to use. Accepts a ``GaiaTAPSource`` for an online TAP</span>
+<span class="sd">            service, a ``GaiaSQLiteSource`` for an offline SQLite database, a TAP</span>
+<span class="sd">            endpoint URL as a string, a ``sqlite:///...`` URI, or a direct path to</span>
+<span class="sd">            a SQLite database file ending in ``.db``, ``.sqlite``, or</span>
+<span class="sd">            ``.sqlite3``. If None, the default TAP backend is used.</span>
+<span class="sd">        allow_nulls : bool, optional</span>
+<span class="sd">            If False (default), only rows where all requested band columns are</span>
+<span class="sd">            non-NULL are returned (``IS NOT NULL`` filter per band). Set to True</span>
+<span class="sd">            to allow rows with missing magnitude values through.</span>
+<span class="sd">        filter_band : Filters or str, optional</span>
+<span class="sd">            Deprecated. Use ``filter_bands`` instead.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        astropy.table.Table</span>
+<span class="sd">            The raw Astropy Table returned by the TAP service, with columns</span>
+<span class="sd">            normalised to ``gaia_id``, ``ra``, ``dec``, ``pmra``, ``pmdec``, and</span>
+<span class="sd">            one magnitude column per requested band named after</span>
+<span class="sd">            ``filter_band.value`` (e.g. ``phot_g_mean_mag``, ``h_m``). The</span>
+<span class="sd">            SQLite backend has no Gaia identifier available and fills</span>
+<span class="sd">            ``gaia_id`` with ``-1``.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; from cabaret.queries import GaiaQuery</span>
+<span class="sd">        &gt;&gt;&gt; from astropy.coordinates import SkyCoord</span>
+<span class="sd">        &gt;&gt;&gt; center = SkyCoord(ra=10.68458, dec=41.26917, unit=&#39;deg&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; table = GaiaQuery.query(center, radius=0.1, limit=10, timeout=30)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">filter_band</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;filter_band is deprecated; use filter_bands instead.&quot;</span><span class="p">,</span>
+                <span class="ne">DeprecationWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">filter_bands</span> <span class="o">=</span> <span class="n">filter_band</span>
+        <span class="n">requested_all</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filter_bands</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">filter_bands</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;ALL&quot;</span>
+        <span class="n">bands</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_normalize_bands</span><span class="p">(</span><span class="n">filter_bands</span><span class="p">)</span>
+        <span class="n">center_coords</span><span class="p">,</span> <span class="n">radius_deg</span><span class="p">,</span> <span class="n">bounds_tuple</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_normalize_region</span><span class="p">(</span>
+            <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span>
+            <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span>
+            <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">backend</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_resolve_query_source</span><span class="p">(</span><span class="n">tap_source</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">GaiaTAPSource</span><span class="p">):</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_query_tap</span><span class="p">(</span>
+                <span class="n">tap_source</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+                <span class="n">bands</span><span class="o">=</span><span class="n">bands</span><span class="p">,</span>
+                <span class="n">center</span><span class="o">=</span><span class="n">center_coords</span><span class="p">,</span>
+                <span class="n">radius_deg</span><span class="o">=</span><span class="n">radius_deg</span><span class="p">,</span>
+                <span class="n">bounds</span><span class="o">=</span><span class="n">bounds_tuple</span><span class="p">,</span>
+                <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+                <span class="n">allow_nulls</span><span class="o">=</span><span class="n">allow_nulls</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_query_sqlite</span><span class="p">(</span>
+                <span class="n">sqlite_source</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+                <span class="n">requested_bands</span><span class="o">=</span><span class="n">bands</span><span class="p">,</span>
+                <span class="n">requested_all</span><span class="o">=</span><span class="n">requested_all</span><span class="p">,</span>
+                <span class="n">center</span><span class="o">=</span><span class="n">center_coords</span><span class="p">,</span>
+                <span class="n">radius_deg</span><span class="o">=</span><span class="n">radius_deg</span><span class="p">,</span>
+                <span class="n">bounds</span><span class="o">=</span><span class="n">bounds_tuple</span><span class="p">,</span>
+                <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+                <span class="n">allow_nulls</span><span class="o">=</span><span class="n">allow_nulls</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">table</span></div>
+
+
+<div class="viewcode-block" id="GaiaQuery.get_flux_table">
+<a class="viewcode-back" href="../../generated/cabaret.GaiaQuery.get_flux_table.html#cabaret.GaiaQuery.get_flux_table">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_flux_table</span><span class="p">(</span>
+        <span class="n">center</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="n">SkyCoord</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Angle</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bounds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">filter_bands</span><span class="p">:</span> <span class="n">Filters</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Filters</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Filters</span><span class="o">.</span><span class="n">G</span><span class="p">,</span>
+        <span class="n">dateobs</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100000</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tap_source</span><span class="p">:</span> <span class="n">GaiaTAPSource</span> <span class="o">|</span> <span class="n">GaiaSQLiteSource</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">allow_nulls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">keep_mag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Table</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Query and return a Table with all columns expressed as physical fluxes.</span>
+
+<span class="sd">        Identical to :meth:`query` but additionally:</span>
+
+<span class="sd">        * applies proper-motion correction when ``dateobs`` is given, and</span>
+<span class="sd">        * converts supported magnitude columns to photons/s/m² using</span>
+<span class="sd">          :meth:`_mag_to_photons` and renames them (e.g. ``&quot;j_m&quot;`` →</span>
+<span class="sd">          ``&quot;j_flux&quot;`` and ``&quot;phot_g_mean_mag&quot;`` → ``&quot;g_flux&quot;``).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        center : tuple or astropy.coordinates.SkyCoord</span>
+<span class="sd">            The sky coordinates of the center of the FOV.</span>
+<span class="sd">        radius : float or astropy.units.Quantity</span>
+<span class="sd">            The radius of the FOV in degrees.</span>
+<span class="sd">        bounds : tuple or None</span>
+<span class="sd">            Field-of-view bounds specified as ``(ra_min, ra_max, dec_min, dec_max)``</span>
+<span class="sd">            in degrees. RA values are interpreted modulo 360 (degrees) and may</span>
+<span class="sd">            be given so that ``ra_min &lt;= ra_max`` for a contiguous RA interval,</span>
+<span class="sd">            or ``ra_min &gt; ra_max`` to indicate an interval that wraps across</span>
+<span class="sd">            RA=0 (for example ``(350.0, 10.0, -5.0, 5.0)``). Declination bounds</span>
+<span class="sd">            must satisfy ``-90 &lt;= dec_min &lt;= dec_max &lt;= 90``.</span>
+<span class="sd">        filter_bands : Filters, str, or sequence thereof, optional</span>
+<span class="sd">            One or more filter bands. Default is ``Filters.G``.</span>
+<span class="sd">        dateobs : datetime.datetime or None, optional</span>
+<span class="sd">            Observation date for proper-motion correction. Default is None.</span>
+<span class="sd">        limit : int, optional</span>
+<span class="sd">            Maximum number of sources to retrieve. Default is 100000.</span>
+<span class="sd">        timeout : float or None, optional</span>
+<span class="sd">            Query timeout in seconds. Default is None (no timeout).</span>
+<span class="sd">        tap_source : GaiaTAPSource, GaiaSQLiteSource, str, or None, optional</span>
+<span class="sd">            Query backend to use. Accepts a ``GaiaTAPSource``, ``GaiaSQLiteSource``,</span>
+<span class="sd">            TAP URL, ``sqlite:///...`` URI, or ``.db``/``.sqlite``/``.sqlite3`` path.</span>
+<span class="sd">            Default is ``GaiaQuery.DEFAULT_TAP_SOURCE``.</span>
+<span class="sd">        allow_nulls : bool, optional</span>
+<span class="sd">            Forwarded to :meth:`query`. If True, rows with NULL magnitude values</span>
+<span class="sd">            are included in the result. Default is False.</span>
+<span class="sd">        keep_mag : bool, optional</span>
+<span class="sd">            If True, retain the original magnitude column (e.g.</span>
+<span class="sd">            ``&quot;phot_g_mean_mag&quot;``) alongside the converted flux column</span>
+<span class="sd">            (e.g. ``&quot;g_flux&quot;``). Default is False.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        astropy.table.Table</span>
+<span class="sd">            Table with columns ``ra``, ``dec``, ``pmra``, ``pmdec``, and one</span>
+<span class="sd">            flux column per requested band, all in photons/s/m². Gaia band</span>
+<span class="sd">            columns are renamed from ``&quot;phot_&lt;b&gt;_mean_mag&quot;`` to</span>
+<span class="sd">            ``&quot;&lt;b&gt;_flux&quot;`` (e.g. ``&quot;g_flux&quot;``); 2MASS band columns are renamed</span>
+<span class="sd">            from ``&quot;&lt;band&gt;_m&quot;`` to ``&quot;&lt;band&gt;_flux&quot;`` (e.g. ``&quot;h_flux&quot;``).</span>
+<span class="sd">            When ``keep_mag=True``, the original magnitude columns are also</span>
+<span class="sd">            present.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; from cabaret.queries import GaiaQuery, Filters</span>
+<span class="sd">        &gt;&gt;&gt; from astropy.coordinates import SkyCoord</span>
+<span class="sd">        &gt;&gt;&gt; center = SkyCoord(ra=10.68458, dec=41.26917, unit=&#39;deg&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; table = GaiaQuery.get_flux_table(</span>
+<span class="sd">        ...     center, radius=0.1, filter_bands=[Filters.G, Filters.H, Filters.KS],</span>
+<span class="sd">        ...     limit=10, timeout=30,</span>
+<span class="sd">        ... )  # doctest: +SKIP</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bands</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_normalize_bands</span><span class="p">(</span><span class="n">filter_bands</span><span class="p">)</span>
+
+        <span class="n">table</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+            <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span>
+            <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span>
+            <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span>
+            <span class="n">filter_bands</span><span class="o">=</span><span class="n">bands</span><span class="p">,</span>
+            <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="n">tap_source</span><span class="o">=</span><span class="n">tap_source</span><span class="p">,</span>
+            <span class="n">allow_nulls</span><span class="o">=</span><span class="n">allow_nulls</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dateobs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_apply_proper_motion</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">dateobs</span><span class="p">)</span>
+
+        <span class="n">seen</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">Filters</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">bands</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">band</span><span class="p">)</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">if</span> <span class="n">Filters</span><span class="o">.</span><span class="n">is_tmass</span><span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+                <span class="n">new_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">col</span><span class="p">)</span><span class="o">.</span><span class="n">removesuffix</span><span class="p">(</span><span class="s2">&quot;_m&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_flux&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_name</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;_flux&quot;</span>  <span class="c1"># e.g. &quot;g_flux&quot;, &quot;bp_flux&quot;</span>
+            <span class="n">table</span><span class="p">[</span><span class="n">new_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_mag_to_photons</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+                <span class="n">band</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">keep_mag</span><span class="p">:</span>
+                <span class="n">table</span><span class="o">.</span><span class="n">remove_column</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">table</span></div>
+
+
+<div class="viewcode-block" id="GaiaQuery.get_sources">
+<a class="viewcode-back" href="../../generated/cabaret.GaiaQuery.get_sources.html#cabaret.GaiaQuery.get_sources">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_sources</span><span class="p">(</span>
+        <span class="n">center</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="n">SkyCoord</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Angle</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bounds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">filter_band</span><span class="p">:</span> <span class="n">Filters</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Filters</span><span class="o">.</span><span class="n">G</span><span class="p">,</span>
+        <span class="n">dateobs</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100000</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tap_source</span><span class="p">:</span> <span class="n">GaiaTAPSource</span> <span class="o">|</span> <span class="n">GaiaSQLiteSource</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sources</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Query a Gaia DR3 TAP service to retrieve the RA-DEC coordinates of stars</span>
+<span class="sd">        within a given radius of a center position, along with their fluxes.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        center : tuple or astropy.coordinates.SkyCoord</span>
+<span class="sd">            The sky coordinates of the center of the FOV.</span>
+<span class="sd">            If a tuple is given, it should contain the RA and DEC in degrees.</span>
+<span class="sd">        radius : float or astropy.units.Quantity or None</span>
+<span class="sd">            The radius of the FOV in degrees. If a Quantity is given, it must be</span>
+<span class="sd">            convertible to degrees.</span>
+<span class="sd">        bounds : tuple or None</span>
+<span class="sd">            Field-of-view bounds specified as ``(ra_min, ra_max, dec_min, dec_max)``</span>
+<span class="sd">            in degrees. RA values are interpreted modulo 360 (degrees) and may</span>
+<span class="sd">            be given so that ``ra_min &lt;= ra_max`` for a contiguous RA interval,</span>
+<span class="sd">            or ``ra_min &gt; ra_max`` to indicate an interval that wraps across</span>
+<span class="sd">            RA=0 (for example ``(350.0, 10.0, -5.0, 5.0)``). Declination bounds</span>
+<span class="sd">            must satisfy ``-90 &lt;= dec_min &lt;= dec_max &lt;= 90``.</span>
+<span class="sd">        filter_band : Filters or str, optional</span>
+<span class="sd">            The filter to use for the flux column. Default is Filters.G.</span>
+<span class="sd">        dateobs : datetime.datetime, optional</span>
+<span class="sd">            The date of the observation. If given, the proper motions of the sources</span>
+<span class="sd">            will be taken into account. By default, it is set to None.</span>
+<span class="sd">        limit : int, optional</span>
+<span class="sd">            The maximum number of sources to retrieve from the Gaia archive.</span>
+<span class="sd">            By default, it is set to 10000.</span>
+<span class="sd">        timeout : float, optional</span>
+<span class="sd">            The maximum time to wait for the Gaia query to complete, in seconds.</span>
+<span class="sd">            If None, there is no timeout. By default, it is set to None.</span>
+<span class="sd">        tap_source : GaiaTAPSource, GaiaSQLiteSource, str, or None, optional</span>
+<span class="sd">            Query backend to use. Accepts a ``GaiaTAPSource`` for an online TAP</span>
+<span class="sd">            service, a ``GaiaSQLiteSource`` for an offline SQLite database, a TAP</span>
+<span class="sd">            endpoint URL as a string, a ``sqlite:///...`` URI, or a direct path to</span>
+<span class="sd">            a SQLite database file ending in ``.db``, ``.sqlite``, or</span>
+<span class="sd">            ``.sqlite3``. If None, the default TAP backend is used.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Sources</span>
+<span class="sd">            A Sources instance containing the coordinates, fluxes and Gaia source</span>
+<span class="sd">            ids of the retrieved sources.</span>
+
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Fluxes are always returned in photons/s/m² via :meth:`_mag_to_photons`.</span>
+
+<span class="sd">        ``gaia_ids`` holds the Gaia DR3 ``source_id`` when a TAP backend is used.</span>
+<span class="sd">        The SQLite backend carries no such identifier, so every id is ``-1``.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ImportError</span>
+<span class="sd">            If the astroquery package is not installed.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; from cabaret.queries import GaiaQuery</span>
+<span class="sd">        &gt;&gt;&gt; from astropy.coordinates import SkyCoord</span>
+<span class="sd">        &gt;&gt;&gt; center = SkyCoord(ra=10.68458, dec=41.26917, unit=&#39;deg&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; sources = GaiaQuery.get_sources(</span>
+<span class="sd">        ...     center, radius=0.1, timeout=30, limit=10</span>
+<span class="sd">        ... )  # doctest: +SKIP</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filter_band</span> <span class="o">=</span> <span class="n">Filters</span><span class="o">.</span><span class="n">ensure_enum</span><span class="p">(</span><span class="n">filter_band</span><span class="p">)</span>
+
+        <span class="n">table</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+            <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span>
+            <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span>
+            <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span>
+            <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="n">filter_bands</span><span class="o">=</span><span class="n">filter_band</span><span class="p">,</span>
+            <span class="n">tap_source</span><span class="o">=</span><span class="n">tap_source</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dateobs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_apply_proper_motion</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">dateobs</span><span class="p">)</span>
+
+        <span class="n">fluxes</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_mag_to_photons</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="n">filter_band</span><span class="o">.</span><span class="n">value</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+            <span class="n">filter_band</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">remove_rows</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">fluxes</span><span class="p">))</span>
+        <span class="n">fluxes</span> <span class="o">=</span> <span class="n">fluxes</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">fluxes</span><span class="p">)]</span>
+
+        <span class="k">return</span> <span class="n">Sources</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
+            <span class="n">ra</span><span class="o">=</span><span class="n">table</span><span class="p">[</span><span class="s2">&quot;ra&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+            <span class="n">dec</span><span class="o">=</span><span class="n">table</span><span class="p">[</span><span class="s2">&quot;dec&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+            <span class="n">fluxes</span><span class="o">=</span><span class="n">fluxes</span><span class="p">,</span>
+            <span class="n">gaia_ids</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="s2">&quot;gaia_id&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_query_source</span><span class="p">(</span>
+        <span class="n">tap_source</span><span class="p">:</span> <span class="n">GaiaTAPSource</span> <span class="o">|</span> <span class="n">GaiaSQLiteSource</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GaiaTAPSource</span> <span class="o">|</span> <span class="n">GaiaSQLiteSource</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve a query source into either TAP or SQLite backend config.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">tap_source</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">DEFAULT_TAP_SOURCE</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tap_source</span><span class="p">,</span> <span class="n">GaiaSQLiteSource</span> <span class="o">|</span> <span class="n">GaiaTAPSource</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">tap_source</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tap_source</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;tap_source must be a GaiaTAPSource, GaiaSQLiteSource, or str, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">tap_source</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">source_text</span> <span class="o">=</span> <span class="n">tap_source</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">source_text</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;sqlite:///&quot;</span><span class="p">):</span>
+            <span class="n">db_path</span> <span class="o">=</span> <span class="n">source_text</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;sqlite:///&quot;</span><span class="p">)</span> <span class="p">:]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">db_path</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;SQLite URI must include a database path.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">GaiaSQLiteSource</span><span class="p">(</span><span class="n">database</span><span class="o">=</span><span class="n">db_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">source_text</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.db&quot;</span><span class="p">,</span> <span class="s2">&quot;.sqlite&quot;</span><span class="p">,</span> <span class="s2">&quot;.sqlite3&quot;</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">GaiaSQLiteSource</span><span class="p">(</span><span class="n">database</span><span class="o">=</span><span class="n">source_text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">GaiaTAPSource</span><span class="o">.</span><span class="n">ensure_enum</span><span class="p">(</span><span class="n">source_text</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_normalize_region</span><span class="p">(</span>
+        <span class="n">center</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="n">SkyCoord</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Angle</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bounds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span>
+        <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Normalize circle/bounds geometry inputs.</span>
+
+<span class="sd">        Exactly one of ``radius`` or ``bounds`` must be provided.</span>
+
+<span class="sd">        The ``bounds`` tuple should be ``(ra_min, ra_max, dec_min, dec_max)``</span>
+<span class="sd">        in degrees. RA values are normalised modulo 360; if ``ra_min &lt;= ra_max``</span>
+<span class="sd">        the RA interval is contiguous, otherwise ``ra_min &gt; ra_max`` indicates</span>
+<span class="sd">        an interval that wraps across RA=0. Declination bounds must satisfy</span>
+<span class="sd">        ``-90 &lt;= dec_min &lt;= dec_max &lt;= 90``. The function returns a tuple of</span>
+<span class="sd">        ``(center_coords, radius_deg, bounds_tuple)`` where only the</span>
+<span class="sd">        applicable geometry is populated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">radius</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="n">bounds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Exactly one geometry must be specified: either radius or bounds.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">center_coords</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">radius_deg</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">bounds_tuple</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">radius</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">center</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;center must be provided for radius-based queries.&quot;</span><span class="p">)</span>
+            <span class="n">radius_value</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">radius</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">)</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">radius</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">radius_value</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;radius must be &gt; 0.&quot;</span><span class="p">)</span>
+            <span class="n">radius_deg</span> <span class="o">=</span> <span class="n">radius_value</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">center</span><span class="p">,</span> <span class="n">SkyCoord</span><span class="p">):</span>
+                <span class="n">center_coords</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="nb">float</span><span class="p">(</span><span class="n">center</span><span class="o">.</span><span class="n">ra</span><span class="o">.</span><span class="n">deg</span> <span class="o">%</span> <span class="mf">360.0</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+                    <span class="nb">float</span><span class="p">(</span><span class="n">center</span><span class="o">.</span><span class="n">dec</span><span class="o">.</span><span class="n">deg</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">center_coords</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">%</span> <span class="mf">360.0</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">bounds</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bounds</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;bounds must be a tuple of (ra_min, ra_max, dec_min, dec_max).&quot;</span>
+                <span class="p">)</span>
+            <span class="n">ra_min</span><span class="p">,</span> <span class="n">ra_max</span><span class="p">,</span> <span class="n">dec_min</span><span class="p">,</span> <span class="n">dec_max</span> <span class="o">=</span> <span class="n">bounds</span>
+            <span class="n">dec_min</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dec_min</span><span class="p">)</span>
+            <span class="n">dec_max</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dec_max</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dec_min</span> <span class="o">&gt;</span> <span class="n">dec_max</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;dec_min must be &lt;= dec_max.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dec_min</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">90.0</span> <span class="ow">or</span> <span class="n">dec_max</span> <span class="o">&gt;</span> <span class="mf">90.0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;declination bounds must stay within [-90, 90].&quot;</span><span class="p">)</span>
+            <span class="n">bounds_tuple</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">float</span><span class="p">(</span><span class="n">ra_min</span> <span class="o">%</span> <span class="mf">360.0</span><span class="p">),</span>
+                <span class="nb">float</span><span class="p">(</span><span class="n">ra_max</span> <span class="o">%</span> <span class="mf">360.0</span><span class="p">),</span>
+                <span class="n">dec_min</span><span class="p">,</span>
+                <span class="n">dec_max</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">center_coords</span><span class="p">,</span> <span class="n">radius_deg</span><span class="p">,</span> <span class="n">bounds_tuple</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_query_tap</span><span class="p">(</span>
+        <span class="n">tap_source</span><span class="p">:</span> <span class="n">GaiaTAPSource</span><span class="p">,</span>
+        <span class="n">bands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Filters</span><span class="p">],</span>
+        <span class="n">center</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">radius_deg</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bounds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">allow_nulls</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Table</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute a Gaia query against a TAP backend.&quot;&quot;&quot;</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">_TAP_CONFIG</span><span class="p">[</span><span class="n">tap_source</span><span class="p">]</span>
+
+        <span class="n">select_cols</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;gaia_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> AS gaia_id&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;ra&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> AS ra&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;dec&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> AS dec&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;pmra&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> AS pmra&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;pmdec&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> AS pmdec&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">where</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">joins</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">need_tmass_join</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">bands</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">Filters</span><span class="o">.</span><span class="n">is_tmass</span><span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+                <span class="n">col_expr</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="n">_TMASS_COL_KEY</span><span class="p">[</span><span class="n">band</span><span class="o">.</span><span class="n">name</span><span class="p">]]</span>
+                <span class="n">need_tmass_join</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">col_expr</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="n">band</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;_mag&quot;</span><span class="p">]</span>
+            <span class="n">select_cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">col_expr</span><span class="si">}</span><span class="s2"> AS </span><span class="si">{</span><span class="n">band</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">allow_nulls</span><span class="p">:</span>
+                <span class="n">where</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">col_expr</span><span class="si">}</span><span class="s2"> IS NOT NULL&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">need_tmass_join</span><span class="p">:</span>
+            <span class="n">joins</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;tmass_joins&quot;</span><span class="p">])</span>
+
+        <span class="n">first</span> <span class="o">=</span> <span class="n">bands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">order_by</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">first</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> ASC&quot;</span>
+
+        <span class="k">if</span> <span class="n">radius_deg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">center</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">where</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;1=CONTAINS(&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;POINT(&#39;ICRS&#39;, </span><span class="si">{</span><span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;ra&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;dec&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">), &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;CIRCLE(&#39;ICRS&#39;, </span><span class="si">{</span><span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">radius_deg</span><span class="si">}</span><span class="s2">))&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">bounds</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">where</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_build_tap_bounds_where</span><span class="p">(</span>
+                    <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;ra&quot;</span><span class="p">],</span>
+                    <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;dec&quot;</span><span class="p">],</span>
+                    <span class="n">bounds</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">select_clause</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">select_cols</span><span class="p">)</span>
+        <span class="n">joins_clause</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">joins</span><span class="p">)</span>
+        <span class="n">where_clause</span> <span class="o">=</span> <span class="s2">&quot; AND &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">where</span><span class="p">)</span>
+
+        <span class="n">adql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        SELECT TOP </span><span class="si">{</span><span class="n">limit</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">select_clause</span><span class="si">}</span>
+<span class="s2">        FROM </span><span class="si">{</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">]</span><span class="si">}</span>
+<span class="s2">        </span><span class="si">{</span><span class="n">joins_clause</span><span class="si">}</span>
+<span class="s2">        WHERE </span><span class="si">{</span><span class="n">where_clause</span><span class="si">}</span>
+<span class="s2">        ORDER BY </span><span class="si">{</span><span class="n">order_by</span><span class="si">}</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_launch_job_with_timeout</span><span class="p">(</span>
+            <span class="n">adql</span><span class="p">,</span> <span class="n">tap_source</span><span class="o">=</span><span class="n">tap_source</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span>
+        <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_query_sqlite</span><span class="p">(</span>
+        <span class="n">sqlite_source</span><span class="p">:</span> <span class="n">GaiaSQLiteSource</span><span class="p">,</span>
+        <span class="n">requested_bands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Filters</span><span class="p">],</span>
+        <span class="n">requested_all</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">center</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">radius_deg</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bounds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">allow_nulls</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Table</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute a Gaia-like query against a local SQLite catalog.&quot;&quot;&quot;</span>
+
+        <span class="n">connection</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">sqlite_source</span><span class="o">.</span><span class="n">database</span><span class="p">,</span> <span class="n">check_same_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">connection</span><span class="o">.</span><span class="n">row_factory</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Row</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_run_query</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Table</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">closing</span><span class="p">(</span><span class="n">connection</span><span class="p">):</span>
+                <span class="n">cursor</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+                <span class="n">selected_tables</span><span class="p">,</span> <span class="n">schema_table</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_select_sqlite_tables</span><span class="p">(</span>
+                    <span class="n">cursor</span><span class="o">=</span><span class="n">cursor</span><span class="p">,</span>
+                    <span class="n">sqlite_source</span><span class="o">=</span><span class="n">sqlite_source</span><span class="p">,</span>
+                    <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span>
+                    <span class="n">radius_deg</span><span class="o">=</span><span class="n">radius_deg</span><span class="p">,</span>
+                    <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">schema_table_name</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_quote_sql_identifier</span><span class="p">(</span><span class="n">schema_table</span><span class="p">)</span>
+
+                <span class="n">available_columns</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PRAGMA table_info(</span><span class="si">{</span><span class="n">schema_table_name</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                <span class="p">}</span>
+                <span class="n">required_position_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ra&quot;</span><span class="p">,</span> <span class="s2">&quot;dec&quot;</span><span class="p">}</span>
+                <span class="n">missing_required</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">required_position_columns</span> <span class="o">-</span> <span class="n">available_columns</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">missing_required</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;SQLite source is missing required columns: &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_required</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">requested_all</span><span class="p">:</span>
+                    <span class="n">selected_bands</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="n">band</span>
+                        <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">requested_bands</span>
+                        <span class="k">if</span> <span class="n">band</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">available_columns</span>
+                    <span class="p">]</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">selected_bands</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="s2">&quot;SQLite source does not contain any supported &quot;</span>
+                            <span class="s2">&quot;magnitude columns.&quot;</span>
+                        <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">missing_requested</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="n">band</span><span class="o">.</span><span class="n">value</span>
+                        <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">requested_bands</span>
+                        <span class="k">if</span> <span class="n">band</span><span class="o">.</span><span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">available_columns</span>
+                    <span class="p">]</span>
+                    <span class="k">if</span> <span class="n">missing_requested</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="s2">&quot;SQLite source is missing requested band columns: &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">missing_requested</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                    <span class="n">selected_bands</span> <span class="o">=</span> <span class="n">requested_bands</span>
+
+                <span class="c1"># Local catalogs are not guaranteed to carry Gaia source ids,</span>
+                <span class="c1"># so they are reported as the -1 sentinel.</span>
+                <span class="n">select_cols</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_NO_GAIA_ID</span><span class="si">}</span><span class="s2"> AS gaia_id&quot;</span><span class="p">,</span>
+                    <span class="s1">&#39;&quot;ra&quot; AS ra&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;&quot;dec&quot; AS dec&#39;</span><span class="p">,</span>
+                    <span class="p">(</span>
+                        <span class="s1">&#39;&quot;pmra&quot; AS pmra&#39;</span>
+                        <span class="k">if</span> <span class="s2">&quot;pmra&quot;</span> <span class="ow">in</span> <span class="n">available_columns</span>
+                        <span class="k">else</span> <span class="s2">&quot;NULL AS pmra&quot;</span>
+                    <span class="p">),</span>
+                    <span class="p">(</span>
+                        <span class="s1">&#39;&quot;pmdec&quot; AS pmdec&#39;</span>
+                        <span class="k">if</span> <span class="s2">&quot;pmdec&quot;</span> <span class="ow">in</span> <span class="n">available_columns</span>
+                        <span class="k">else</span> <span class="s2">&quot;NULL AS pmdec&quot;</span>
+                    <span class="p">),</span>
+                <span class="p">]</span>
+                <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">selected_bands</span><span class="p">:</span>
+                    <span class="n">quoted_col</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_quote_sql_identifier</span><span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                    <span class="n">select_cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">quoted_col</span><span class="si">}</span><span class="s2"> AS </span><span class="si">{</span><span class="n">band</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="n">where_sql</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">params</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">allow_nulls</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">selected_bands</span><span class="p">:</span>
+                        <span class="n">quoted_col</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_quote_sql_identifier</span><span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                        <span class="n">where_sql</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">quoted_col</span><span class="si">}</span><span class="s2"> IS NOT NULL&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">bounds</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">bounds_sql</span><span class="p">,</span> <span class="n">bounds_params</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_build_sqlite_bounds_where</span><span class="p">(</span>
+                        <span class="n">bounds</span>
+                    <span class="p">)</span>
+                    <span class="n">where_sql</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bounds_sql</span><span class="p">)</span>
+                    <span class="n">params</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">bounds_params</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">assert</span> <span class="n">center</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="k">assert</span> <span class="n">radius_deg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="n">circle_sql</span><span class="p">,</span> <span class="n">circle_params</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_build_sqlite_circle_prefilter_where</span><span class="p">(</span>
+                            <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span>
+                            <span class="n">radius_deg</span><span class="o">=</span><span class="n">radius_deg</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="n">where_sql</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">circle_sql</span><span class="p">)</span>
+                    <span class="n">params</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">circle_params</span><span class="p">)</span>
+
+                <span class="n">first_band</span> <span class="o">=</span> <span class="n">selected_bands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="n">output_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;gaia_id&quot;</span><span class="p">,</span> <span class="s2">&quot;ra&quot;</span><span class="p">,</span> <span class="s2">&quot;dec&quot;</span><span class="p">,</span> <span class="s2">&quot;pmra&quot;</span><span class="p">,</span> <span class="s2">&quot;pmdec&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
+                    <span class="n">band</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">selected_bands</span>
+                <span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">selected_tables</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">Table</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="p">[],</span> <span class="n">names</span><span class="o">=</span><span class="n">output_names</span><span class="p">)</span>
+
+                <span class="n">output_rows</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">selected_tables</span><span class="p">:</span>
+                    <span class="n">table_name</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_quote_sql_identifier</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+                    <span class="n">query_parts</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="sa">f</span><span class="s2">&quot;SELECT </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">select_cols</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">&quot;FROM </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="p">]</span>
+                    <span class="k">if</span> <span class="n">where_sql</span><span class="p">:</span>
+                        <span class="n">query_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;WHERE &quot;</span> <span class="o">+</span> <span class="s2">&quot; AND &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">where_sql</span><span class="p">))</span>
+                    <span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">query_parts</span><span class="p">)</span>
+
+                    <span class="n">rows</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">params</span><span class="p">)))</span>
+                    <span class="n">output_rows</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                        <span class="nb">tuple</span><span class="p">(</span>
+                            <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">row</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span>
+                            <span class="k">else</span> <span class="n">row</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+                            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">output_names</span>
+                        <span class="p">)</span>
+                        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span>
+                    <span class="p">)</span>
+
+                <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="n">output_rows</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">output_names</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">radius_deg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">assert</span> <span class="n">center</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="n">inside_circle</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_on_sky_circle_mask</span><span class="p">(</span>
+                        <span class="n">ra</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="s2">&quot;ra&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span>
+                        <span class="n">dec</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="s2">&quot;dec&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span>
+                        <span class="n">center_ra</span><span class="o">=</span><span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="n">center_dec</span><span class="o">=</span><span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="n">radius_deg</span><span class="o">=</span><span class="n">radius_deg</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">table</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="n">inside_circle</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">table</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">sort_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="n">first_band</span><span class="o">.</span><span class="n">value</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span>  <span class="c1"># type: ignore[index]</span>
+                        <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">table</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">sort_values</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">)]</span>
+                <span class="k">return</span> <span class="n">Table</span><span class="p">(</span><span class="n">table</span><span class="p">[:</span><span class="n">limit</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_run_callable_with_timeout</span><span class="p">(</span>
+            <span class="n">func</span><span class="o">=</span><span class="n">_run_query</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="n">timeout_message</span><span class="o">=</span><span class="p">(</span>
+                <span class="s2">&quot;SQLite Gaia query timed out. &quot;</span>
+                <span class="s2">&quot;You may want to increase the timeout or reduce the query size.&quot;</span>
+            <span class="p">),</span>
+            <span class="n">on_timeout</span><span class="o">=</span><span class="n">connection</span><span class="o">.</span><span class="n">interrupt</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_tap_bounds_where</span><span class="p">(</span>
+        <span class="n">ra_col</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">dec_col</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">bounds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build an ADQL bounds predicate with RA wrap handling.&quot;&quot;&quot;</span>
+        <span class="n">ra_min</span><span class="p">,</span> <span class="n">ra_max</span><span class="p">,</span> <span class="n">dec_min</span><span class="p">,</span> <span class="n">dec_max</span> <span class="o">=</span> <span class="n">bounds</span>
+        <span class="n">dec_clause</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">dec_col</span><span class="si">}</span><span class="s2"> &gt;= </span><span class="si">{</span><span class="n">dec_min</span><span class="si">}</span><span class="s2"> AND </span><span class="si">{</span><span class="n">dec_col</span><span class="si">}</span><span class="s2"> &lt;= </span><span class="si">{</span><span class="n">dec_max</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">if</span> <span class="n">ra_min</span> <span class="o">&lt;=</span> <span class="n">ra_max</span><span class="p">:</span>
+            <span class="n">ra_clause</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">ra_col</span><span class="si">}</span><span class="s2"> &gt;= </span><span class="si">{</span><span class="n">ra_min</span><span class="si">}</span><span class="s2"> AND </span><span class="si">{</span><span class="n">ra_col</span><span class="si">}</span><span class="s2"> &lt;= </span><span class="si">{</span><span class="n">ra_max</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ra_clause</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">ra_col</span><span class="si">}</span><span class="s2"> &gt;= </span><span class="si">{</span><span class="n">ra_min</span><span class="si">}</span><span class="s2"> OR </span><span class="si">{</span><span class="n">ra_col</span><span class="si">}</span><span class="s2"> &lt;= </span><span class="si">{</span><span class="n">ra_max</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dec_clause</span><span class="si">}</span><span class="s2"> AND </span><span class="si">{</span><span class="n">ra_clause</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_select_sqlite_tables</span><span class="p">(</span>
+        <span class="n">cursor</span><span class="p">:</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Cursor</span><span class="p">,</span>
+        <span class="n">sqlite_source</span><span class="p">:</span> <span class="n">GaiaSQLiteSource</span><span class="p">,</span>
+        <span class="n">center</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">radius_deg</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bounds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve SQLite tables for a query, including dec-ring shards.&quot;&quot;&quot;</span>
+        <span class="n">all_tables</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_list_sqlite_tables</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sqlite_source</span><span class="o">.</span><span class="n">table</span> <span class="ow">in</span> <span class="n">all_tables</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">sqlite_source</span><span class="o">.</span><span class="n">table</span><span class="p">],</span> <span class="n">sqlite_source</span><span class="o">.</span><span class="n">table</span>
+
+        <span class="n">ring_tables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">all_tables</span><span class="p">:</span>
+            <span class="n">dec_range</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_parse_dec_ring_table_name</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dec_range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">ring_tables</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">table</span><span class="p">,</span> <span class="n">dec_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dec_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ring_tables</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;SQLite table &#39;</span><span class="si">{</span><span class="n">sqlite_source</span><span class="o">.</span><span class="n">table</span><span class="si">}</span><span class="s2">&#39; not found and no sharded &quot;</span>
+                <span class="s2">&quot;declination-ring tables were detected.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">bounds</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dec_min</span> <span class="o">=</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">dec_max</span> <span class="o">=</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">center</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">assert</span> <span class="n">radius_deg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">dec_min</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="o">-</span><span class="mf">90.0</span><span class="p">,</span> <span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">radius_deg</span><span class="p">)</span>
+            <span class="n">dec_max</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">90.0</span><span class="p">,</span> <span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">radius_deg</span><span class="p">)</span>
+
+        <span class="n">ring_dec_min</span> <span class="o">=</span> <span class="p">{</span><span class="n">table</span><span class="p">:</span> <span class="n">tmin</span> <span class="k">for</span> <span class="n">table</span><span class="p">,</span> <span class="n">tmin</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">ring_tables</span><span class="p">}</span>
+
+        <span class="n">selected</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">table</span>
+                <span class="k">for</span> <span class="n">table</span><span class="p">,</span> <span class="n">ring_min</span><span class="p">,</span> <span class="n">ring_max</span> <span class="ow">in</span> <span class="n">ring_tables</span>
+                <span class="k">if</span> <span class="n">ring_max</span> <span class="o">&gt;=</span> <span class="n">dec_min</span> <span class="ow">and</span> <span class="n">ring_min</span> <span class="o">&lt;=</span> <span class="n">dec_max</span>
+            <span class="p">],</span>
+            <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">name</span><span class="p">:</span> <span class="n">ring_dec_min</span><span class="p">[</span><span class="n">name</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="n">schema_table</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ring_tables</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">selected</span><span class="p">,</span> <span class="n">schema_table</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_list_sqlite_tables</span><span class="p">(</span><span class="n">cursor</span><span class="p">:</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Cursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List user tables in a SQLite database.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                <span class="s2">&quot;SELECT name FROM sqlite_master &quot;</span>
+                <span class="s2">&quot;WHERE type=&#39;table&#39; AND name NOT LIKE &#39;sqlite_%&#39;&quot;</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_dec_ring_table_name</span><span class="p">(</span><span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse sharded dec-ring table names such as &#39;-25_-24&#39;.&quot;&quot;&quot;</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^(-?\d+(?:\.\d+)?)_(-?\d+(?:\.\d+)?)$&quot;</span><span class="p">,</span> <span class="n">table_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">dec_min</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">dec_max</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">dec_min</span> <span class="o">&gt;</span> <span class="n">dec_max</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dec_max</span><span class="p">,</span> <span class="n">dec_min</span>
+        <span class="k">return</span> <span class="n">dec_min</span><span class="p">,</span> <span class="n">dec_max</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_sqlite_bounds_where</span><span class="p">(</span>
+        <span class="n">bounds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="o">...</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build SQL bounds predicate with parameters and RA wrap handling.&quot;&quot;&quot;</span>
+        <span class="n">ra_min</span><span class="p">,</span> <span class="n">ra_max</span><span class="p">,</span> <span class="n">dec_min</span><span class="p">,</span> <span class="n">dec_max</span> <span class="o">=</span> <span class="n">bounds</span>
+        <span class="k">if</span> <span class="n">ra_min</span> <span class="o">&lt;=</span> <span class="n">ra_max</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="s1">&#39;(&quot;dec&quot; &gt;= ? AND &quot;dec&quot; &lt;= ?) AND (&quot;ra&quot; &gt;= ? AND &quot;ra&quot; &lt;= ?)&#39;</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">dec_min</span><span class="p">,</span> <span class="n">dec_max</span><span class="p">,</span> <span class="n">ra_min</span><span class="p">,</span> <span class="n">ra_max</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s1">&#39;(&quot;dec&quot; &gt;= ? AND &quot;dec&quot; &lt;= ?) AND ((&quot;ra&quot; &gt;= ?) OR (&quot;ra&quot; &lt;= ?))&#39;</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">dec_min</span><span class="p">,</span> <span class="n">dec_max</span><span class="p">,</span> <span class="n">ra_min</span><span class="p">,</span> <span class="n">ra_max</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_sqlite_circle_prefilter_where</span><span class="p">(</span>
+        <span class="n">center</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+        <span class="n">radius_deg</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="o">...</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build a rectangular SQL prefilter around a circle query.&quot;&quot;&quot;</span>
+        <span class="n">center_ra</span><span class="p">,</span> <span class="n">center_dec</span> <span class="o">=</span> <span class="n">center</span>
+        <span class="n">dec_min</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="o">-</span><span class="mf">90.0</span><span class="p">,</span> <span class="n">center_dec</span> <span class="o">-</span> <span class="n">radius_deg</span><span class="p">)</span>
+        <span class="n">dec_max</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">90.0</span><span class="p">,</span> <span class="n">center_dec</span> <span class="o">+</span> <span class="n">radius_deg</span><span class="p">)</span>
+
+        <span class="n">cos_dec</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">center_dec</span><span class="p">))),</span> <span class="mf">1e-6</span><span class="p">)</span>
+        <span class="n">ra_half_width</span> <span class="o">=</span> <span class="n">radius_deg</span> <span class="o">/</span> <span class="n">cos_dec</span>
+
+        <span class="c1"># When the circle is wide enough to span all RA values (e.g. near a pole),</span>
+        <span class="c1"># skip the RA filter — only the dec bounds apply.</span>
+        <span class="k">if</span> <span class="n">ra_half_width</span> <span class="o">&gt;=</span> <span class="mf">180.0</span> <span class="ow">or</span> <span class="n">dec_min</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mf">90.0</span> <span class="ow">or</span> <span class="n">dec_max</span> <span class="o">&gt;=</span> <span class="mf">90.0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;&quot;dec&quot; &gt;= ? AND &quot;dec&quot; &lt;= ?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">dec_min</span><span class="p">,</span> <span class="n">dec_max</span><span class="p">)</span>
+
+        <span class="n">ra_min</span> <span class="o">=</span> <span class="p">(</span><span class="n">center_ra</span> <span class="o">-</span> <span class="n">ra_half_width</span><span class="p">)</span> <span class="o">%</span> <span class="mf">360.0</span>
+        <span class="n">ra_max</span> <span class="o">=</span> <span class="p">(</span><span class="n">center_ra</span> <span class="o">+</span> <span class="n">ra_half_width</span><span class="p">)</span> <span class="o">%</span> <span class="mf">360.0</span>
+
+        <span class="k">return</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_build_sqlite_bounds_where</span><span class="p">((</span><span class="n">ra_min</span><span class="p">,</span> <span class="n">ra_max</span><span class="p">,</span> <span class="n">dec_min</span><span class="p">,</span> <span class="n">dec_max</span><span class="p">))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_sky_circle_mask</span><span class="p">(</span>
+        <span class="n">ra</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">dec</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">center_ra</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">center_dec</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">radius_deg</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return mask for points within an angular radius on the sphere.&quot;&quot;&quot;</span>
+        <span class="n">ra_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span>
+        <span class="n">dec_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span>
+        <span class="n">center_ra_rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">center_ra</span><span class="p">)</span>
+        <span class="n">center_dec_rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">center_dec</span><span class="p">)</span>
+
+        <span class="n">cos_sep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">dec_rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">center_dec_rad</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span>
+            <span class="n">dec_rad</span>
+        <span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">center_dec_rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ra_rad</span> <span class="o">-</span> <span class="n">center_ra_rad</span><span class="p">)</span>
+        <span class="n">cos_sep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">cos_sep</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">sep_deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">cos_sep</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">sep_deg</span> <span class="o">&lt;=</span> <span class="n">radius_deg</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_quote_sql_identifier</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Quote a SQLite identifier safely.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">identifier</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;SQL identifier cannot be empty.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="n">identifier</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;&quot;&quot;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_run_callable_with_timeout</span><span class="p">(</span>
+        <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">_T</span><span class="p">],</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">timeout_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">on_timeout</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_T</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run a callable with optional timeout using a daemon thread.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">()</span>
+
+        <span class="n">result</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">_T</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">exc</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_run_safe</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">func</span><span class="p">())</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">exc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">_run_safe</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">on_timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">on_timeout</span><span class="p">()</span>
+            <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="n">timeout_message</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_launch_job_with_timeout</span><span class="p">(</span>
+        <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">tap_source</span><span class="p">:</span> <span class="n">GaiaTAPSource</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Table</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Launch a TAP job and return its results, optionally enforcing a timeout.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        query : str</span>
+<span class="sd">            The ADQL query string.</span>
+<span class="sd">        tap_source : GaiaTAPSource</span>
+<span class="sd">            The TAP service to use.</span>
+<span class="sd">        timeout : float or None, optional</span>
+<span class="sd">            Maximum number of seconds to wait for the job to complete.</span>
+<span class="sd">            If None, the job is run on the main thread (no thread overhead).</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Additional keyword arguments forwarded to ``TapPlus.launch_job``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        object</span>
+<span class="sd">            The result returned by job.get_results().</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TimeoutError</span>
+<span class="sd">            If `timeout` is not None and the call does not complete within `timeout`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">astroquery.utils.tap.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">TapPlus</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_run</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Table</span><span class="p">:</span>
+            <span class="n">tap</span> <span class="o">=</span> <span class="n">TapPlus</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">tap_source</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="n">tap</span><span class="o">.</span><span class="n">launch_job</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Table</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">get_results</span><span class="p">())</span>  <span class="c1"># type: ignore[arg-type]</span>
+
+        <span class="k">return</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_run_callable_with_timeout</span><span class="p">(</span>
+            <span class="n">func</span><span class="o">=</span><span class="n">_run</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="n">timeout_message</span><span class="o">=</span><span class="p">(</span>
+                <span class="s2">&quot;Gaia query timed out. &quot;</span>
+                <span class="s2">&quot;You may want to increase the timeout or reduce the query size. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Query was: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Vega zero-points for all supported bands.</span>
+    <span class="c1"># See _derive_band_properties for how these were obtained.</span>
+    <span class="n">_BAND_PROPS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;G&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dlam_lam&quot;</span><span class="p">:</span> <span class="mf">0.7117</span><span class="p">,</span> <span class="s2">&quot;flux_m0_Jy&quot;</span><span class="p">:</span> <span class="mf">4031.5</span><span class="p">},</span>
+        <span class="s2">&quot;BP&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dlam_lam&quot;</span><span class="p">:</span> <span class="mf">0.5131</span><span class="p">,</span> <span class="s2">&quot;flux_m0_Jy&quot;</span><span class="p">:</span> <span class="mf">3683.21</span><span class="p">},</span>
+        <span class="s2">&quot;RP&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dlam_lam&quot;</span><span class="p">:</span> <span class="mf">0.3741</span><span class="p">,</span> <span class="s2">&quot;flux_m0_Jy&quot;</span><span class="p">:</span> <span class="mf">5040.41</span><span class="p">},</span>
+        <span class="s2">&quot;J&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dlam_lam&quot;</span><span class="p">:</span> <span class="mf">0.1312</span><span class="p">,</span> <span class="s2">&quot;flux_m0_Jy&quot;</span><span class="p">:</span> <span class="mf">1594.0</span><span class="p">},</span>
+        <span class="s2">&quot;H&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dlam_lam&quot;</span><span class="p">:</span> <span class="mf">0.151</span><span class="p">,</span> <span class="s2">&quot;flux_m0_Jy&quot;</span><span class="p">:</span> <span class="mf">1024.0</span><span class="p">},</span>
+        <span class="s2">&quot;KS&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dlam_lam&quot;</span><span class="p">:</span> <span class="mf">0.1214</span><span class="p">,</span> <span class="s2">&quot;flux_m0_Jy&quot;</span><span class="p">:</span> <span class="mf">666.8</span><span class="p">},</span>
+    <span class="p">}</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_mag_to_photons</span><span class="p">(</span><span class="n">mags</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">filter_band</span><span class="p">:</span> <span class="n">Filters</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert Vega magnitudes to photon flux in photons/s/m².</span>
+
+<span class="sd">        Applies to all supported bands (Gaia G/BP/RP and 2MASS J/H/KS).</span>
+<span class="sd">        Formula: Δλ/λ × F₀ × 1.51×10⁷ × 10^(−0.4 × mag),</span>
+<span class="sd">        where F₀ is the Vega zero-point flux density in Jy.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mags : np.ndarray</span>
+<span class="sd">            Vega magnitudes.</span>
+<span class="sd">        filter_band : Filters</span>
+<span class="sd">            Any supported filter band.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.ndarray</span>
+<span class="sd">            Flux in photons/s/m².</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">props</span> <span class="o">=</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_BAND_PROPS</span><span class="p">[</span><span class="n">filter_band</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;_mag_to_photons: unsupported filter </span><span class="si">{</span><span class="n">filter_band</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Supported: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_BAND_PROPS</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">Jy</span> <span class="o">=</span> <span class="mf">1.51e7</span>  <span class="c1"># [photons s^-1 m^-2 (Δλ/λ)^-1]</span>
+        <span class="k">return</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;dlam_lam&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;flux_m0_Jy&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">Jy</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">mags</span><span class="p">)</span>
+
+    <span class="c1"># Gaia DR3 reference epoch J2016.0 expressed as a decimal year.</span>
+    <span class="n">_GAIA_DR3_EPOCH</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Time</span><span class="p">(</span><span class="mf">2016.0</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;jyear&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">decimalyear</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_proper_motion</span><span class="p">(</span><span class="n">table</span><span class="p">:</span> <span class="n">Table</span><span class="p">,</span> <span class="n">dateobs</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="n">Time</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Table</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply proper motion correction to RA and DEC columns</span>
+<span class="sd">        for the given observation date.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dateobs</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
+            <span class="n">dateobs</span> <span class="o">=</span> <span class="n">Time</span><span class="p">(</span><span class="n">dateobs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dateobs</span><span class="p">,</span> <span class="n">Time</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;dateobs must be an astropy.time.Time or datetime, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">dateobs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">years</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dateobs</span><span class="o">.</span><span class="n">decimalyear</span><span class="p">)</span> <span class="o">-</span> <span class="n">GaiaQuery</span><span class="o">.</span><span class="n">_GAIA_DR3_EPOCH</span>
+        <span class="c1"># Zero-fill missing proper motions so sources without pm data keep their</span>
+        <span class="c1"># catalogue position rather than being silently NaN-corrupted.</span>
+        <span class="c1"># np.where returns a plain ndarray (no units/mask), so use column</span>
+        <span class="c1"># assignment (=) rather than in-place (+=) to avoid Astropy dropping</span>
+        <span class="c1"># column metadata when mixing Column and ndarray operands.</span>
+        <span class="n">pmra</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="s2">&quot;pmra&quot;</span><span class="p">]),</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">table</span><span class="p">[</span><span class="s2">&quot;pmra&quot;</span><span class="p">])</span>
+        <span class="n">pmdec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="s2">&quot;pmdec&quot;</span><span class="p">]),</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">table</span><span class="p">[</span><span class="s2">&quot;pmdec&quot;</span><span class="p">])</span>
+        <span class="n">table</span><span class="p">[</span><span class="s2">&quot;ra&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="s2">&quot;ra&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">years</span> <span class="o">*</span> <span class="n">pmra</span> <span class="o">/</span> <span class="mi">1000</span> <span class="o">/</span> <span class="mi">3600</span>  <span class="c1"># type: ignore</span>
+        <span class="n">table</span><span class="p">[</span><span class="s2">&quot;dec&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="s2">&quot;dec&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">years</span> <span class="o">*</span> <span class="n">pmdec</span> <span class="o">/</span> <span class="mi">1000</span> <span class="o">/</span> <span class="mi">3600</span>  <span class="c1"># type: ignore</span>
+
+        <span class="k">return</span> <span class="n">table</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_normalize_bands</span><span class="p">(</span>
+        <span class="n">filter_bands</span><span class="p">:</span> <span class="n">Filters</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Filters</span> <span class="o">|</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Filters&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Normalize filter_bands argument to a deduplicated list[Filters].</span>
+
+<span class="sd">        Passing the string ``&quot;all&quot;`` (case-insensitive) expands to every</span>
+<span class="sd">        available filter, equivalent to ``Filters.all()``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filter_bands</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">filter_bands</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;ALL&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Filters</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filter_bands</span><span class="p">,</span> <span class="n">Filters</span> <span class="o">|</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">filter_bands</span> <span class="o">=</span> <span class="p">[</span><span class="n">filter_bands</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filter_bands</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;filter_bands must be a Filters, str, or sequence thereof, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">filter_bands</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">filter_bands</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;At least one filter_band must be specified.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">Filters</span><span class="o">.</span><span class="n">ensure_enum</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">filter_bands</span><span class="p">))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_derive_band_properties</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Derives physical band properties for Gaia DR3 and 2MASS.</span>
+
+<span class="sd">        This method serves as a reference for how the Vega zero-point fluxes and Δλ/λ</span>
+<span class="sd">        values were obtained for the supported bands.</span>
+
+<span class="sd">        Sources</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        2MASS: Derived from Isophotal Fluxes</span>
+<span class="sd">        Cohen et al. 2003 AJ 126 1090 (Table 2) | Bibcode: 2003AJ....126.1090C</span>
+<span class="sd">        https://doi.org/10.1086/376474</span>
+
+<span class="sd">        Gaia: Derived from Magnitude Zero Points</span>
+<span class="sd">        Riello et al. 2021 A&amp;A 649 A3 (Table 3) | Bibcode: 2021A&amp;A...649A...3R</span>
+<span class="sd">        https://doi.org/10.1051/0004-6361/202039587</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        &gt;&gt;&gt; from cabaret.queries import GaiaQuery</span>
+<span class="sd">        &gt;&gt;&gt; properties = GaiaQuery._derive_band_properties()</span>
+<span class="sd">        &gt;&gt;&gt; properties == GaiaQuery._BAND_PROPS</span>
+<span class="sd">        True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">AB_ZERO_POINT_JY</span> <span class="o">=</span> <span class="mf">3631.0</span>
+
+        <span class="c1"># GAIA DR3 (Riello et al. 2021 A&amp;A 649 A3, Table 3)</span>
+        <span class="c1"># Format: {Band: [ZP_VEG, ZP_AB, FWHM_nm, LAM_0_nm]}</span>
+        <span class="n">gaia_table</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;G&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">25.6874</span><span class="p">,</span> <span class="mf">25.8010</span><span class="p">,</span> <span class="mf">454.82</span><span class="p">,</span> <span class="mf">639.07</span><span class="p">],</span>
+            <span class="s2">&quot;BP&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">25.3385</span><span class="p">,</span> <span class="mf">25.3540</span><span class="p">,</span> <span class="mf">265.90</span><span class="p">,</span> <span class="mf">518.26</span><span class="p">],</span>
+            <span class="s2">&quot;RP&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">24.7479</span><span class="p">,</span> <span class="mf">25.1040</span><span class="p">,</span> <span class="mf">292.75</span><span class="p">,</span> <span class="mf">782.51</span><span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="c1"># 2MASS (Martin Cohen et al. 2003 AJ 126 1090, Table 2)</span>
+        <span class="c1"># Format: {Band: [Flux_Jy, Bandwidth_um, Lam_Iso_um]}</span>
+        <span class="c1"># Note: KS refers to the 2MASS &quot;Short&quot; K-band, which has a narrower</span>
+        <span class="c1"># bandwidth and shorter pivot wavelength than standard Johnson K.</span>
+        <span class="n">tmass_table</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;J&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1594.0</span><span class="p">,</span> <span class="mf">0.162</span><span class="p">,</span> <span class="mf">1.235</span><span class="p">],</span>
+            <span class="s2">&quot;H&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1024.0</span><span class="p">,</span> <span class="mf">0.251</span><span class="p">,</span> <span class="mf">1.662</span><span class="p">],</span>
+            <span class="s2">&quot;KS&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">666.8</span><span class="p">,</span> <span class="mf">0.262</span><span class="p">,</span> <span class="mf">2.159</span><span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">band</span><span class="p">,</span> <span class="p">(</span><span class="n">zp_v</span><span class="p">,</span> <span class="n">zp_a</span><span class="p">,</span> <span class="n">fwhm</span><span class="p">,</span> <span class="n">l0</span><span class="p">)</span> <span class="ow">in</span> <span class="n">gaia_table</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># dlam_lam = FWHM / Pivot Wavelength</span>
+            <span class="n">dlam_lam</span> <span class="o">=</span> <span class="n">fwhm</span> <span class="o">/</span> <span class="n">l0</span>
+            <span class="c1"># Flux density of Vega = 3631 * 10^(0.4 * (ZP_AB - ZP_VEG))</span>
+            <span class="n">flux_jy</span> <span class="o">=</span> <span class="n">AB_ZERO_POINT_JY</span> <span class="o">*</span> <span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="mf">0.4</span> <span class="o">*</span> <span class="p">(</span><span class="n">zp_a</span> <span class="o">-</span> <span class="n">zp_v</span><span class="p">)))</span>
+
+            <span class="n">results</span><span class="p">[</span><span class="n">band</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;dlam_lam&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">dlam_lam</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+                <span class="s2">&quot;flux_m0_Jy&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">flux_jy</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">band</span><span class="p">,</span> <span class="p">(</span><span class="n">flux_jy</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">l_iso</span><span class="p">)</span> <span class="ow">in</span> <span class="n">tmass_table</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># dlam_lam = Width / Isophotal Wavelength</span>
+            <span class="n">dlam_lam</span> <span class="o">=</span> <span class="n">width</span> <span class="o">/</span> <span class="n">l_iso</span>
+
+            <span class="n">results</span><span class="p">[</span><span class="n">band</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;dlam_lam&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">dlam_lam</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+                <span class="s2">&quot;flux_m0_Jy&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">flux_jy</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">results</span></div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Peter Pihlmann, Lionel Garcia, David Degen
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, Peter Pedersen, Lionel Garcia, David Degen.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
