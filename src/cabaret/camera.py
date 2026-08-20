@@ -173,9 +173,11 @@ class Camera:
         if rng is None:
             rng = np.random.default_rng()
 
-        base = np.ones((self.height, self.width)).astype(np.float64)
+        ones = np.ones((self.height, self.width)).astype(np.float64)
 
-        base += rng.poisson(base * self.dark_current * exp_time).astype(np.float64)
+        base = np.zeros_like(ones, dtype=np.float64)
+
+        base += rng.poisson(ones * self.dark_current * exp_time).astype(np.float64)
 
         base += rng.normal(0, self.read_noise, (self.height, self.width)).astype(
             np.float64

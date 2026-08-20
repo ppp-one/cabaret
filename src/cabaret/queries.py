@@ -166,6 +166,7 @@ class GaiaTAPSource(Enum):
 _TAP_CONFIG: dict[GaiaTAPSource, dict] = {
     GaiaTAPSource.GAIA: {
         "from": "gaiadr3.gaia_source AS gaia",
+        "gaia_id": "gaia.source_id",
         "ra": "gaia.ra",
         "dec": "gaia.dec",
         "pmra": "gaia.pmra",
@@ -185,6 +186,7 @@ _TAP_CONFIG: dict[GaiaTAPSource, dict] = {
     },
     GaiaTAPSource.VIZIER: {
         "from": '"I/355/gaiadr3" AS g',
+        "gaia_id": 'g."Source"',
         "ra": "g.RA_ICRS",
         "dec": "g.DE_ICRS",
         "pmra": "g.pmRA",
@@ -203,6 +205,9 @@ _TAP_CONFIG: dict[GaiaTAPSource, dict] = {
 
 # Map Filters enum names to the per-source 2MASS column key in _TAP_CONFIG.
 _TMASS_COL_KEY = {"J": "j_col", "H": "h_col", "KS": "ks_col"}
+
+# Sentinel used for backends that cannot provide a Gaia source id (SQLite).
+_NO_GAIA_ID = -1
 
 
 class GaiaQuery:
@@ -297,9 +302,11 @@ class GaiaQuery:
         -------
         astropy.table.Table
             The raw Astropy Table returned by the TAP service, with columns
-            normalised to ``ra``, ``dec``, ``pmra``, ``pmdec``, and one magnitude
-            column per requested band named after ``filter_band.value``
-            (e.g. ``phot_g_mean_mag``, ``h_m``).
+            normalised to ``gaia_id``, ``ra``, ``dec``, ``pmra``, ``pmdec``, and
+            one magnitude column per requested band named after
+            ``filter_band.value`` (e.g. ``phot_g_mean_mag``, ``h_m``). The
+            SQLite backend has no Gaia identifier available and fills
+            ``gaia_id`` with ``-1``.
 
         Examples
         --------
@@ -511,13 +518,16 @@ class GaiaQuery:
         Returns
         -------
         Sources
-            A Sources instance containing the coordinates and fluxes of the retrieved
-            sources.
+            A Sources instance containing the coordinates, fluxes and Gaia source
+            ids of the retrieved sources.
 
 
         Notes
         -----
         Fluxes are always returned in photons/s/m² via :meth:`_mag_to_photons`.
+
+        ``gaia_ids`` holds the Gaia DR3 ``source_id`` when a TAP backend is used.
+        The SQLite backend carries no such identifier, so every id is ``-1``.
 
         Raises
         ------
@@ -560,6 +570,7 @@ class GaiaQuery:
             ra=table["ra"].value.data,  # type: ignore
             dec=table["dec"].value.data,  # type: ignore
             fluxes=fluxes,
+            gaia_ids=np.asarray(table["gaia_id"], dtype=np.int64),
         )
 
     @staticmethod
@@ -671,6 +682,7 @@ class GaiaQuery:
         cfg = _TAP_CONFIG[tap_source]
 
         select_cols = [
+            f"{cfg['gaia_id']} AS gaia_id",
             f"{cfg['ra']} AS ra",
             f"{cfg['dec']} AS dec",
             f"{cfg['pmra']} AS pmra",
@@ -794,7 +806,10 @@ class GaiaQuery:
                         )
                     selected_bands = requested_bands
 
+                # Local catalogs are not guaranteed to carry Gaia source ids,
+                # so they are reported as the -1 sentinel.
                 select_cols = [
+                    f"{_NO_GAIA_ID} AS gaia_id",
                     '"ra" AS ra',
                     '"dec" AS dec',
                     (
@@ -839,7 +854,7 @@ class GaiaQuery:
 
                 first_band = selected_bands[0]
 
-                output_names = ["ra", "dec", "pmra", "pmdec"] + [
+                output_names = ["gaia_id", "ra", "dec", "pmra", "pmdec"] + [
                     band.value for band in selected_bands
                 ]
                 if not selected_tables:

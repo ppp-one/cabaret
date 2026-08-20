@@ -45,6 +45,22 @@ def test_get_sources_gaia():
     assert sources is not None
 
 
+@pytest.mark.parametrize("tap_source", [GaiaTAPSource.VIZIER, GaiaTAPSource.GAIA])
+def test_get_sources_gaia_ids(tap_source):
+    """Both TAP backends resolve the same Gaia DR3 source ids."""
+    if not has_tap_source(tap_source):
+        pytest.skip(f"{tap_source.name} TAP unavailable")
+    center = SkyCoord(ra=10.68458, dec=41.269, unit="deg")
+    sources = GaiaQuery.get_sources(
+        center, radius=0.05, limit=3, timeout=60, tap_source=tap_source
+    )
+    assert sources.gaia_ids.dtype == np.int64
+    assert len(sources.gaia_ids) == len(sources)
+    assert np.all(sources.gaia_ids > 0)
+    # brightest-first ordering, so the same ids come back from either service
+    assert sources.gaia_ids[0] == 381261910408440576
+
+
 @skip_no_vizier
 def test_get_sources_timeout():
     center = SkyCoord(ra=10.68458, dec=41.26917, unit="deg")
@@ -339,6 +355,8 @@ def test_get_sources_sqlite_bounds(tmp_path):
 
     assert len(sources) == 2
     assert np.all(sources.fluxes > 0)
+    # SQLite catalogs carry no Gaia source id
+    assert np.all(sources.gaia_ids == -1)
 
 
 def test_query_sqlite_sharded_auto_detect_bounds(tmp_path):

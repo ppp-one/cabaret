@@ -2,8 +2,21 @@ from dataclasses import dataclass, field
 
 import numpy as np
 from astropy import units as u
-from astropy.coordinates import Longitude, SkyCoord
+from astropy.coordinates import Longitude, SkyCoord, concatenate
 from astropy.wcs import WCS
+
+NO_GAIA_ID = -1
+"""Sentinel id for sources that have no Gaia DR3 ``source_id``."""
+
+
+def _normalize_gaia_ids(gaia_ids: np.ndarray | list | None, n: int) -> np.ndarray:
+    """Convert gaia_ids to a plain int64 numpy array of shape (n,)."""
+    if gaia_ids is None:
+        return np.full(n, NO_GAIA_ID, dtype=np.int64)
+    gaia_ids = np.asarray(gaia_ids, dtype=np.int64)
+    if gaia_ids.shape != (n,):
+        raise ValueError(f"gaia_ids must have shape ({n},).")
+    return gaia_ids
 
 
 def _normalize_rates(
@@ -55,6 +68,10 @@ class Sources:
     """Dec motion rates, shape (n,) in arcsec/s. Accepts an astropy Quantity with
     angular velocity units or a plain array assumed to be in arcsec/s. Stored
     internally as arcsec/s. Positive values move north."""
+    gaia_ids: np.ndarray = field(init=False, repr=False)
+    """Gaia DR3 ``source_id`` per source, shape (n,) as int64. Sources with no
+    known Gaia counterpart — for instance everything coming from the SQLite
+    backend — carry ``NO_GAIA_ID`` (``-1``)."""
 
     def __init__(
         self,
@@ -62,6 +79,7 @@ class Sources:
         fluxes: np.ndarray,
         ra_rates: np.ndarray | u.Quantity | None = None,
         dec_rates: np.ndarray | u.Quantity | None = None,
+        gaia_ids: np.ndarray | list | None = None,
     ) -> None:
         if not isinstance(coords, SkyCoord):
             raise ValueError("coords must be an instance of SkyCoord.")
@@ -78,6 +96,7 @@ class Sources:
         n = coords.size
         self.ra_rates = _normalize_rates(ra_rates, n, "ra_rates")
         self.dec_rates = _normalize_rates(dec_rates, n, "dec_rates")
+        self.gaia_ids = _normalize_gaia_ids(gaia_ids, n)
 
     @property
     def ra(self) -> Longitude:
@@ -128,14 +147,18 @@ class Sources:
         new_fluxes = np.asarray(self.fluxes)[key]
         new_ra_rates = np.asarray(self.ra_rates)[key]
         new_dec_rates = np.asarray(self.dec_rates)[key]
+        new_gaia_ids = np.asarray(self.gaia_ids)[key]
         if np.isscalar(new_fluxes):
             new_fluxes = np.array([new_fluxes])
             new_ra_rates = np.array([new_ra_rates])
             new_dec_rates = np.array([new_dec_rates])
+            new_gaia_ids = np.array([new_gaia_ids])
 
         new_coords = self.coords[key]
 
-        return Sources(new_coords, new_fluxes, new_ra_rates, new_dec_rates)
+        return Sources(
+            new_coords, new_fluxes, new_ra_rates, new_dec_rates, new_gaia_ids
+        )
 
     def __add__(self, other: "Sources") -> "Sources":
         return Sources.concat(self, other)
@@ -157,10 +180,11 @@ class Sources:
         if not sources_list:
             raise ValueError("Must provide at least one Sources object to concatenate.")
         return cls(
-            coords=np.concatenate([s.coords for s in sources_list]),  # type: ignore[arg-type]
+            coords=concatenate([s.coords for s in sources_list]),  # type: ignore[arg-type]
             fluxes=np.concatenate([s.fluxes for s in sources_list]),
             ra_rates=np.concatenate([s.ra_rates for s in sources_list]),
             dec_rates=np.concatenate([s.dec_rates for s in sources_list]),
+            gaia_ids=np.concatenate([s.gaia_ids for s in sources_list]),
         )
 
     @classmethod
@@ -172,6 +196,7 @@ class Sources:
         units: str = "deg",
         ra_rates: np.ndarray | list | None = None,
         dec_rates: np.ndarray | list | None = None,
+        gaia_ids: np.ndarray | list | None = None,
     ) -> "Sources":
         """Create a Sources instance from separate RA and DEC arrays.
 
@@ -190,6 +215,9 @@ class Sources:
             RA motion rates in arcsec/s, shape (n,). Defaults to zeros.
         dec_rates : np.ndarray or list, optional
             Dec motion rates in arcsec/s, shape (n,). Defaults to zeros.
+        gaia_ids : np.ndarray or list, optional
+            Gaia DR3 ``source_id`` values, shape (n,). Defaults to ``-1`` for
+            every source.
 
         Returns
         -------
@@ -221,6 +249,7 @@ class Sources:
             fluxes=fluxes,
             ra_rates=ra_rates,
             dec_rates=dec_rates,
+            gaia_ids=gaia_ids,
         )
 
     def drop_nan_fluxes(self) -> "Sources":
